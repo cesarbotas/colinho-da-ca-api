@@ -9,4 +9,19 @@ public class ClienteDb
     public string Cpf { get; set; }
     public string Endereco { get; set; }
     public string Observacoes { get; set; }
+
+    public ClienteDb()
+    {
+        
+    }
+
+    public ClienteDb(CadastrarClienteCommand command)
+    {
+        Nome = command.Nome;
+        Email = command.Email;
+        Celular = command.Celular;
+        Cpf = command.Cpf;
+        Endereco = command.Endereco;
+        Observacoes = command.Observacoes;
+    }
 }

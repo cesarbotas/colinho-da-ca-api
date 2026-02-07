@@ -24,7 +24,7 @@ public class ClientesController : Controller
     [HttpPost("", Name = "")]
     public async Task<ActionResult> CadastrarCliente([FromBody] CadastrarClienteCommand command)
     {
-        var result = await _cadastrarClienteService.Execute(command);
+        await _cadastrarClienteService.Execute(command);
 
         return Ok();
     }

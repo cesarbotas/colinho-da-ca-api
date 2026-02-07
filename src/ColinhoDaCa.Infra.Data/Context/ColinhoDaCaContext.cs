@@ -1,4 +1,5 @@
 using ColinhoDaCa.Domain.Clientes.Entities;
+using ColinhoDaCa.Infra.Data.Context.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace ColinhoDaCa.Infra.Data.Context;
@@ -14,7 +15,9 @@ public class ColinhoDaCaContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ColinhoDaCaContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(ClienteConfiguration).Assembly);
+
         base.OnModelCreating(modelBuilder);
     }
 }

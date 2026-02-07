@@ -17,17 +17,19 @@ public class CadastrarClienteService : ICadastrarClienteService
 
     public async Task Execute(CadastrarClienteCommand command)
     {
-        var cliente = new ClienteDb
+        try
         {
-            Nome = command.Nome,
-            Email = command.Email,
-            Celular = command.Celular,
-            Cpf = command.Cpf,
-            Endereco = command.Endereco,
-            Observacoes = command.Observacoes
-        };
+            var cliente = new ClienteDb(command);
 
-        _context.Clientes.Add(cliente);
-        await _context.SaveChangesAsync();
+            _context.Clientes.Add(cliente);
+
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Problema na Inclusão de Clientes");
+
+            throw;
+        }
     }
 }
