@@ -14,4 +14,8 @@
     <ProjectReference Include="..\ColinhoDaCa.Domain\ColinhoDaCa.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UseCases\Pets\" />
+  </ItemGroup>
+
 </Project>

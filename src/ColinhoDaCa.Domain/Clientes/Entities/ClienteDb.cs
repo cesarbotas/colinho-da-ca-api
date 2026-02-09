@@ -9,6 +9,8 @@ public class ClienteDb
     public string Cpf { get; set; }
     public string Endereco { get; set; }
     public string Observacoes { get; set; }
+    public DateTime DataInclusao { get; set; }
+    public DateTime DataAlteracao { get; set; }
 
     public ClienteDb()
     {
@@ -17,6 +19,7 @@ public class ClienteDb
 
     public static ClienteDb Create(string nome, string email, string celular, string cpf, string endereco, string obs)
     {
+        var now = DateTime.UtcNow;
         return new ClienteDb
         {
             Nome = nome,
@@ -24,7 +27,9 @@ public class ClienteDb
             Celular = celular,
             Cpf = cpf,
             Endereco = endereco,
-            Observacoes = obs
+            Observacoes = obs,
+            DataInclusao = now,
+            DataAlteracao = now
         };
     }
 
@@ -36,5 +41,6 @@ public class ClienteDb
         Cpf = cpf;
         Endereco = endereco;
         Observacoes = obs;
+        DataAlteracao = DateTime.UtcNow;
     }
 }
