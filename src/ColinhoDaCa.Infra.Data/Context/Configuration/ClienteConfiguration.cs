@@ -8,12 +8,12 @@ public class ClienteConfiguration : IEntityTypeConfiguration<ClienteDb>
 {
     public void Configure(EntityTypeBuilder<ClienteDb> builder)
     {
-        builder.ToTable("Clientes");
+        builder.ToTable("Clientes", "public");
 
         builder.HasKey(c => c.Id);
 
         builder.Property(c => c.Id)
-            .ValueGeneratedOnAdd();
+            .UseIdentityAlwaysColumn();
 
         builder.Property(c => c.Nome)
             .IsRequired()
