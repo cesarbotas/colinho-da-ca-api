@@ -1,3 +1,5 @@
+using ColinhoDaCa.Application._Shared.DTOs.Paginacao;
+using ColinhoDaCa.Application.DTOs.Pets;
 using ColinhoDaCa.Application.UseCases.Pets.v1.AlterarPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.CadastrarPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.ExcluirPet;
@@ -32,7 +34,7 @@ public class PetsController : Controller
     }
 
     [HttpGet("", Name = "ListarPets")]
-    public async Task<ActionResult<IEnumerable<PetDb>>> ListarPets([FromQuery] ListarPetQuery query)
+    public async Task<ActionResult<ResultadoPaginadoDto<PetsDto>>> ListarPets([FromQuery] ListarPetQuery query)
     {
         var result = await _listarPetService.Handle(query);
 

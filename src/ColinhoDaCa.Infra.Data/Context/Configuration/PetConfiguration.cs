@@ -29,11 +29,22 @@ public class PetConfiguration : IEntityTypeConfiguration<PetDb>
         builder.Property(p => p.Peso)
             .IsRequired();
 
+        builder.Property(p => p.Porte)
+            .HasMaxLength(1);
+
         builder.Property(p => p.Observacoes)
             .HasMaxLength(1000);
 
         builder.Property(p => p.ClienteId)
             .IsRequired();
+
+        builder.Property(p => p.DataInclusao)
+            .IsRequired()
+            .HasColumnType("timestamp without time zone");
+
+        builder.Property(p => p.DataAlteracao)
+            .IsRequired()
+            .HasColumnType("timestamp without time zone");
 
         builder.HasOne<ClienteDb>()
             .WithMany()

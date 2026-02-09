@@ -37,6 +37,8 @@ public class PetRepository : Repository<PetDb>, IPetRepository, IPetReadReposito
                     Nome = p.Nome,
                     Raca = p.Raca,
                     Idade = p.Idade,
+                    Peso = p.Peso,
+                    Porte = p.Porte,
                     Observacoes = p.Observacoes,
                     ClienteId = p.ClienteId,
                     ClienteNome = c.Nome

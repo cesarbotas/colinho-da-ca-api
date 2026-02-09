@@ -1,9 +1,9 @@
-﻿using ColinhoDaCa.Application.UseCases.Clientes.v1.AlterarCliente;
+﻿using ColinhoDaCa.Application._Shared.DTOs.Paginacao;
+using ColinhoDaCa.Application.DTOs.Clientes;
+using ColinhoDaCa.Application.UseCases.Clientes.v1.AlterarCliente;
 using ColinhoDaCa.Application.UseCases.Clientes.v1.CadastrarCliente;
 using ColinhoDaCa.Application.UseCases.Clientes.v1.ExcluirCliente;
 using ColinhoDaCa.Application.UseCases.Clientes.v1.ListarCliente;
-using ColinhoDaCa.Domain.Clientes.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ColinhoDaCaApi.Controllers.v1;
@@ -34,7 +34,7 @@ public class ClientesController : Controller
     }
 
     [HttpGet("", Name = "")]
-    public async Task<ActionResult<IEnumerable<ClienteDb>>> ListarClientes([FromQuery] ListarClienteQuery query)
+    public async Task<ActionResult<ResultadoPaginadoDto<ClientesDto>>> ListarClientes([FromQuery] ListarClienteQuery query)
     {
         var result = await _listarClienteService.Handle(query);
 

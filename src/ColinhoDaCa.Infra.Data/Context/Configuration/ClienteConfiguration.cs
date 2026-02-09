@@ -36,5 +36,13 @@ public class ClienteConfiguration : IEntityTypeConfiguration<ClienteDb>
 
         builder.Property(c => c.Observacoes)
             .HasMaxLength(1000);
+
+        builder.Property(c => c.DataInclusao)
+            .IsRequired()
+            .HasColumnType("timestamp without time zone");
+
+        builder.Property(c => c.DataAlteracao)
+            .IsRequired()
+            .HasColumnType("timestamp without time zone");
     }
 }
