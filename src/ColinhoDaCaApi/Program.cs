@@ -12,13 +12,13 @@ try
     {
         options.AddPolicy("AllowFrontend", policy =>
         {
-            policy.WithOrigins(
-                "http://localhost:8080",
-                "https://colinho-da-ca-site.vercel.app/"
-            )
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
+            policy
+                .WithOrigins(
+                    "http://localhost:8080",
+                    "https://colinho-da-ca-site.vercel.app"
+                )
+                .AllowAnyMethod()
+                .AllowAnyHeader();
         });
     });
 
@@ -35,9 +35,11 @@ try
         app.UseSwaggerUI();
     }
 
+    app.UseRouting();
+
     app.UseHttpsRedirection();
 
-    app.UseCors("AllowFrontend");
+    app.UseCors("AllowFrontend");    
 
     app.UseAuthorization();
 
