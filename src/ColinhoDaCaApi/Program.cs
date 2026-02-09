@@ -7,6 +7,21 @@ try
     builder.Services.RegistraDependencias(builder.Configuration);
 
     builder.Services.AddControllers();
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowFrontend", policy =>
+        {
+            policy.WithOrigins(
+                "http://localhost:8080",
+                "https://colinho-da-ca-site.vercel.app/"
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+        });
+    });
+
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -21,6 +36,8 @@ try
     }
 
     app.UseHttpsRedirection();
+
+    app.UseCors("AllowFrontend");
 
     app.UseAuthorization();
 
