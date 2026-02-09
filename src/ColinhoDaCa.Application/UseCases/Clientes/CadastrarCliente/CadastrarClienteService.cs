@@ -9,7 +9,8 @@ public class CadastrarClienteService : ICadastrarClienteService
     private readonly ILogger<CadastrarClienteService> _logger;
     private readonly ColinhoDaCaContext _context;
 
-    public CadastrarClienteService(ILogger<CadastrarClienteService> logger, ColinhoDaCaContext context)
+    public CadastrarClienteService(ILogger<CadastrarClienteService> logger,
+        ColinhoDaCaContext context)
     {
         _logger = logger;
         _context = context;
