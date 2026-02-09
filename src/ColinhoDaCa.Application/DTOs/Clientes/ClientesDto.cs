@@ -1,7 +1,8 @@
-﻿namespace ColinhoDaCa.Domain.Clientes.Entities;
+﻿namespace ColinhoDaCa.Application.DTOs.Clientes;
 
-public class CadastrarClienteCommand
+public class ClientesDto
 {
+    public long Id { get; set; }
     public string Nome { get; set; }
     public string Email { get; set; }
     public string Celular { get; set; }

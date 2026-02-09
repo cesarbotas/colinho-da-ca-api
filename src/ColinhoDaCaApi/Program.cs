@@ -1,53 +1,39 @@
-using ColinhoDaCa.Infra.Data.Context;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using ColinhoDaCa.IoC;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
-builder.Services.RegistraDependencias(builder.Configuration);
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<ColinhoDaCaContext>(options =>
+try
 {
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    );
-});
+    var builder = WebApplication.CreateBuilder(args);
 
-var app = builder.Build();
+    builder.Services.RegistraDependencias(builder.Configuration);
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    builder.Services.AddControllers();
+    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
 
-app.UseHttpsRedirection();
+    var app = builder.Build();
 
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
-
-public static class ServiceCollectionExtensions
-{
-    public static IServiceCollection RegistraDependencias(this IServiceCollection services, IConfiguration configuration)
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
     {
-        // Register your application services, repositories, etc. here.
-        // Example:
-        // services.AddScoped<IMyService, MyService>();
-        //
-        // Keep this method as the central place to configure DI for the application.
-
-        return services;
+        app.UseSwagger();
+        app.UseSwaggerUI();
     }
+
+    app.UseHttpsRedirection();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.ToString());
+    //Log.Fatal(ex, $"Aplicação finalizada de forma inesperada: {ex.Message}");
+}
+finally
+{
+    //Log.CloseAndFlush();
 }

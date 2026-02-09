@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using ColinhoDaCa.IoC.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ColinhoDaCa.IoC;
@@ -7,19 +8,19 @@ namespace ColinhoDaCa.IoC;
 [ExcludeFromCodeCoverage]
 public static class ServiceRegistrationExtensions
 {
-    public static IServiceCollection RegistraDependencias(this IServiceCollection services/*, IConfiguration configuration*/)
+    public static IServiceCollection RegistraDependencias(this IServiceCollection services, IConfiguration configuration)
     {
         services
-            // .AddSingleton(configuration)
-            // .AdicionarConfiguracoes(configuration)
-            // .AdicionarServicos(configuration)
-            // .AdicionarUnitOfWork()
-            // .AdicionarContextoDb(configuration)
+            //.AddSingleton(configuration)
+            //.AdicionarConfiguracoes(configuration)
+            //.AdicionarServicos(configuration)
+            .AdicionarUnitOfWork()
+            .AdicionarContextoDb(configuration)
             //.AdicionarSqlServer(configuration)
             //.AdicionarDatabricks(configuration)
-            // .AdicionarRepositorios()
-            // .AdicionarApplicationValidators()
-            // .AdicionarDomainValidators()
+            .AdicionarRepositorios()
+            //.AdicionarApplicationValidators()
+            //.AdicionarDomainValidators()
             .AdicionarUseCases()
             ;
 

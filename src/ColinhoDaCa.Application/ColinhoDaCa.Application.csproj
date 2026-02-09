@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ColinhoDaCa.Domain\ColinhoDaCa.Domain.csproj" />
-    <ProjectReference Include="..\ColinhoDaCa.Infra.Data\ColinhoDaCa.Infra.Data.csproj" />
   </ItemGroup>
 
 </Project>

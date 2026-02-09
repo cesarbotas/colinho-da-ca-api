@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ColinhoDaCa.Application\ColinhoDaCa.Application.csproj" />
     <ProjectReference Include="..\ColinhoDaCa.Domain\ColinhoDaCa.Domain.csproj" />
+    <ProjectReference Include="..\ColinhoDaCa.IoC\ColinhoDaCa.IoC.csproj" />
   </ItemGroup>
 
 </Project>

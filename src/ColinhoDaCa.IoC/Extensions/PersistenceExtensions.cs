@@ -1,30 +1,37 @@
+using ColinhoDaCa.Domain._Shared.Entities;
+using ColinhoDaCa.Domain.Clientes.Repositories;
+using ColinhoDaCa.Infra.Data._Shared.Postgres.UoW;
+using ColinhoDaCa.Infra.Data.Context;
+using ColinhoDaCa.Infra.Data.Context.Repositories.Clientes;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ColinhoDaCa.IoC.Extensions;
 
 internal static class PersistenceExtensions
 {
-    internal static IServiceCollection AdicionarContextoDb(this IServiceCollection services/*, IConfiguration configuration*/)
+    internal static IServiceCollection AdicionarContextoDb(this IServiceCollection services, IConfiguration configuration)
     {
-        // var connectionString = configuration.GetConnectionString("ColinhoDaCaRender");
-        // services.AddDbContext<DbContext, ColinhodaCaContext>(options =>
-        //     options.UseNpgsql(connectionString, npgsqlOptions =>
-        //     {
-        //         npgsqlOptions.EnableRetryOnFailure(             // Habilita o retry automático em caso de falhas
-        //             maxRetryCount: 5,                           // Número máximo de tentativas
-        //             maxRetryDelay: TimeSpan.FromSeconds(10),    // Tempo máximo de espera entre as tentativas
-        //             errorCodesToAdd: null                       // Lista opcional de códigos de erro adicionais para considerar no retry
-        //         );
-        //     })
-        // );
+        var connectionString = configuration.GetConnectionString("ColinhoDaCaRender");
+        services.AddDbContext<DbContext, ColinhoDaCaContext>(options =>
+            options.UseNpgsql(connectionString, npgsqlOptions =>
+            {
+                npgsqlOptions.EnableRetryOnFailure(             // Habilita o retry automático em caso de falhas
+                    maxRetryCount: 5,                           // Número máximo de tentativas
+                    maxRetryDelay: TimeSpan.FromSeconds(10),    // Tempo máximo de espera entre as tentativas
+                    errorCodesToAdd: null                       // Lista opcional de códigos de erro adicionais para considerar no retry
+                );
+            })
+        );
 
         return services;
     }
 
     internal static IServiceCollection AdicionarUnitOfWork(this IServiceCollection services)
     {
-        // services
-            // .AddScoped<IUnitOfWork, UnitOfWork>();
+        services
+            .AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }
@@ -33,7 +40,8 @@ internal static class PersistenceExtensions
     {
         #region Repositórios Postgres
 
-        // services.AddScoped<IVagasRepository, VagaRepository>();
+        services.AddScoped<IClienteRepository, ClienteRepository>();
+        services.AddScoped<IClienteReadRepository, ClienteRepository>();
 
         #endregion
 

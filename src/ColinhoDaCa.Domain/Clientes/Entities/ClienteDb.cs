@@ -15,13 +15,16 @@ public class ClienteDb
         
     }
 
-    public ClienteDb(CadastrarClienteCommand command)
+    public static ClienteDb Create(string nome, string email, string celular, string cpf, string endereco, string obs)
     {
-        Nome = command.Nome;
-        Email = command.Email;
-        Celular = command.Celular;
-        Cpf = command.Cpf;
-        Endereco = command.Endereco;
-        Observacoes = command.Observacoes;
+        return new ClienteDb
+        {
+            Nome = nome,
+            Email = email,
+            Celular = celular,
+            Cpf = cpf,
+            Endereco = endereco,
+            Observacoes = obs
+        };
     }
 }
