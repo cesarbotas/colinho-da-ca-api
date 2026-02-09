@@ -2,7 +2,7 @@
 
 public class ClienteDb
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     public string Nome { get; set; }
     public string Email { get; set; }
     public string Celular { get; set; }
