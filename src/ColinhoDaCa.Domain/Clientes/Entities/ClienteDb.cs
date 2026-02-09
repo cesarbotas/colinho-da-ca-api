@@ -27,4 +27,14 @@ public class ClienteDb
             Observacoes = obs
         };
     }
+
+    public void Alterar(string nome, string email, string celular, string cpf, string endereco, string obs)
+    {
+        Nome = nome;
+        Email = email;
+        Celular = celular;
+        Cpf = cpf;
+        Endereco = endereco;
+        Observacoes = obs;
+    }
 }

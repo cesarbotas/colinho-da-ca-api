@@ -37,16 +37,4 @@ public class CadastrarClienteService : ICadastrarClienteService
             throw;
         }
     }
-
-    //private async Task AtualizarCliente(ClienteDb cliente, CadastrarClienteCommand command)
-    //{
-    //    cliente.Nome = command.Nome;
-    //    cliente.Email = command.Email;
-    //    cliente.Celular = command.Celular;
-    //    cliente.Cpf = command.Cpf;
-    //    cliente.Endereco = command.Endereco;
-    //    cliente.Observacoes = command.Observacoes;
-
-    //    //await _clienteRepository.UpdateAsync(cliente);
-    //}
 }
