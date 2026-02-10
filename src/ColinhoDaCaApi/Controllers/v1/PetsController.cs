@@ -4,7 +4,6 @@ using ColinhoDaCa.Application.UseCases.Pets.v1.AlterarPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.CadastrarPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.ExcluirPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.ListarPet;
-using ColinhoDaCa.Domain.Pets.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ColinhoDaCaApi.Controllers.v1;
