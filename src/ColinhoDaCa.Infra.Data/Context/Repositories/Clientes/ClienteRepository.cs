@@ -46,6 +46,11 @@ public class ClienteRepository : Repository<ClienteDb>, IClienteRepository, ICli
                     Observacoes = u.Observacoes
                 };
 
+            if (query.Id.HasValue && query.Id > 0)
+            {
+                queryResult = queryResult.Where(c => c.Id == query.Id);
+            }
+
             var totalItens = await queryResult
                 .CountAsync();
 
