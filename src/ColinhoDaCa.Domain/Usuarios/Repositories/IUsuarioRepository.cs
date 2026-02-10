@@ -5,5 +5,5 @@ namespace ColinhoDaCa.Domain.Usuarios.Repositories;
 
 public interface IUsuarioRepository : IRepository<UsuarioDb>
 {
-    Task<UsuarioDb> GetByEmailAsync(string email);
+    Task<UsuarioDb> GetByClienteIdAsync(long clienteId);
 }

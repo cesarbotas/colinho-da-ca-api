@@ -15,9 +15,9 @@ public class UsuarioRepository : Repository<UsuarioDb>, IUsuarioRepository
         _context = context;
     }
 
-    public async Task<UsuarioDb> GetByEmailAsync(string email)
+    public async Task<UsuarioDb> GetByClienteIdAsync(long clienteId)
     {
         return await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Email == email);
+            .FirstOrDefaultAsync(u => u.ClienteId == clienteId);
     }
 }

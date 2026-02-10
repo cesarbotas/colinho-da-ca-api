@@ -1,4 +1,5 @@
 using ColinhoDaCa.Application.Services.Auth;
+using ColinhoDaCa.Domain.Clientes.Repositories;
 using ColinhoDaCa.Domain.Usuarios.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -8,16 +9,19 @@ public class LoginService : ILoginService
 {
     private readonly ILogger<LoginService> _logger;
     private readonly IUsuarioRepository _usuarioRepository;
+    private readonly IClienteRepository _clienteRepository;
     private readonly IPasswordService _passwordService;
     private readonly IJwtService _jwtService;
 
     public LoginService(ILogger<LoginService> logger,
         IUsuarioRepository usuarioRepository,
+        IClienteRepository clienteRepository,
         IPasswordService passwordService,
         IJwtService jwtService)
     {
         _logger = logger;
         _usuarioRepository = usuarioRepository;
+        _clienteRepository = clienteRepository;
         _passwordService = passwordService;
         _jwtService = jwtService;
     }
@@ -26,14 +30,21 @@ public class LoginService : ILoginService
     {
         try
         {
-            var usuario = await _usuarioRepository.GetByEmailAsync(command.Email);
+            var cliente = await _clienteRepository.GetByEmailAsync(command.Email);
 
-            if (usuario == null || !_passwordService.VerifyPassword(command.Senha, usuario.SenhaHash))
+            if (cliente == null)
             {
                 throw new Exception("Email ou senha inválidos");
             }
 
-            var token = _jwtService.GenerateToken(usuario.Email, usuario.ClienteId);
+            var usuario = await _usuarioRepository.GetByClienteIdAsync(cliente.Id);
+
+            if (usuario == null || !usuario.Ativo || !_passwordService.VerifyPassword(command.Senha, usuario.SenhaHash))
+            {
+                throw new Exception("Email ou senha inválidos");
+            }
+
+            var token = _jwtService.GenerateToken(cliente.Email, usuario.Id);
 
             return new LoginResponse
             {
@@ -41,11 +52,11 @@ public class LoginService : ILoginService
                 Usuario = new UsuarioResponse
                 {
                     Id = usuario.Id,
-                    ClienteId = usuario.ClienteId,
-                    Nome = usuario.Nome,
-                    Email = usuario.Email,
-                    Celular = string.Empty,
-                    Cpf = string.Empty,
+                    ClienteId = cliente.Id,
+                    Nome = cliente.Nome,
+                    Email = cliente.Email,
+                    Celular = cliente.Celular,
+                    Cpf = cliente.Cpf
                 }
             };
         }

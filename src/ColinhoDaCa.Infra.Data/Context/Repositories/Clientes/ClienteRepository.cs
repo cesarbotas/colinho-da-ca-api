@@ -30,6 +30,12 @@ public class ClienteRepository : Repository<ClienteDb>, IClienteRepository, ICli
             .FirstOrDefaultAsync(c => c.Cpf == cpf);
     }
 
+    public async Task<ClienteDb> GetByEmailAsync(string email)
+    {
+        return await _context.Clientes
+            .FirstOrDefaultAsync(c => c.Email == email);
+    }
+
     public async Task<ResultadoPaginadoDto<ClientesDto>> PesquisarClientesDto(ListarClienteQuery query)
     {
         try

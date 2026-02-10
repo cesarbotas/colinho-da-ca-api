@@ -15,27 +15,29 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<UsuarioDb>
         builder.Property(u => u.Id)
             .UseIdentityAlwaysColumn();
 
-        builder.Property(u => u.Email)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(u => u.Nome)
-            .IsRequired()
-            .HasMaxLength(200);
-
-        builder.HasIndex(u => u.Email)
-            .IsUnique();
-
         builder.Property(u => u.SenhaHash)
             .IsRequired()
             .HasMaxLength(500);
 
-        builder.Property(u => u.ClienteId);
+        builder.Property(u => u.ClienteId)
+            .IsRequired();
+
+        builder.Property(u => u.Ativo)
+            .IsRequired()
+            .HasDefaultValue(true);
 
         builder.HasOne<ColinhoDaCa.Domain.Clientes.Entities.ClienteDb>()
             .WithMany()
             .HasForeignKey(u => u.ClienteId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(u => u.ClienteId)
+            .IsUnique();
+
+        builder.HasMany(u => u.UsuarioPerfis)
+            .WithOne()
+            .HasForeignKey(up => up.UsuarioId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(u => u.DataInclusao)
             .IsRequired()

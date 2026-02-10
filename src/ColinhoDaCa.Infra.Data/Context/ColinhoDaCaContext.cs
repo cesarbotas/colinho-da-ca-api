@@ -2,6 +2,7 @@ using ColinhoDaCa.Domain.Clientes.Entities;
 using ColinhoDaCa.Domain.Pets.Entities;
 using ColinhoDaCa.Domain.Reservas.Entities;
 using ColinhoDaCa.Domain.Usuarios.Entities;
+using ColinhoDaCa.Domain.Perfis.Entities;
 using ColinhoDaCa.Infra.Data.Context.Configuration;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,8 @@ public class ColinhoDaCaContext : DbContext
     public DbSet<ReservaDb> Reservas { get; set; }
     public DbSet<ReservaPetDb> ReservaPets { get; set; }
     public DbSet<UsuarioDb> Usuarios { get; set; }
+    public DbSet<PerfilDb> Perfis { get; set; }
+    public DbSet<UsuarioPerfilDb> UsuarioPerfis { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
