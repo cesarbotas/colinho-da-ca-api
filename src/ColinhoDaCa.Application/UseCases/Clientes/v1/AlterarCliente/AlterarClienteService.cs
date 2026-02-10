@@ -30,7 +30,7 @@ public class AlterarClienteService : IAlterarClienteService
                 throw new Exception("Cliente não encontrado");
             }
 
-             cliente.Alterar(command.Nome, command.Email, command.Celular, command.Cpf, command.Endereco, command.Observacoes);
+             cliente.Alterar(command.Nome, command.Email, command.Celular, command.Cpf, command.Observacoes);
 
              _clienteRepository.Update(cliente);
             

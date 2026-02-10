@@ -33,7 +33,7 @@ public class LoginService : ILoginService
                 throw new Exception("Email ou senha inválidos");
             }
 
-            var token = _jwtService.GenerateToken(usuario.Email, usuario.Id);
+            var token = _jwtService.GenerateToken(usuario.Email, usuario.ClienteId);
 
             return new LoginResponse
             {
@@ -41,8 +41,11 @@ public class LoginService : ILoginService
                 Usuario = new UsuarioResponse
                 {
                     Id = usuario.Id,
+                    ClienteId = usuario.ClienteId,
                     Nome = usuario.Nome,
-                    Email = usuario.Email
+                    Email = usuario.Email,
+                    Celular = string.Empty,
+                    Cpf = string.Empty,
                 }
             };
         }

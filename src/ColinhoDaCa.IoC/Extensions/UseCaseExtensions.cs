@@ -16,6 +16,7 @@ using ColinhoDaCa.Application.UseCases.Auth.v1.Login;
 using ColinhoDaCa.Application.UseCases.Auth.v1.Registrar;
 using ColinhoDaCa.Application.Services.Email;
 using ColinhoDaCa.Application.Services.Auth;
+using ColinhoDaCa.Application.Services.Validation;
 
 namespace ColinhoDaCa.IoC.Extensions;
 
@@ -42,6 +43,7 @@ internal static class UseCaseExtensions
             .AddScoped<IEmailService, EmailService>()
             .AddScoped<IPasswordService, PasswordService>()
             .AddScoped<IJwtService, JwtService>()
+            .AddScoped<ICpfValidationService, CpfValidationService>()
             ;
 
         return services;

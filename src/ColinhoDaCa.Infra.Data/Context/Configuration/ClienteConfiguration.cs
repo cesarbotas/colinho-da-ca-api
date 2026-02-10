@@ -31,9 +31,6 @@ public class ClienteConfiguration : IEntityTypeConfiguration<ClienteDb>
             .IsRequired()
             .HasMaxLength(11);
 
-        builder.Property(c => c.Endereco)
-            .HasMaxLength(500);
-
         builder.Property(c => c.Observacoes)
             .HasMaxLength(1000);
 

@@ -7,7 +7,6 @@ public class ClienteDb
     public string Email { get; set; }
     public string Celular { get; set; }
     public string Cpf { get; set; }
-    public string Endereco { get; set; }
     public string Observacoes { get; set; }
     public DateTime DataInclusao { get; set; }
     public DateTime DataAlteracao { get; set; }
@@ -17,30 +16,29 @@ public class ClienteDb
         
     }
 
-    public static ClienteDb Create(string nome, string email, string celular, string cpf, string endereco, string obs)
+    public static ClienteDb Create(string nome, string email, string celular, string cpf, string obs)
     {
-        var now = DateTime.UtcNow;
+        var now = DateTime.Now;
+
         return new ClienteDb
         {
             Nome = nome,
             Email = email,
             Celular = celular,
             Cpf = cpf,
-            Endereco = endereco,
             Observacoes = obs,
             DataInclusao = now,
             DataAlteracao = now
         };
     }
 
-    public void Alterar(string nome, string email, string celular, string cpf, string endereco, string obs)
+    public void Alterar(string nome, string email, string celular, string cpf, string obs)
     {
         Nome = nome;
         Email = email;
         Celular = celular;
         Cpf = cpf;
-        Endereco = endereco;
         Observacoes = obs;
-        DataAlteracao = DateTime.UtcNow;
+        DataAlteracao = DateTime.Now;
     }
 }

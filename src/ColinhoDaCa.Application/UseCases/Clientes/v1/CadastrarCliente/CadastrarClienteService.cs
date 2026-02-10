@@ -24,7 +24,7 @@ public class CadastrarClienteService : ICadastrarClienteService
     {
         try
         {
-            var cliente = ClienteDb.Create(command.Nome, command.Email, command.Celular, command.Cpf, command.Endereco, command.Observacoes);
+            var cliente = ClienteDb.Create(command.Nome, command.Email, command.Celular, command.Cpf, command.Observacoes);
 
             await _clienteRepository.InsertAsync(cliente);
 
