@@ -37,12 +37,14 @@ public class LoginService : ILoginService
                 throw new Exception("Email ou senha inválidos");
             }
 
-            var usuario = await _usuarioRepository.GetByClienteIdAsync(cliente.Id);
+            var usuario = await _usuarioRepository.GetByClienteIdWithPerfisAsync(cliente.Id);
 
             if (usuario == null || !usuario.Ativo || !_passwordService.VerifyPassword(command.Senha, usuario.SenhaHash))
             {
                 throw new Exception("Email ou senha inválidos");
             }
+
+            var perfis = await _usuarioRepository.GetPerfisUsuarioAsync(usuario.Id);
 
             var token = _jwtService.GenerateToken(cliente.Email, usuario.Id);
 
@@ -56,7 +58,12 @@ public class LoginService : ILoginService
                     Nome = cliente.Nome,
                     Email = cliente.Email,
                     Celular = cliente.Celular,
-                    Cpf = cliente.Cpf
+                    Cpf = cliente.Cpf,
+                    Perfis = perfis.Select(p => new PerfilResponse
+                    {
+                        Id = p.Id,
+                        Nome = p.Nome
+                    }).ToList()
                 }
             };
         }
