@@ -5,5 +5,5 @@ namespace ColinhoDaCa.Domain.Clientes.Repositories;
 
 public interface IClienteRepository : IRepository<ClienteDb>
 {
-
+    Task<ClienteDb> GetByCpfAsync(string cpf);
 }

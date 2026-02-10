@@ -9,6 +9,9 @@ public class LoginResponse
 public class UsuarioResponse
 {
     public long Id { get; set; }
+    public long ClienteId { get; set; }
     public string Nome { get; set; }
     public string Email { get; set; }
+    public string Celular { get; set; }
+    public string Cpf { get; set; }
 }

@@ -6,6 +6,7 @@ public class UsuarioDb
     public string Nome { get; set; }
     public string Email { get; set; }
     public string SenhaHash { get; set; }
+    public long ClienteId { get; set; }
     public DateTime DataInclusao { get; set; }
     public DateTime DataAlteracao { get; set; }
 
@@ -26,6 +27,12 @@ public class UsuarioDb
             DataInclusao = now,
             DataAlteracao = now
         };
+    }
+
+    public void VincularCliente(long clienteId)
+    {
+        ClienteId = clienteId;
+        DataAlteracao = DateTime.Now;
     }
 
     public void AlterarSenha(string senhaHash)

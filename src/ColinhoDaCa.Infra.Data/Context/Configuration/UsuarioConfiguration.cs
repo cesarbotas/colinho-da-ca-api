@@ -30,6 +30,13 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<UsuarioDb>
             .IsRequired()
             .HasMaxLength(500);
 
+        builder.Property(u => u.ClienteId);
+
+        builder.HasOne<ColinhoDaCa.Domain.Clientes.Entities.ClienteDb>()
+            .WithMany()
+            .HasForeignKey(u => u.ClienteId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.Property(u => u.DataInclusao)
             .IsRequired()
             .HasColumnType("timestamp without time zone");
