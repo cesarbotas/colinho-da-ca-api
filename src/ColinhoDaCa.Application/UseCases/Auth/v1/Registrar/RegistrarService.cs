@@ -56,6 +56,11 @@ public class RegistrarService : IRegistrarService
             var senhaHash = _passwordService.HashPassword(command.Senha);
             var usuario = UsuarioDb.Create(senhaHash, cliente.Id);
             await _usuarioRepository.InsertAsync(usuario);
+            await _unitOfWork.CommitAsync();
+
+            var perfilCliente = new UsuarioPerfilDb { UsuarioId = usuario.Id, PerfilId = 2 };
+            usuario.UsuarioPerfis.Add(perfilCliente);
+            _usuarioRepository.Update(usuario);
 
             await _unitOfWork.CommitAsync();
         }
