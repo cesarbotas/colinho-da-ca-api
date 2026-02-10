@@ -1,0 +1,51 @@
+using ColinhoDaCa.Domain.Clientes.Entities;
+using ColinhoDaCa.Domain.Reservas.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace ColinhoDaCa.Infra.Data.Context.Configuration;
+
+public class ReservaConfiguration : IEntityTypeConfiguration<ReservaDb>
+{
+    public void Configure(EntityTypeBuilder<ReservaDb> builder)
+    {
+        builder.ToTable("Reservas", "public");
+
+        builder.HasKey(r => r.Id);
+
+        builder.Property(r => r.Id)
+            .UseIdentityAlwaysColumn();
+
+        builder.Property(r => r.ClienteId)
+            .IsRequired();
+
+        builder.Property(r => r.DataInicial)
+            .IsRequired()
+            .HasColumnType("timestamp without time zone");
+
+        builder.Property(r => r.DataFinal)
+            .IsRequired()
+            .HasColumnType("timestamp without time zone");
+
+        builder.Property(r => r.Observacoes)
+            .HasMaxLength(1000);
+
+        builder.Property(r => r.DataInclusao)
+            .IsRequired()
+            .HasColumnType("timestamp without time zone");
+
+        builder.Property(r => r.DataAlteracao)
+            .IsRequired()
+            .HasColumnType("timestamp without time zone");
+
+        builder.HasOne<ClienteDb>()
+            .WithMany()
+            .HasForeignKey(r => r.ClienteId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(r => r.ReservaPets)
+            .WithOne()
+            .HasForeignKey(rp => rp.ReservaId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
