@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ColinhoDaCa.Application\ColinhoDaCa.Application.csproj" />
+    <ProjectReference Include="..\ColinhoDaCa.Domain\ColinhoDaCa.Domain.csproj" />
+    <ProjectReference Include="..\ColinhoDaCa.IoC\ColinhoDaCa.IoC.csproj" />
+  </ItemGroup>
+
+</Project>

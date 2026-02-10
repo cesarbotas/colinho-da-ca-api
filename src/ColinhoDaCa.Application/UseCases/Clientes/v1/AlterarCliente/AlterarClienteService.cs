@@ -1,0 +1,46 @@
+﻿using ColinhoDaCa.Domain._Shared.Entities;
+using ColinhoDaCa.Domain.Clientes.Repositories;
+using Microsoft.Extensions.Logging;
+
+namespace ColinhoDaCa.Application.UseCases.Clientes.v1.AlterarCliente;
+
+public class AlterarClienteService : IAlterarClienteService
+{
+    private readonly ILogger<AlterarClienteService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IClienteRepository _clienteRepository;
+
+    public AlterarClienteService(ILogger<AlterarClienteService> logger, 
+        IUnitOfWork unitOfWork, 
+        IClienteRepository clienteRepository)
+    {
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _clienteRepository = clienteRepository;
+    }
+
+    public async Task Handle(long id, AlterarClienteCommand command)
+    {
+        try
+        {
+            var cliente = await _clienteRepository.GetAsync(c => c.Id == id);
+
+            if (cliente == null)
+            {
+                throw new Exception("Cliente não encontrado");
+            }
+
+             cliente.Alterar(command.Nome, command.Email, command.Celular, command.Cpf, command.Endereco, command.Observacoes);
+
+             _clienteRepository.Update(cliente);
+            
+            await _unitOfWork.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Problema na Alteração de Clientes");
+
+            throw;
+        }
+    }
+}
