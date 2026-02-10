@@ -44,6 +44,12 @@ public class PetRepository : Repository<PetDb>, IPetRepository, IPetReadReposito
                     ClienteNome = c.Nome
                 };
 
+            if (query.ClienteId.HasValue && query.ClienteId > 0)
+            {
+                queryResult = queryResult
+                    .Where(p => p.ClienteId == query.ClienteId);
+            }
+
             var totalItens = await queryResult
                 .CountAsync();
 

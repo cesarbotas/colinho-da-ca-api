@@ -7,6 +7,10 @@ using ColinhoDaCa.Application.UseCases.Pets.v1.CadastrarPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.ListarPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.AlterarPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.ExcluirPet;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.CadastrarReserva;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.ListarReserva;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.AlterarReserva;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.ExcluirReserva;
 
 namespace ColinhoDaCa.IoC.Extensions;
 
@@ -23,6 +27,10 @@ internal static class UseCaseExtensions
             .AddScoped<IListarPetService, ListarPetService>()
             .AddScoped<IAlterarPetService, AlterarPetService>()
             .AddScoped<IExcluirPetService, ExcluirPetService>()
+            .AddScoped<ICadastrarReservaService, CadastrarReservaService>()
+            .AddScoped<IListarReservaService, ListarReservaService>()
+            .AddScoped<IAlterarReservaService, AlterarReservaService>()
+            .AddScoped<IExcluirReservaService, ExcluirReservaService>()
             ;
 
         return services;
