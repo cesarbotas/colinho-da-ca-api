@@ -42,13 +42,6 @@ public class RegistrarService : IRegistrarService
                 throw new Exception("CPF inválido");
             }
 
-            var usuarioExistente = await _usuarioRepository.GetByEmailAsync(command.Email);
-
-            if (usuarioExistente != null)
-            {
-                throw new Exception("Email já cadastrado");
-            }
-
             var clienteExistente = await _clienteRepository.GetByCpfAsync(command.Cpf);
 
             if (clienteExistente != null)
@@ -56,18 +49,17 @@ public class RegistrarService : IRegistrarService
                 throw new Exception("CPF já cadastrado");
             }
 
-            var senhaHash = _passwordService.HashPassword(command.Senha);
-            var usuario = UsuarioDb.Create(command.Nome, command.Email, senhaHash);
-
-            await _usuarioRepository.InsertAsync(usuario);
-
             var cliente = ClienteDb.Create(command.Nome, command.Email, command.Celular, command.Cpf, "");
-
             await _clienteRepository.InsertAsync(cliente);
-
             await _unitOfWork.CommitAsync();
 
-            usuario.VincularCliente(cliente.Id);
+            var senhaHash = _passwordService.HashPassword(command.Senha);
+            var usuario = UsuarioDb.Create(senhaHash, cliente.Id);
+            await _usuarioRepository.InsertAsync(usuario);
+            await _unitOfWork.CommitAsync();
+
+            var perfilCliente = new UsuarioPerfilDb { UsuarioId = usuario.Id, PerfilId = 2 };
+            usuario.UsuarioPerfis.Add(perfilCliente);
             _usuarioRepository.Update(usuario);
 
             await _unitOfWork.CommitAsync();

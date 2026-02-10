@@ -14,4 +14,11 @@ public class UsuarioResponse
     public string Email { get; set; }
     public string Celular { get; set; }
     public string Cpf { get; set; }
+    public List<PerfilResponse> Perfis { get; set; }
+}
+
+public class PerfilResponse
+{
+    public long Id { get; set; }
+    public string Nome { get; set; }
 }
