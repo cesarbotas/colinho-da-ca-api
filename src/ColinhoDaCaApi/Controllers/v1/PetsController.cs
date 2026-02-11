@@ -4,11 +4,13 @@ using ColinhoDaCa.Application.UseCases.Pets.v1.AlterarPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.CadastrarPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.ExcluirPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.ListarPet;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ColinhoDaCaApi.Controllers.v1;
 
 [ApiController]
+[Authorize]
 [Route("api/v1/pets")]
 [ApiExplorerSettings(GroupName = "v1")]
 public class PetsController : Controller
