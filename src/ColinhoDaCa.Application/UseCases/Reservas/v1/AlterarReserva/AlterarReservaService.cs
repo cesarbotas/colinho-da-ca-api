@@ -30,7 +30,7 @@ public class AlterarReservaService : IAlterarReservaService
                 throw new Exception("Reserva não encontrada");
             }
 
-             reserva.Alterar(command.ClienteId, command.DataInicial, command.DataFinal, command.Observacoes, command.PetIds);
+             reserva.Alterar(command.ClienteId, command.DataInicial, command.DataFinal, command.QuantidadeDiarias, command.QuantidadePets, command.ValorTotal, command.Observacoes, command.PetIds);
 
              _reservaRepository.Update(reserva);
             
