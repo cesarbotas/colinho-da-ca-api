@@ -7,6 +7,7 @@ using ColinhoDaCa.Application.UseCases.Pets.v1.CadastrarPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.ListarPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.AlterarPet;
 using ColinhoDaCa.Application.UseCases.Pets.v1.ExcluirPet;
+using ColinhoDaCa.Application.UseCases.Racas.v1.Listar;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.CadastrarReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.ListarReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.AlterarReserva;
@@ -16,6 +17,7 @@ using ColinhoDaCa.Application.UseCases.Auth.v1.Login;
 using ColinhoDaCa.Application.UseCases.Auth.v1.Registrar;
 using ColinhoDaCa.Application.Services.Email;
 using ColinhoDaCa.Application.Services.Auth;
+using ColinhoDaCa.Application.Services.Validation;
 
 namespace ColinhoDaCa.IoC.Extensions;
 
@@ -32,6 +34,7 @@ internal static class UseCaseExtensions
             .AddScoped<IListarPetService, ListarPetService>()
             .AddScoped<IAlterarPetService, AlterarPetService>()
             .AddScoped<IExcluirPetService, ExcluirPetService>()
+            .AddScoped<IListarRacasService, ListarRacasService>()
             .AddScoped<ICadastrarReservaService, CadastrarReservaService>()
             .AddScoped<IListarReservaService, ListarReservaService>()
             .AddScoped<IAlterarReservaService, AlterarReservaService>()
@@ -42,6 +45,7 @@ internal static class UseCaseExtensions
             .AddScoped<IEmailService, EmailService>()
             .AddScoped<IPasswordService, PasswordService>()
             .AddScoped<IJwtService, JwtService>()
+            .AddScoped<ICpfValidationService, CpfValidationService>()
             ;
 
         return services;

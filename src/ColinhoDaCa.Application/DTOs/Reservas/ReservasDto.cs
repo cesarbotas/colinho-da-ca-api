@@ -7,6 +7,9 @@ public class ReservasDto
     public string ClienteNome { get; set; }
     public DateTime DataInicial { get; set; }
     public DateTime DataFinal { get; set; }
+    public int QuantidadeDiarias { get; set; }
+    public int QuantidadePets { get; set; }
+    public decimal ValorTotal { get; set; }
     public string Observacoes { get; set; }
     public List<PetReservaDto> Pets { get; set; }
 }

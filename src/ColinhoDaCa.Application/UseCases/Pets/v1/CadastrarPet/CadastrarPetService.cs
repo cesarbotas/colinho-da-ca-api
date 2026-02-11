@@ -24,7 +24,7 @@ public class CadastrarPetService : ICadastrarPetService
     {
         try
         {
-            var pet = PetDb.Create(command.Nome, command.Raca, command.Idade, command.Peso, command.Porte, command.Observacoes, command.ClienteId);
+            var pet = PetDb.Create(command.Nome, command.RacaId, command.Idade, command.Peso, command.Porte, command.Observacoes, command.ClienteId);
 
             await _petRepository.InsertAsync(pet);
 

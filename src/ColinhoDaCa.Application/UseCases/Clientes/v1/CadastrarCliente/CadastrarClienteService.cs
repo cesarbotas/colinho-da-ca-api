@@ -1,4 +1,5 @@
 ﻿using ColinhoDaCa.Domain._Shared.Entities;
+using ColinhoDaCa.Domain._Shared.Exceptions;
 using ColinhoDaCa.Domain.Clientes.Entities;
 using ColinhoDaCa.Domain.Clientes.Repositories;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,19 @@ public class CadastrarClienteService : ICadastrarClienteService
     {
         try
         {
-            var cliente = ClienteDb.Create(command.Nome, command.Email, command.Celular, command.Cpf, command.Endereco, command.Observacoes);
+            var clienteExistenteEmail = await _clienteRepository.GetByEmailAsync(command.Email);
+            if (clienteExistenteEmail != null)
+            {
+                throw new ValidationException("Email já cadastrado");
+            }
+
+            var clienteExistenteCpf = await _clienteRepository.GetByCpfAsync(command.Cpf);
+            if (clienteExistenteCpf != null)
+            {
+                throw new ValidationException("CPF já cadastrado");
+            }
+
+            var cliente = ClienteDb.Create(command.Nome, command.Email, command.Celular, command.Cpf, command.Observacoes);
 
             await _clienteRepository.InsertAsync(cliente);
 

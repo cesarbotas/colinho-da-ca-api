@@ -1,5 +1,6 @@
 using ColinhoDaCa.Domain.Clientes.Entities;
 using ColinhoDaCa.Domain.Pets.Entities;
+using ColinhoDaCa.Domain.Racas.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,8 +21,7 @@ public class PetConfiguration : IEntityTypeConfiguration<PetDb>
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(p => p.Raca)
-            .HasMaxLength(100);
+        builder.Property(p => p.RacaId);
 
         builder.Property(p => p.Idade)
             .IsRequired();
@@ -49,6 +49,11 @@ public class PetConfiguration : IEntityTypeConfiguration<PetDb>
         builder.HasOne<ClienteDb>()
             .WithMany()
             .HasForeignKey(p => p.ClienteId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<RacaDb>()
+            .WithMany()
+            .HasForeignKey(p => p.RacaId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

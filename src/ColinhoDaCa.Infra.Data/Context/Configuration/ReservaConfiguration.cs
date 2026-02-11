@@ -27,6 +27,16 @@ public class ReservaConfiguration : IEntityTypeConfiguration<ReservaDb>
             .IsRequired()
             .HasColumnType("timestamp without time zone");
 
+        builder.Property(r => r.QuantidadeDiarias)
+            .IsRequired();
+
+        builder.Property(r => r.QuantidadePets)
+            .IsRequired();
+
+        builder.Property(r => r.ValorTotal)
+            .IsRequired()
+            .HasColumnType("decimal(18,2)");
+
         builder.Property(r => r.Observacoes)
             .HasMaxLength(1000);
 

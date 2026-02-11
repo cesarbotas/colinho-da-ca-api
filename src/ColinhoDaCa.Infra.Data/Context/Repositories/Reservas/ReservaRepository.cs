@@ -38,6 +38,9 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
                     ClienteNome = c.Nome,
                     r.DataInicial,
                     r.DataFinal,
+                    r.QuantidadeDiarias,
+                    r.QuantidadePets,
+                    r.ValorTotal,
                     r.Observacoes,
                     Pets = (from rp in _context.ReservaPets
                             join p in _context.Pets on rp.PetId equals p.Id
@@ -61,6 +64,9 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
                     ClienteNome = x.ClienteNome,
                     DataInicial = x.DataInicial,
                     DataFinal = x.DataFinal,
+                    QuantidadeDiarias = x.QuantidadeDiarias,
+                    QuantidadePets = x.QuantidadePets,
+                    ValorTotal = x.ValorTotal,
                     Observacoes = x.Observacoes,
                     Pets = x.Pets
                 })

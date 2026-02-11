@@ -31,11 +31,14 @@ public class PetRepository : Repository<PetDb>, IPetRepository, IPetReadReposito
             var queryResult =
                 from p in _context.Pets
                 join c in _context.Clientes on p.ClienteId equals c.Id
+                join r in _context.Racas on p.RacaId equals r.Id into racaGroup
+                from r in racaGroup.DefaultIfEmpty()
                 select new PetsDto
                 {
                     Id = p.Id,
                     Nome = p.Nome,
-                    Raca = p.Raca,
+                    RacaId = p.RacaId,
+                    RacaNome = r.Nome,
                     Idade = p.Idade,
                     Peso = p.Peso,
                     Porte = p.Porte,

@@ -1,8 +1,6 @@
-﻿using System.Net;
-
-namespace ColinhoDaCa.Domain._Shared.Exceptions;
+﻿namespace ColinhoDaCa.Domain._Shared.Exceptions;
 
 public interface IHasHttpCode
 {
-    public HttpStatusCode StatusCode { get; }
+    public int HttpStatusCode { get; }
 }

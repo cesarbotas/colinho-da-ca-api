@@ -24,6 +24,18 @@ public class ClienteRepository : Repository<ClienteDb>, IClienteRepository, ICli
             .AsQueryable();
     }
 
+    public async Task<ClienteDb> GetByCpfAsync(string cpf)
+    {
+        return await _context.Clientes
+            .FirstOrDefaultAsync(c => c.Cpf == cpf);
+    }
+
+    public async Task<ClienteDb> GetByEmailAsync(string email)
+    {
+        return await _context.Clientes
+            .FirstOrDefaultAsync(c => c.Email == email);
+    }
+
     public async Task<ResultadoPaginadoDto<ClientesDto>> PesquisarClientesDto(ListarClienteQuery query)
     {
         try
@@ -37,9 +49,13 @@ public class ClienteRepository : Repository<ClienteDb>, IClienteRepository, ICli
                     Email = u.Email,
                     Celular = u.Celular,
                     Cpf = u.Cpf,
-                    Endereco = u.Endereco,
                     Observacoes = u.Observacoes
                 };
+
+            if (query.Id.HasValue && query.Id > 0)
+            {
+                queryResult = queryResult.Where(c => c.Id == query.Id);
+            }
 
             var totalItens = await queryResult
                 .CountAsync();

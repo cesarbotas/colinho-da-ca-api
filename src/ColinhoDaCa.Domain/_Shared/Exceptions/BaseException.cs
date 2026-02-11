@@ -2,10 +2,7 @@
 
 namespace ColinhoDaCa.Domain._Shared.Exceptions;
 
-/// <summary>
-/// Base exception for application specific exceptions.
-/// </summary>
-public abstract class BaseException : Exception
+public abstract class BaseException : Exception, IHasHttpCode
 {
     protected BaseException()
     {
@@ -25,4 +22,6 @@ public abstract class BaseException : Exception
         : base(serializationInfo, context)
     {
     }
+
+    public abstract int HttpStatusCode { get; }
 }

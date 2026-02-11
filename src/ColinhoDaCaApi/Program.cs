@@ -1,4 +1,5 @@
 using ColinhoDaCa.IoC;
+using ColinhoDaCaApi.Middlewares;
 
 try
 {
@@ -28,6 +29,8 @@ try
 
     var app = builder.Build();
 
+    app.UseMiddleware<ExceptionHandlingMiddleware>();
+
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -50,7 +53,7 @@ try
 catch (Exception ex)
 {
     Console.WriteLine(ex.ToString());
-    //Log.Fatal(ex, $"Aplicação finalizada de forma inesperada: {ex.Message}");
+    //Log.Fatal(ex, $"Aplicaï¿½ï¿½o finalizada de forma inesperada: {ex.Message}");
 }
 finally
 {

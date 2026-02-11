@@ -1,6 +1,7 @@
 using ColinhoDaCa.Domain._Shared.Entities;
 using ColinhoDaCa.Domain.Clientes.Repositories;
 using ColinhoDaCa.Domain.Pets.Repositories;
+using ColinhoDaCa.Domain.Racas.Repositories;
 using ColinhoDaCa.Domain.Reservas.Repositories;
 using ColinhoDaCa.Domain.Usuarios.Repositories;
 using ColinhoDaCa.Infra.Data._Shared.Postgres.UoW;
@@ -9,6 +10,7 @@ using ColinhoDaCa.Infra.Data.Context.Repositories.Clientes;
 using ColinhoDaCa.Infra.Data.Context.Repositories.Pets;
 using ColinhoDaCa.Infra.Data.Context.Repositories.Reservas;
 using ColinhoDaCa.Infra.Data.Context.Repositories.Usuarios;
+using ColinhoDaCa.Infra.Data.Racas;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,6 +53,8 @@ internal static class PersistenceExtensions
 
         services.AddScoped<IPetRepository, PetRepository>();
         services.AddScoped<IPetReadRepository, PetRepository>();
+
+        services.AddScoped<IRacaRepository, RacaRepository>();
 
         services.AddScoped<IReservaRepository, ReservaRepository>();
         services.AddScoped<IReservaReadRepository, ReservaRepository>();

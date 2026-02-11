@@ -1,0 +1,3 @@
+ALTER TABLE public."Reservas" ADD COLUMN "QuantidadeDiarias" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE public."Reservas" ADD COLUMN "QuantidadePets" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE public."Reservas" ADD COLUMN "ValorTotal" DECIMAL(18,2) NOT NULL DEFAULT 0;
