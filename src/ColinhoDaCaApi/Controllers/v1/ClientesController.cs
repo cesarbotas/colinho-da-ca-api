@@ -4,12 +4,13 @@ using ColinhoDaCa.Application.UseCases.Clientes.v1.AlterarCliente;
 using ColinhoDaCa.Application.UseCases.Clientes.v1.CadastrarCliente;
 using ColinhoDaCa.Application.UseCases.Clientes.v1.ExcluirCliente;
 using ColinhoDaCa.Application.UseCases.Clientes.v1.ListarCliente;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ColinhoDaCaApi.Controllers.v1;
 
 [ApiController]
-//[Authorize]
+[Authorize]
 [Route("api/v1/clientes")]
 [ApiExplorerSettings(GroupName = "v1")]
 public class ClientesController : Controller

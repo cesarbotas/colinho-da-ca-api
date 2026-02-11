@@ -2,11 +2,13 @@ using ColinhoDaCa.Application.UseCases.Reservas.v1.AlterarReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.CadastrarReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.ExcluirReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.ListarReserva;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ColinhoDaCaApi.Controllers.v1;
 
 [ApiController]
+[Authorize]
 [Route("api/v1/reservas")]
 [ApiExplorerSettings(GroupName = "v1")]
 public class ReservasController : Controller
