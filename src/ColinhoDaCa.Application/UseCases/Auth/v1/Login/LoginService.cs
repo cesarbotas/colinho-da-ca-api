@@ -1,4 +1,5 @@
 using ColinhoDaCa.Application.Services.Auth;
+using ColinhoDaCa.Domain._Shared.Exceptions;
 using ColinhoDaCa.Domain.Clientes.Repositories;
 using ColinhoDaCa.Domain.Usuarios.Repositories;
 using Microsoft.Extensions.Logging;
@@ -34,37 +35,39 @@ public class LoginService : ILoginService
 
             if (cliente == null)
             {
-                throw new Exception("Email ou senha inválidos");
+                throw new ValidationException("Email ou senha inválidos");
             }
 
             var usuario = await _usuarioRepository.GetByClienteIdWithPerfisAsync(cliente.Id);
 
             if (usuario == null || !usuario.Ativo || !_passwordService.VerifyPassword(command.Senha, usuario.SenhaHash))
             {
-                throw new Exception("Email ou senha inválidos");
+                throw new ValidationException("Email ou senha inválidos");
             }
 
             var perfis = await _usuarioRepository.GetPerfisUsuarioAsync(usuario.Id);
 
-            var token = _jwtService.GenerateToken(cliente.Email, usuario.Id);
+            var usuarioResponse = new UsuarioResponse
+            {
+                Id = usuario.Id,
+                ClienteId = cliente.Id,
+                Nome = cliente.Nome,
+                Email = cliente.Email,
+                Celular = cliente.Celular,
+                Cpf = cliente.Cpf,
+                Perfis = perfis.Select(p => new PerfilResponse
+                {
+                    Id = p.Id,
+                    Nome = p.Nome
+                }).ToList()
+            };
+
+            var token = _jwtService.GenerateToken(usuarioResponse);
 
             return new LoginResponse
             {
                 Token = token,
-                Usuario = new UsuarioResponse
-                {
-                    Id = usuario.Id,
-                    ClienteId = cliente.Id,
-                    Nome = cliente.Nome,
-                    Email = cliente.Email,
-                    Celular = cliente.Celular,
-                    Cpf = cliente.Cpf,
-                    Perfis = perfis.Select(p => new PerfilResponse
-                    {
-                        Id = p.Id,
-                        Nome = p.Nome
-                    }).ToList()
-                }
+                //Usuario = usuarioResponse
             };
         }
         catch (Exception ex)

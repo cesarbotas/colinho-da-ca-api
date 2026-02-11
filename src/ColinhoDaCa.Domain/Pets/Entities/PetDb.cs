@@ -4,7 +4,7 @@ public class PetDb
 {
     public long Id { get; set; }
     public string Nome { get; set; }
-    public string Raca { get; set; }
+    public long? RacaId { get; set; }
     public int Idade { get; set; }
     public double Peso { get; set; }
     public string Porte { get; set; }
@@ -18,14 +18,14 @@ public class PetDb
         
     }
 
-    public static PetDb Create(string nome, string raca, int idade, double peso, string porte, string obs, long clienteId)
+    public static PetDb Create(string nome, long? racaId, int idade, double peso, string porte, string obs, long clienteId)
     {
         var now = DateTime.Now;
         
         return new PetDb
         {
             Nome = nome,
-            Raca = raca,
+            RacaId = racaId,
             Idade = idade,
             Peso = peso,
             Porte = porte,
@@ -36,10 +36,10 @@ public class PetDb
         };
     }
 
-    public void Alterar(string nome, string raca, int idade, double peso, string porte, string obs, long clienteId)
+    public void Alterar(string nome, long? racaId, int idade, double peso, string porte, string obs, long clienteId)
     {
         Nome = nome;
-        Raca = raca;
+        RacaId = racaId;
         Idade = idade;
         Peso = peso;
         Porte = porte;

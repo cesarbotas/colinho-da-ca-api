@@ -30,7 +30,7 @@ public class AlterarPetService : IAlterarPetService
                 throw new Exception("Pet não encontrado");
             }
 
-             pet.Alterar(command.Nome, command.Raca, command.Idade, command.Peso, command.Porte, command.Observacoes, command.ClienteId);
+             pet.Alterar(command.Nome, command.RacaId, command.Idade, command.Peso, command.Porte, command.Observacoes, command.ClienteId);
 
              _petRepository.Update(pet);
             
