@@ -12,6 +12,9 @@ using ColinhoDaCa.Application.UseCases.Reservas.v1.CadastrarReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.ListarReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.AlterarReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.ExcluirReserva;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.ConfirmarReserva;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.EnviarComprovante;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.AprovarPagamento;
 using ColinhoDaCa.Application.UseCases.Sobre.v1.EnviarEmail;
 using ColinhoDaCa.Application.UseCases.Auth.v1.Login;
 using ColinhoDaCa.Application.UseCases.Auth.v1.Registrar;
@@ -39,6 +42,9 @@ internal static class UseCaseExtensions
             .AddScoped<IListarReservaService, ListarReservaService>()
             .AddScoped<IAlterarReservaService, AlterarReservaService>()
             .AddScoped<IExcluirReservaService, ExcluirReservaService>()
+            .AddScoped<IConfirmarReservaService, ConfirmarReservaService>()
+            .AddScoped<IEnviarComprovanteService, EnviarComprovanteService>()
+            .AddScoped<IAprovarPagamentoService, AprovarPagamentoService>()
             .AddScoped<IEnviarEmailService, EnviarEmailService>()
             .AddScoped<ILoginService, LoginService>()
             .AddScoped<IRegistrarService, RegistrarService>()

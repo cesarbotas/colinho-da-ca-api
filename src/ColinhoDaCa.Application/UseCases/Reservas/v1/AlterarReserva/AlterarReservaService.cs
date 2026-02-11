@@ -1,4 +1,6 @@
 using ColinhoDaCa.Domain._Shared.Entities;
+using ColinhoDaCa.Domain._Shared.Exceptions;
+using ColinhoDaCa.Domain.Reservas.Enums;
 using ColinhoDaCa.Domain.Reservas.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -27,7 +29,12 @@ public class AlterarReservaService : IAlterarReservaService
 
             if (reserva == null)
             {
-                throw new Exception("Reserva não encontrada");
+                throw new EntityNotFoundException("Reserva não encontrada");
+            }
+
+            if (reserva.Status != ReservaStatus.ReservaCriada)
+            {
+                throw new ValidationException("Somente reservas com status 'Reserva Criada' podem ser alteradas pelo cliente");
             }
 
              reserva.Alterar(command.ClienteId, command.DataInicial, command.DataFinal, command.QuantidadeDiarias, command.QuantidadePets, command.ValorTotal, command.Observacoes, command.PetIds);

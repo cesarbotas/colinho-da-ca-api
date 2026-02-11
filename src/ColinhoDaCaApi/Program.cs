@@ -10,6 +10,8 @@ try
 
     builder.Services.RegistraDependencias(builder.Configuration);
 
+    builder.Services.AddHttpContextAccessor();
+
     builder.Services.AddControllers();
 
     builder.Services.AddCors(options =>

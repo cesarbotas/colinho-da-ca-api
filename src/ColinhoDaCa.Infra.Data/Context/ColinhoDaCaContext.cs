@@ -22,6 +22,7 @@ public class ColinhoDaCaContext : DbContext
     public DbSet<RacaDb> Racas { get; set; }
     public DbSet<ReservaDb> Reservas { get; set; }
     public DbSet<ReservaPetDb> ReservaPets { get; set; }
+    public DbSet<ReservaStatusHistoricoDb> ReservaStatusHistorico { get; set; }
     public DbSet<UsuarioDb> Usuarios { get; set; }
     public DbSet<PerfilDb> Perfis { get; set; }
     public DbSet<UsuarioPerfilDb> UsuarioPerfis { get; set; }

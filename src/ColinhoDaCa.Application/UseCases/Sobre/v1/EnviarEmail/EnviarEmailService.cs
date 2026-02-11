@@ -1,4 +1,5 @@
 using ColinhoDaCa.Application.Services.Email;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace ColinhoDaCa.Application.UseCases.Sobre.v1.EnviarEmail;
@@ -7,11 +8,13 @@ public class EnviarEmailService : IEnviarEmailService
 {
     private readonly ILogger<EnviarEmailService> _logger;
     private readonly IEmailService _emailService;
+    private readonly IConfiguration _configuration;
 
-    public EnviarEmailService(ILogger<EnviarEmailService> logger, IEmailService emailService)
+    public EnviarEmailService(ILogger<EnviarEmailService> logger, IEmailService emailService, IConfiguration configuration)
     {
         _logger = logger;
         _emailService = emailService;
+        _configuration = configuration;
     }
 
     public async Task Handle(EnviarEmailCommand command)
@@ -27,7 +30,8 @@ public class EnviarEmailService : IEnviarEmailService
                 <p>{command.Mensagem}</p>
             ";
 
-            await _emailService.EnviarEmailAsync(command.Assunto, corpo);
+            var emailDestino = _configuration["Email:EmailDestino"];
+            await _emailService.EnviarEmailAsync(emailDestino, command.Assunto, corpo);
         }
         catch (Exception ex)
         {

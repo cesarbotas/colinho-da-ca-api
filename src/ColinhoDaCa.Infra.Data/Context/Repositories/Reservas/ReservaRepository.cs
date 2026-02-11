@@ -42,6 +42,10 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
                     r.QuantidadePets,
                     r.ValorTotal,
                     r.Observacoes,
+                    r.Status,
+                    r.ComprovantePagamento,
+                    r.DataPagamento,
+                    r.ObservacoesPagamento,
                     Pets = (from rp in _context.ReservaPets
                             join p in _context.Pets on rp.PetId equals p.Id
                             where rp.ReservaId == r.Id
@@ -49,7 +53,19 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
                             {
                                 Id = p.Id,
                                 Nome = p.Nome
-                            }).ToList()
+                            }).ToList(),
+                    Historico = (from h in _context.ReservaStatusHistorico
+                                 join u in _context.Usuarios on h.UsuarioId equals u.Id
+                                 join cl in _context.Clientes on u.ClienteId equals cl.Id
+                                 where h.ReservaId == r.Id
+                                 orderby h.DataAlteracao
+                                 select new StatusHistoricoDto
+                                 {
+                                     Status = (int)h.Status,
+                                     UsuarioId = h.UsuarioId,
+                                     UsuarioNome = cl.Nome,
+                                     DataAlteracao = h.DataAlteracao
+                                 }).ToList()
                 };
 
             var totalItens = await queryResult.CountAsync();
@@ -68,6 +84,19 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
                     QuantidadePets = x.QuantidadePets,
                     ValorTotal = x.ValorTotal,
                     Observacoes = x.Observacoes,
+                    Status = (int)x.Status,
+                    ComprovantePagamento = x.ComprovantePagamento,
+                    DataPagamento = x.DataPagamento,
+                    ObservacoesPagamento = x.ObservacoesPagamento,
+                    StatusTimeline = new Dictionary<int, bool>
+                    {
+                        { 1, (int)x.Status >= 1 },
+                        { 2, (int)x.Status >= 2 },
+                        { 3, (int)x.Status >= 3 },
+                        { 4, (int)x.Status >= 4 },
+                        { 5, (int)x.Status >= 5 }
+                    },
+                    Historico = x.Historico,
                     Pets = x.Pets
                 })
                 .ToListAsync();
