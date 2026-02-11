@@ -1,4 +1,5 @@
 ﻿using ColinhoDaCa.Domain._Shared.Entities;
+using ColinhoDaCa.Domain._Shared.Exceptions;
 using ColinhoDaCa.Domain.Clientes.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -27,7 +28,19 @@ public class AlterarClienteService : IAlterarClienteService
 
             if (cliente == null)
             {
-                throw new Exception("Cliente não encontrado");
+                throw new EntityNotFoundException("Cliente não encontrado");
+            }
+
+            var clienteExistenteEmail = await _clienteRepository.GetByEmailAsync(command.Email);
+            if (clienteExistenteEmail != null && clienteExistenteEmail.Id != id)
+            {
+                throw new ValidationException("Email já cadastrado para outro cliente");
+            }
+
+            var clienteExistenteCpf = await _clienteRepository.GetByCpfAsync(command.Cpf);
+            if (clienteExistenteCpf != null && clienteExistenteCpf.Id != id)
+            {
+                throw new ValidationException("CPF já cadastrado para outro cliente");
             }
 
              cliente.Alterar(command.Nome, command.Email, command.Celular, command.Cpf, command.Observacoes);

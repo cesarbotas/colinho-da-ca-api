@@ -2,10 +2,7 @@
 
 namespace ColinhoDaCa.Domain._Shared.Exceptions;
 
-/// <summary>
-/// This exception is thrown if an entity excepted to be found but not found.
-/// </summary>
-public class EntityNotFoundException : BaseException, IHasHttpCode
+public class EntityNotFoundException : BaseException
 {
     /// <summary>
     /// Inicia uma nova instância da classe <see cref="EntityNotFoundException"/>.
@@ -73,5 +70,5 @@ public class EntityNotFoundException : BaseException, IHasHttpCode
     /// </summary>
     public object? Id { get; set; } = null!;
 
-    public HttpStatusCode StatusCode => HttpStatusCode.NotFound;
+    public override int HttpStatusCode => 404;
 }
