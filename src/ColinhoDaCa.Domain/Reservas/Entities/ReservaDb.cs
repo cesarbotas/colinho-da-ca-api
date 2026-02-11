@@ -6,6 +6,9 @@ public class ReservaDb
     public long ClienteId { get; set; }
     public DateTime DataInicial { get; set; }
     public DateTime DataFinal { get; set; }
+    public int QuantidadeDiarias { get; set; }
+    public int QuantidadePets { get; set; }
+    public decimal ValorTotal { get; set; }
     public string Observacoes { get; set; }
     public DateTime DataInclusao { get; set; }
     public DateTime DataAlteracao { get; set; }
@@ -16,7 +19,7 @@ public class ReservaDb
         ReservaPets = new List<ReservaPetDb>();
     }
 
-    public static ReservaDb Create(long clienteId, DateTime dataInicial, DateTime dataFinal, string obs, List<long> petIds)
+    public static ReservaDb Create(long clienteId, DateTime dataInicial, DateTime dataFinal, int quantidadeDiarias, int quantidadePets, decimal valorTotal, string obs, List<long> petIds)
     {
         var now = DateTime.Now;
 
@@ -25,6 +28,9 @@ public class ReservaDb
             ClienteId = clienteId,
             DataInicial = dataInicial,
             DataFinal = dataFinal,
+            QuantidadeDiarias = quantidadeDiarias,
+            QuantidadePets = quantidadePets,
+            ValorTotal = valorTotal,
             Observacoes = obs,
             DataInclusao = now,
             DataAlteracao = now
@@ -38,11 +44,14 @@ public class ReservaDb
         return reserva;
     }
 
-    public void Alterar(long clienteId, DateTime dataInicial, DateTime dataFinal, string obs, List<long> petIds)
+    public void Alterar(long clienteId, DateTime dataInicial, DateTime dataFinal, int quantidadeDiarias, int quantidadePets, decimal valorTotal, string obs, List<long> petIds)
     {
         ClienteId = clienteId;
         DataInicial = dataInicial;
         DataFinal = dataFinal;
+        QuantidadeDiarias = quantidadeDiarias;
+        QuantidadePets = quantidadePets;
+        ValorTotal = valorTotal;
         Observacoes = obs;
         DataAlteracao = DateTime.Now;
         
