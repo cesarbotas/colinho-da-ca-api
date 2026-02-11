@@ -1,7 +1,11 @@
 using ColinhoDaCa.Application.UseCases.Reservas.v1.AlterarReserva;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.AprovarPagamento;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.CadastrarReserva;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.ConfirmarReserva;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.EnviarComprovante;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.ExcluirReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.ListarReserva;
+using ColinhoDaCa.Domain.Reservas.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,18 +22,27 @@ public class ReservasController : Controller
     private readonly IListarReservaService _listarReservaService;
     private readonly IAlterarReservaService _alterarReservaService;
     private readonly IExcluirReservaService _excluirReservaService;
+    private readonly IConfirmarReservaService _confirmarReservaService;
+    private readonly IEnviarComprovanteService _enviarComprovanteService;
+    private readonly IAprovarPagamentoService _aprovarPagamentoService;
 
     public ReservasController(ILogger<ReservasController> logger,
         ICadastrarReservaService cadastrarReservaService,
         IListarReservaService listarReservaService,
         IAlterarReservaService alterarReservaService,
-        IExcluirReservaService excluirReservaService)
+        IExcluirReservaService excluirReservaService,
+        IConfirmarReservaService confirmarReservaService,
+        IEnviarComprovanteService enviarComprovanteService,
+        IAprovarPagamentoService aprovarPagamentoService)
     {
         _logger = logger;
         _cadastrarReservaService = cadastrarReservaService;
         _listarReservaService = listarReservaService;
         _alterarReservaService = alterarReservaService;
         _excluirReservaService = excluirReservaService;
+        _confirmarReservaService = confirmarReservaService;
+        _enviarComprovanteService = enviarComprovanteService;
+        _aprovarPagamentoService = aprovarPagamentoService;
     }
 
     [HttpGet("")]
@@ -62,5 +75,53 @@ public class ReservasController : Controller
         await _excluirReservaService.Handle(id);
 
         return Ok();
+    }
+
+    [HttpPost("{id}/confirmar")]
+    public async Task<ActionResult> ConfirmarReserva([FromRoute] long id)
+    {
+        await _confirmarReservaService.Handle(id);
+
+        return Ok(new { mensagem = "Reserva confirmada e email enviado ao cliente" });
+    }
+
+    [HttpPost("{id}/comprovante")]
+    [Consumes("application/json")]
+    public async Task<ActionResult> EnviarComprovante([FromRoute] long id, [FromBody] EnviarComprovanteCommand command)
+    {
+        await _enviarComprovanteService.Handle(id, command);
+
+        return Ok(new { mensagem = "Comprovante enviado com sucesso" });
+    }
+
+    [HttpPost("{id}/aprovar-pagamento")]
+    public async Task<ActionResult> AprovarPagamento([FromRoute] long id)
+    {
+        await _aprovarPagamentoService.Handle(id);
+
+        return Ok(new { mensagem = "Pagamento aprovado e email de confirmação enviado" });
+    }
+
+    [HttpGet("{id}/comprovante")]
+    public async Task<ActionResult> VisualizarComprovante([FromRoute] long id, [FromServices] IReservaRepository reservaRepository)
+    {
+        var reserva = await reservaRepository.GetAsync(r => r.Id == id);
+
+        if (reserva == null)
+        {
+            return NotFound(new { mensagem = "Reserva não encontrada" });
+        }
+
+        if (string.IsNullOrEmpty(reserva.ComprovantePagamento))
+        {
+            return NotFound(new { mensagem = "Comprovante não encontrado" });
+        }
+
+        return Ok(new
+        {
+            comprovantePagamento = reserva.ComprovantePagamento,
+            observacoesPagamento = reserva.ObservacoesPagamento,
+            dataPagamento = reserva.DataPagamento
+        });
     }
 }

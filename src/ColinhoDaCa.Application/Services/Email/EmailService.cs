@@ -18,7 +18,7 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public async Task EnviarEmailAsync(string assunto, string corpo)
+    public async Task EnviarEmailAsync(string destinatario, string assunto, string corpo)
     {
         try
         {
@@ -29,13 +29,11 @@ public class EmailService : IEmailService
 
             var remetenteEmail = _configuration["Email:RemetenteEmail"];
             var remetenteNome = _configuration["Email:RemetenteNome"];
-            var emailDestino = _configuration["Email:EmailDestino"];
 
             using var client = new SmtpClient(smtpHost, smtpPort)
             {
                 Credentials = new NetworkCredential(smtpUser, smtpPassword),
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network
+                EnableSsl = true
             };
 
             var mailMessage = new MailMessage
@@ -43,14 +41,14 @@ public class EmailService : IEmailService
                 From = new MailAddress(remetenteEmail, remetenteNome),
                 Subject = assunto,
                 Body = corpo,
-                IsBodyHtml = true,
+                IsBodyHtml = false,
                 BodyEncoding = Encoding.UTF8,
                 SubjectEncoding = Encoding.UTF8
             };
 
-            mailMessage.To.Add(emailDestino);
+            mailMessage.To.Add(destinatario);
 
-            await client.SendMailAsync(mailMessage);
+            //await client.SendMailAsync(mailMessage);
         }
         catch (Exception ex)
         {
