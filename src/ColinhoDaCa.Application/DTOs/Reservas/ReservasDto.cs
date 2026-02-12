@@ -34,4 +34,5 @@ public class PetReservaDto
 {
     public long Id { get; set; }
     public string Nome { get; set; }
+    public string RacaNome { get; set; }
 }

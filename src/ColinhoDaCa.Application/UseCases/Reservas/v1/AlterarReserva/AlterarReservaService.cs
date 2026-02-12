@@ -37,7 +37,7 @@ public class AlterarReservaService : IAlterarReservaService
                 throw new ValidationException("Somente reservas com status 'Reserva Criada' podem ser alteradas pelo cliente");
             }
 
-             reserva.Alterar(command.ClienteId, command.DataInicial, command.DataFinal, command.QuantidadeDiarias, command.QuantidadePets, command.ValorTotal, command.Observacoes, command.PetIds);
+             reserva.Alterar(command.ClienteId, command.DataInicial, command.DataFinal, command.QuantidadeDiarias, command.QuantidadePets, command.ValorTotal, command.ValorDesconto, command.ValorFinal, command.CupomId, command.Observacoes, command.PetIds);
 
              _reservaRepository.Update(reserva);
             

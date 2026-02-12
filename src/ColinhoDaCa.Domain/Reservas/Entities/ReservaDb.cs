@@ -15,6 +15,7 @@ public class ReservaDb
     public decimal ValorFinal { get; set; }
     public string Observacoes { get; set; }
     public ReservaStatus Status { get; set; }
+    public long? CupomId { get; set; }
     public string? ComprovantePagamento { get; set; }
     public DateTime? DataPagamento { get; set; }
     public string? ObservacoesPagamento { get; set; }
@@ -29,7 +30,7 @@ public class ReservaDb
         StatusHistorico = new List<ReservaStatusHistoricoDb>();
     }
 
-    public static ReservaDb Create(long clienteId, DateTime dataInicial, DateTime dataFinal, int quantidadeDiarias, int quantidadePets, decimal valorTotal, string obs, List<long> petIds, long usuarioId)
+    public static ReservaDb Create(long clienteId, DateTime dataInicial, DateTime dataFinal, int quantidadeDiarias, int quantidadePets, decimal valorTotal, decimal valorDesconto, decimal valorFinal, long? cupomId, string obs, List<long> petIds, long usuarioId)
     {
         var now = DateTime.Now;
 
@@ -41,8 +42,9 @@ public class ReservaDb
             QuantidadeDiarias = quantidadeDiarias,
             QuantidadePets = quantidadePets,
             ValorTotal = valorTotal,
-            ValorDesconto = 0,
-            ValorFinal = valorTotal,
+            ValorDesconto = valorDesconto,
+            ValorFinal = valorFinal,
+            CupomId = cupomId,
             Observacoes = obs,
             Status = ReservaStatus.ReservaCriada,
             DataInclusao = now,
@@ -59,7 +61,7 @@ public class ReservaDb
         return reserva;
     }
 
-    public void Alterar(long clienteId, DateTime dataInicial, DateTime dataFinal, int quantidadeDiarias, int quantidadePets, decimal valorTotal, string obs, List<long> petIds)
+    public void Alterar(long clienteId, DateTime dataInicial, DateTime dataFinal, int quantidadeDiarias, int quantidadePets, decimal valorTotal, decimal valorDesconto, decimal valorFinal, long? cupomId, string obs, List<long> petIds)
     {
         ClienteId = clienteId;
         DataInicial = dataInicial;
@@ -67,6 +69,9 @@ public class ReservaDb
         QuantidadeDiarias = quantidadeDiarias;
         QuantidadePets = quantidadePets;
         ValorTotal = valorTotal;
+        ValorDesconto = valorDesconto;
+        ValorFinal = valorFinal;
+        CupomId = cupomId;
         Observacoes = obs;
         DataAlteracao = DateTime.Now;
         
@@ -116,6 +121,14 @@ public class ReservaDb
 
     public void ConcederDesconto(decimal valorDesconto)
     {
+        ValorDesconto = valorDesconto;
+        ValorFinal = ValorTotal - ValorDesconto;
+        DataAlteracao = DateTime.Now;
+    }
+
+    public void AplicarCupom(long cupomId, decimal valorDesconto)
+    {
+        CupomId = cupomId;
         ValorDesconto = valorDesconto;
         ValorFinal = ValorTotal - ValorDesconto;
         DataAlteracao = DateTime.Now;

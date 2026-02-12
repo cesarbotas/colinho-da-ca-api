@@ -50,11 +50,14 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
                     r.ObservacoesPagamento,
                     Pets = (from rp in _context.ReservaPets
                             join p in _context.Pets on rp.PetId equals p.Id
+                            join ra in _context.Racas on p.RacaId equals ra.Id into racaGroup
+                            from ra in racaGroup.DefaultIfEmpty()
                             where rp.ReservaId == r.Id
                             select new PetReservaDto
                             {
                                 Id = p.Id,
-                                Nome = p.Nome
+                                Nome = p.Nome,
+                                RacaNome = ra != null ? ra.Nome : null
                             }).ToList(),
                     Historico = (from h in _context.ReservaStatusHistorico
                                  join u in _context.Usuarios on h.UsuarioId equals u.Id

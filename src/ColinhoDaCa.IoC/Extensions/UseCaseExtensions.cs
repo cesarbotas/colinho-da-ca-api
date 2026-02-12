@@ -15,6 +15,11 @@ using ColinhoDaCa.Application.UseCases.Reservas.v1.ExcluirReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.ConfirmarReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.EnviarComprovante;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.AprovarPagamento;
+using ColinhoDaCa.Application.UseCases.Cupons.v1.AlterarCupom;
+using ColinhoDaCa.Application.UseCases.Cupons.v1.CadastrarCupom;
+using ColinhoDaCa.Application.UseCases.Cupons.v1.InativarCupom;
+using ColinhoDaCa.Application.UseCases.Cupons.v1.ListarCupom;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.AplicarCupom;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.ConcederDesconto;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.CancelarReserva;
 using ColinhoDaCa.Application.UseCases.Sobre.v1.EnviarEmail;
@@ -47,8 +52,13 @@ internal static class UseCaseExtensions
             .AddScoped<IConfirmarReservaService, ConfirmarReservaService>()
             .AddScoped<IEnviarComprovanteService, EnviarComprovanteService>()
             .AddScoped<IAprovarPagamentoService, AprovarPagamentoService>()
+            .AddScoped<IAplicarCupomService, AplicarCupomService>()
             .AddScoped<IConcederDescontoService, ConcederDescontoService>()
             .AddScoped<ICancelarReservaService, CancelarReservaService>()
+            .AddScoped<ICadastrarCupomService, CadastrarCupomService>()
+            .AddScoped<IListarCupomService, ListarCupomService>()
+            .AddScoped<IAlterarCupomService, AlterarCupomService>()
+            .AddScoped<IInativarCupomService, InativarCupomService>()
             .AddScoped<IEnviarEmailService, EnviarEmailService>()
             .AddScoped<ILoginService, LoginService>()
             .AddScoped<IRegistrarService, RegistrarService>()

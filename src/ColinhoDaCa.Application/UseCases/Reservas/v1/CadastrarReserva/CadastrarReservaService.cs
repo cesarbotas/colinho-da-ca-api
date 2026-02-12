@@ -24,7 +24,7 @@ public class CadastrarReservaService : ICadastrarReservaService
     {
         try
         {
-            var reserva = ReservaDb.Create(command.ClienteId, command.DataInicial, command.DataFinal, command.QuantidadeDiarias, command.QuantidadePets, command.ValorTotal, command.Observacoes, command.PetIds, command.UsuarioId);
+            var reserva = ReservaDb.Create(command.ClienteId, command.DataInicial, command.DataFinal, command.QuantidadeDiarias, command.QuantidadePets, command.ValorTotal, command.ValorDesconto, command.ValorFinal, command.CupomId, command.Observacoes, command.PetIds, command.UsuarioId);
 
             await _reservaRepository.InsertAsync(reserva);
 
