@@ -37,6 +37,14 @@ public class ReservaConfiguration : IEntityTypeConfiguration<ReservaDb>
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 
+        builder.Property(r => r.ValorDesconto)
+            .IsRequired()
+            .HasColumnType("decimal(18,2)");
+
+        builder.Property(r => r.ValorFinal)
+            .IsRequired()
+            .HasColumnType("decimal(18,2)");
+
         builder.Property(r => r.Observacoes)
             .HasMaxLength(1000);
 

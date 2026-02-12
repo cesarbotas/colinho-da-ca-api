@@ -11,6 +11,8 @@ public class ReservaDb
     public int QuantidadeDiarias { get; set; }
     public int QuantidadePets { get; set; }
     public decimal ValorTotal { get; set; }
+    public decimal ValorDesconto { get; set; }
+    public decimal ValorFinal { get; set; }
     public string Observacoes { get; set; }
     public ReservaStatus Status { get; set; }
     public string? ComprovantePagamento { get; set; }
@@ -39,6 +41,8 @@ public class ReservaDb
             QuantidadeDiarias = quantidadeDiarias,
             QuantidadePets = quantidadePets,
             ValorTotal = valorTotal,
+            ValorDesconto = 0,
+            ValorFinal = valorTotal,
             Observacoes = obs,
             Status = ReservaStatus.ReservaCriada,
             DataInclusao = now,
@@ -108,5 +112,19 @@ public class ReservaDb
         Status = ReservaStatus.ReservaFinalizada;
         DataAlteracao = DateTime.Now;
         StatusHistorico.Add(ReservaStatusHistoricoDb.Create(Id, ReservaStatus.ReservaFinalizada, usuarioId));
+    }
+
+    public void ConcederDesconto(decimal valorDesconto)
+    {
+        ValorDesconto = valorDesconto;
+        ValorFinal = ValorTotal - ValorDesconto;
+        DataAlteracao = DateTime.Now;
+    }
+
+    public void CancelarReserva(long usuarioId)
+    {
+        Status = ReservaStatus.ReservaCancelada;
+        DataAlteracao = DateTime.Now;
+        StatusHistorico.Add(ReservaStatusHistoricoDb.Create(Id, ReservaStatus.ReservaCancelada, usuarioId));
     }
 }
