@@ -1,7 +1,10 @@
 using ColinhoDaCa.Application.Services.Email;
+using ColinhoDaCa.Application.Services.EmailTemplates;
 using ColinhoDaCa.Domain._Shared.Entities;
 using ColinhoDaCa.Domain._Shared.Exceptions;
 using ColinhoDaCa.Domain.Clientes.Repositories;
+using ColinhoDaCa.Domain.Pets.Repositories;
+using ColinhoDaCa.Domain.Racas.Repositories;
 using ColinhoDaCa.Domain.Reservas.Enums;
 using ColinhoDaCa.Domain.Reservas.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +19,8 @@ public class ConfirmarReservaService : IConfirmarReservaService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IReservaRepository _reservaRepository;
     private readonly IClienteRepository _clienteRepository;
+    private readonly IPetRepository _petRepository;
+    private readonly IRacaRepository _racaRepository;
     private readonly IEmailService _emailService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -24,6 +29,8 @@ public class ConfirmarReservaService : IConfirmarReservaService
         IUnitOfWork unitOfWork,
         IReservaRepository reservaRepository,
         IClienteRepository clienteRepository,
+        IPetRepository petRepository,
+        IRacaRepository racaRepository,
         IEmailService emailService,
         IHttpContextAccessor httpContextAccessor)
     {
@@ -31,6 +38,8 @@ public class ConfirmarReservaService : IConfirmarReservaService
         _unitOfWork = unitOfWork;
         _reservaRepository = reservaRepository;
         _clienteRepository = clienteRepository;
+        _petRepository = petRepository;
+        _racaRepository = racaRepository;
         _emailService = emailService;
         _httpContextAccessor = httpContextAccessor;
     }
@@ -61,26 +70,37 @@ public class ConfirmarReservaService : IConfirmarReservaService
 
             var cliente = await _clienteRepository.GetAsync(c => c.Id == reserva.ClienteId);
 
-            await _emailService.EnviarEmailAsync(
-                cliente.Email,
-                "Reserva Confirmada - Colinho da Cá",
-                $@"Olá {cliente.Nome},
+            var pets = new List<(string Nome, string Raca)>();
+            foreach (var reservaPet in reserva.ReservaPets)
+            {
+                var pet = await _petRepository.GetAsync(p => p.Id == reservaPet.PetId);
+                if (pet != null)
+                {
+                    var racaNome = "Sem raça";
+                    if (pet.RacaId.HasValue)
+                    {
+                        var raca = await _racaRepository.GetByIdAsync(pet.RacaId.Value);
+                        if (raca != null) racaNome = raca.Nome;
+                    }
+                    pets.Add((pet.Nome, racaNome));
+                }
+            }
 
-Sua reserva foi confirmada!
-
-Detalhes da Reserva:
-- Período: {reserva.DataInicial:dd/MM/yyyy} a {reserva.DataFinal:dd/MM/yyyy}
-- Quantidade de Diárias: {reserva.QuantidadeDiarias}
-- Quantidade de Pets: {reserva.QuantidadePets}
-- Valor Total: R$ {reserva.ValorTotal:N2}
-
-Status: Pagamento Pendente
-
-Por favor, envie o comprovante de pagamento para prosseguir com a reserva.
-
-Atenciosamente,
-Equipe Colinho da Cá"
+            var assunto = $"Reserva Confirmada #{reserva.Id.ToString().PadLeft(6, '0')} - Colinho da Cá";
+            var corpoHtml = EmailTemplateService.GerarEmailConfirmacao(
+                cliente.Nome,
+                reserva.Id,
+                reserva.DataInicial,
+                reserva.DataFinal,
+                reserva.QuantidadeDiarias,
+                reserva.QuantidadePets,
+                reserva.ValorTotal,
+                reserva.ValorDesconto,
+                reserva.ValorFinal,
+                reserva.Observacoes,
+                pets
             );
+            await _emailService.EnviarEmailAsync(cliente.Email, assunto, corpoHtml);
         }
         catch (Exception ex)
         {

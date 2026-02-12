@@ -1,4 +1,5 @@
 using ColinhoDaCa.Application.Services.Email;
+using ColinhoDaCa.Application.Services.EmailTemplates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -21,17 +22,14 @@ public class EnviarEmailService : IEnviarEmailService
     {
         try
         {
-            var corpo = $@"
-                <h3>Contato do Site</h3>
-                <p><strong>Nome:</strong> {command.Nome}</p>
-                <p><strong>Email:</strong> {command.Email}</p>
-                <p><strong>Assunto:</strong> {command.Assunto}</p>
-                <p><strong>Mensagem:</strong></p>
-                <p>{command.Mensagem}</p>
-            ";
+            var corpo = EmailTemplateService.GerarEmailContatoSite(
+                command.Nome,
+                command.Email,
+                command.Assunto,
+                command.Mensagem);
 
             var emailDestino = _configuration["Email:EmailDestino"];
-            await _emailService.EnviarEmailAsync(emailDestino, command.Assunto, corpo);
+            await _emailService.EnviarEmailAsync(emailDestino, $"Contato do Site - {command.Assunto}", corpo);
         }
         catch (Exception ex)
         {

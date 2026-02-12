@@ -55,8 +55,6 @@ public class ReservaDb
         {
             reserva.ReservaPets.Add(new ReservaPetDb { PetId = petId });
         }
-
-        reserva.StatusHistorico.Add(ReservaStatusHistoricoDb.Create(0, ReservaStatus.ReservaCriada, usuarioId));
         
         return reserva;
     }
