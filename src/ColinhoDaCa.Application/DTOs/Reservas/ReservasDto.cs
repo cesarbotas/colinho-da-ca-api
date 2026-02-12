@@ -10,6 +10,8 @@ public class ReservasDto
     public int QuantidadeDiarias { get; set; }
     public int QuantidadePets { get; set; }
     public decimal ValorTotal { get; set; }
+    public decimal ValorDesconto { get; set; }
+    public decimal ValorFinal { get; set; }
     public string Observacoes { get; set; }
     public int Status { get; set; }
     public string? ComprovantePagamento { get; set; }

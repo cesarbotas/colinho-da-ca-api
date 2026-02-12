@@ -1,6 +1,8 @@
 using ColinhoDaCa.Application.UseCases.Reservas.v1.AlterarReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.AprovarPagamento;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.CadastrarReserva;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.CancelarReserva;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.ConcederDesconto;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.ConfirmarReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.EnviarComprovante;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.ExcluirReserva;
@@ -25,6 +27,8 @@ public class ReservasController : Controller
     private readonly IConfirmarReservaService _confirmarReservaService;
     private readonly IEnviarComprovanteService _enviarComprovanteService;
     private readonly IAprovarPagamentoService _aprovarPagamentoService;
+    private readonly IConcederDescontoService _concederDescontoService;
+    private readonly ICancelarReservaService _cancelarReservaService;
 
     public ReservasController(ILogger<ReservasController> logger,
         ICadastrarReservaService cadastrarReservaService,
@@ -33,7 +37,9 @@ public class ReservasController : Controller
         IExcluirReservaService excluirReservaService,
         IConfirmarReservaService confirmarReservaService,
         IEnviarComprovanteService enviarComprovanteService,
-        IAprovarPagamentoService aprovarPagamentoService)
+        IAprovarPagamentoService aprovarPagamentoService,
+        IConcederDescontoService concederDescontoService,
+        ICancelarReservaService cancelarReservaService)
     {
         _logger = logger;
         _cadastrarReservaService = cadastrarReservaService;
@@ -43,6 +49,8 @@ public class ReservasController : Controller
         _confirmarReservaService = confirmarReservaService;
         _enviarComprovanteService = enviarComprovanteService;
         _aprovarPagamentoService = aprovarPagamentoService;
+        _concederDescontoService = concederDescontoService;
+        _cancelarReservaService = cancelarReservaService;
     }
 
     [HttpGet("")]
@@ -123,5 +131,22 @@ public class ReservasController : Controller
             observacoesPagamento = reserva.ObservacoesPagamento,
             dataPagamento = reserva.DataPagamento
         });
+    }
+
+    [HttpPost("{id}/desconto")]
+    [Consumes("application/json")]
+    public async Task<ActionResult> ConcederDesconto([FromRoute] long id, [FromBody] ConcederDescontoCommand command)
+    {
+        await _concederDescontoService.Handle(id, command);
+
+        return Ok(new { mensagem = "Desconto concedido com sucesso" });
+    }
+
+    [HttpPost("{id}/cancelar")]
+    public async Task<ActionResult> CancelarReserva([FromRoute] long id)
+    {
+        await _cancelarReservaService.Handle(id);
+
+        return Ok(new { mensagem = "Reserva cancelada com sucesso" });
     }
 }

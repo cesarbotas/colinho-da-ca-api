@@ -41,6 +41,8 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
                     r.QuantidadeDiarias,
                     r.QuantidadePets,
                     r.ValorTotal,
+                    r.ValorDesconto,
+                    r.ValorFinal,
                     r.Observacoes,
                     r.Status,
                     r.ComprovantePagamento,
@@ -83,6 +85,8 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
                     QuantidadeDiarias = x.QuantidadeDiarias,
                     QuantidadePets = x.QuantidadePets,
                     ValorTotal = x.ValorTotal,
+                    ValorDesconto = x.ValorDesconto,
+                    ValorFinal = x.ValorFinal,
                     Observacoes = x.Observacoes,
                     Status = (int)x.Status,
                     ComprovantePagamento = x.ComprovantePagamento,
@@ -94,7 +98,8 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
                         { 2, (int)x.Status >= 2 },
                         { 3, (int)x.Status >= 3 },
                         { 4, (int)x.Status >= 4 },
-                        { 5, (int)x.Status >= 5 }
+                        { 5, (int)x.Status >= 5 },
+                        { 6, (int)x.Status == 6 }
                     },
                     Historico = x.Historico,
                     Pets = x.Pets

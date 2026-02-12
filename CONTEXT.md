@@ -1,116 +1,240 @@
 # Contexto do Projeto - Colinho da Cá API
 
-## Visão Geral
-Sistema de gerenciamento para pet shop com funcionalidades de cadastro de clientes, pets, reservas e autenticação.
+## 📋 Visão Geral
+Sistema completo de gerenciamento para pet shop com funcionalidades de cadastro de clientes, pets, raças, reservas, autenticação JWT, fluxo de status de reservas e envio de emails.
 
-## Arquitetura
-- **Clean Architecture** com separação em camadas:
-  - Domain: Entidades e interfaces de repositórios
-  - Application: Use Cases, DTOs e Services
-  - Infra.Data: Implementação de repositórios e contexto EF Core
-  - API: Controllers e configurações
-  - IoC: Injeção de dependências
+## 🏗️ Arquitetura
+**Clean Architecture** com separação em camadas:
+- **Domain**: Entidades, enums e interfaces de repositórios
+- **Application**: Use Cases, DTOs, Services e validações
+- **Infra.Data**: Implementação de repositórios, contexto EF Core e configurações
+- **API**: Controllers, middlewares e configurações
+- **IoC**: Injeção de dependências
 
-## Tecnologias
+## 🛠️ Tecnologias
 - .NET 8
 - Entity Framework Core
 - PostgreSQL (Render)
-- JWT Authentication
+- JWT Authentication (Bearer Token)
 - SHA256 para hash de senhas
+- Testcontainers (testes integrados)
+- K6 (testes de carga)
+- xUnit + FluentAssertions + Bogus
 
-## Estrutura de Dados
+## 📊 Estrutura de Dados
 
 ### Clientes
 - Id, Nome, Email, Celular, Cpf, Observacoes
 - DataInclusao, DataAlteracao
+- Validações: Email único, CPF único e válido
 
 ### Pets
-- Id, Nome, Raca, Idade, Peso (double), Porte (P/M/G), Observacoes
+- Id, Nome, **RacaId** (FK para Racas), Idade, Peso (double), Porte (P/M/G), Observacoes
 - ClienteId (FK para Clientes)
 - DataInclusao, DataAlteracao
 
+### Racas
+- Id, Nome, Porte (P/M/G/null)
+- 36 raças pré-cadastradas (12 pequenas, 10 médias, 12 grandes, 2 SRD)
+
 ### Reservas
-- Id, ClienteId, DataInicial, DataFinal, Observacoes
+- Id, ClienteId, DataInicial, DataFinal, QuantidadeDiarias, QuantidadePets, ValorTotal (decimal), Observacoes
+- **Status** (enum): ReservaCriada, ReservaConfirmada, PagamentoPendente, PagamentoAprovado, ReservaFinalizada
+- ComprovantePagamento, DataPagamento, ObservacoesPagamento
 - DataInclusao, DataAlteracao
-- Relacionamento N-N com Pets através de ReservaPets
+- Relacionamento N:N com Pets através de ReservaPets
+
+### ReservaStatusHistorico
+- Id, ReservaId, Status, UsuarioId, DataAlteracao
+- Registra histórico completo de mudanças de status
 
 ### Usuarios
 - Id, SenhaHash, ClienteId (FK único), Ativo (bool)
 - DataInclusao, DataAlteracao
-- Relacionamento N-N com Perfis através de UsuarioPerfis
+- Relacionamento N:N com Perfis através de UsuarioPerfis
 
 ### Perfis
 - Id, Nome, Descricao
 - Perfis padrão: Administrador (Id=1), Cliente (Id=2)
 
-## Endpoints Principais
+## 🔐 Autenticação e Autorização
+
+### JWT Token
+- Contém **TODOS** os dados do usuário (id, email, clienteId, nome, celular, cpf, perfis)
+- Expiração: 24 horas
+- Claims: NameIdentifier, Email, Name, clienteId, celular, cpf, perfis (JSON)
+
+### Endpoints Protegidos
+- Todos os endpoints exceto `/auth/registrar` e `/auth/login` requerem `[Authorize]`
+- Token extraído via `IHttpContextAccessor` para auditoria
+
+## 🌐 Endpoints Principais
 
 ### Auth
 - POST /api/v1/auth/registrar - Cria Cliente e Usuario com perfil Cliente
-- POST /api/v1/auth/login - Retorna JWT e dados do usuário com perfis
+- POST /api/v1/auth/login - Retorna JWT (sem dados do usuário no body, tudo no token)
 
 ### Clientes
 - GET /api/v1/clientes - Lista com paginação e filtro por Id
-- POST /api/v1/clientes - Cadastra cliente
-- PUT /api/v1/clientes/{id} - Atualiza cliente
+- POST /api/v1/clientes - Cadastra cliente (valida email/CPF duplicados)
+- PUT /api/v1/clientes/{id} - Atualiza cliente (valida email/CPF de outros)
 - DELETE /api/v1/clientes/{id} - Remove cliente
 
 ### Pets
-- GET /api/v1/pets - Lista com paginação e filtro por ClienteId
-- POST /api/v1/pets - Cadastra pet
+- GET /api/v1/pets - Lista com paginação, filtro por ClienteId, retorna RacaId e RacaNome
+- POST /api/v1/pets - Cadastra pet com RacaId
 - PUT /api/v1/pets/{id} - Atualiza pet
 - DELETE /api/v1/pets/{id} - Remove pet
 
+### Racas
+- GET /api/v1/racas - Lista todas as raças
+- GET /api/v1/racas?racaId={id} - Busca raça específica
+
 ### Reservas
-- GET /api/v1/reservas - Lista com paginação
-- POST /api/v1/reservas - Cadastra reserva com lista de pets
-- PUT /api/v1/reservas/{id} - Atualiza reserva
+- GET /api/v1/reservas - Lista com paginação, retorna Status, StatusTimeline e Historico
+- POST /api/v1/reservas - Cadastra reserva (Status=ReservaCriada, registra histórico)
+- PUT /api/v1/reservas/{id} - Atualiza reserva (apenas se Status=ReservaCriada)
 - DELETE /api/v1/reservas/{id} - Remove reserva
+- **POST /api/v1/reservas/{id}/confirmar** - ADM confirma (1→2→3) + envia email
+- **POST /api/v1/reservas/{id}/comprovante** - Cliente envia comprovante
+- **POST /api/v1/reservas/{id}/aprovar-pagamento** - ADM aprova (3→4→5) + envia email
+- **GET /api/v1/reservas/{id}/comprovante** - Visualiza comprovante
 
 ### Sobre
 - POST /api/v1/sobre/enviar-email - Envia email de contato
 
-## Serviços Reutilizáveis
+## 🔄 Fluxo de Status de Reservas
+
+```
+1. ReservaCriada (Cliente cria)
+   ↓ ADM confirma
+2. ReservaConfirmada
+   ↓ Automático
+3. PagamentoPendente (Email enviado ao cliente)
+   ↓ Cliente envia comprovante
+   ↓ ADM aprova
+4. PagamentoAprovado
+   ↓ Automático
+5. ReservaFinalizada (Email de confirmação enviado)
+```
+
+### Regras de Transição
+- **Alterar Reserva**: Apenas Status=1 (ReservaCriada)
+- **Confirmar**: Status=1 → 2 → 3 (ADM)
+- **Enviar Comprovante**: Status=3 (Cliente)
+- **Aprovar Pagamento**: Status=3 → 4 → 5 (ADM, requer comprovante)
+
+### StatusTimeline (Retorno da API)
+```json
+{
+  "status": 3,
+  "statusTimeline": {
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": false,
+    "5": false
+  },
+  "historico": [
+    {
+      "status": 1,
+      "usuarioId": 5,
+      "usuarioNome": "João Silva",
+      "dataAlteracao": "2024-01-10T10:00:00"
+    }
+  ]
+}
+```
+
+## 🛡️ Tratamento de Exceções
+
+### Middleware Global (ExceptionHandlingMiddleware)
+- Captura todas as exceções
+- Retorna JSON padronizado: `{ "message": "..." }`
+- Status HTTP apropriado
+
+### Exceções Customizadas
+- **ValidationException**: HTTP 400 (erros de validação)
+- **EntityNotFoundException**: HTTP 404 (recurso não encontrado)
+- **Exception**: HTTP 500 (erro interno)
+
+## 📧 Serviços Reutilizáveis
 
 ### EmailService
-- EnviarEmailAsync(assunto, corpo)
-- Configurado via appsettings (SMTP Brevo)
+- `EnviarEmailAsync(destinatario, assunto, corpo)`
+- SMTP Brevo (smtp-relay.brevo.com:587)
+- Usado em: Contato, Confirmação de Reserva, Aprovação de Pagamento
 
 ### PasswordService
-- HashPassword(password) - SHA256
-- VerifyPassword(password, hash)
+- `HashPassword(password)` - SHA256
+- `VerifyPassword(password, hash)`
 
 ### JwtService
-- GenerateToken(email, userId)
-- Expiração: 24 horas
+- `GenerateToken(UsuarioResponse usuario)`
+- Inclui todos os dados do usuário como claims
 
 ### CpfValidationService
-- IsValid(cpf) - Valida formato e dígitos verificadores
+- `IsValid(cpf)` - Valida formato e dígitos verificadores
 
-## Regras de Negócio
+## 📝 Regras de Negócio
 
 ### Registro
-1. Valida CPF
+1. Valida CPF (formato e dígitos)
 2. Verifica se CPF já existe
 3. Cria Cliente
 4. Cria Usuario vinculado ao Cliente
 5. Adiciona perfil "Cliente" (Id=2)
-6. Usuario criado com Ativo=true
+6. Registra histórico de status inicial
 
 ### Login
 1. Busca Cliente por email
-2. Busca Usuario por ClienteId
+2. Busca Usuario por ClienteId com perfis
 3. Valida se Usuario está ativo
-4. Valida senha
-5. Retorna JWT com dados do Cliente e lista de Perfis
+4. Valida senha (SHA256)
+5. Gera JWT com TODOS os dados do usuário
+6. Retorna apenas token (dados no JWT)
 
-### Relacionamentos
-- Usuario 1:1 Cliente (ClienteId único)
-- Cliente 1:N Pets
-- Reserva N:N Pets (ReservaPets)
-- Usuario N:N Perfis (UsuarioPerfis)
+### Cadastro de Cliente
+1. Valida email único
+2. Valida CPF único e válido
+3. Persiste com DataInclusao/DataAlteracao
 
-## Configurações (appsettings.json)
+### Alteração de Cliente
+1. Valida se cliente existe (404)
+2. Valida email único (exceto próprio)
+3. Valida CPF único (exceto próprio)
+4. Atualiza DataAlteracao
+
+### Cadastro de Reserva
+1. Cria com Status=ReservaCriada
+2. Registra histórico inicial (UsuarioId do token)
+3. Vincula pets via ReservaPets
+
+### Confirmação de Reserva (ADM)
+1. Valida Status=ReservaCriada
+2. Altera para ReservaConfirmada
+3. Altera para PagamentoPendente
+4. Registra 2 históricos (UsuarioId do token)
+5. Envia email ao cliente
+
+### Aprovação de Pagamento (ADM)
+1. Valida Status=PagamentoPendente
+2. Valida comprovante enviado
+3. Altera para PagamentoAprovado
+4. Altera para ReservaFinalizada
+5. Registra 2 históricos (UsuarioId do token)
+6. Envia email de confirmação
+
+## 🗄️ Relacionamentos
+
+- Usuario **1:1** Cliente (ClienteId único)
+- Cliente **1:N** Pets
+- Reserva **N:N** Pets (ReservaPets)
+- Reserva **1:N** ReservaStatusHistorico
+- Usuario **N:N** Perfis (UsuarioPerfis)
+- Pet **N:1** Raca
+
+## ⚙️ Configurações (appsettings.json)
 
 ### ConnectionStrings
 - ColinhoDaCaRender: PostgreSQL no Render
@@ -123,27 +247,147 @@ Sistema de gerenciamento para pet shop com funcionalidades de cadastro de client
 - SmtpHost: smtp-relay.brevo.com
 - SmtpPort: 587
 - SmtpUser, SmtpPassword
-- EmailDestino, RemetenteEmail, RemetenteNome
+- RemetenteEmail, RemetenteNome
 
-## CORS
-- Permitido: localhost:8080 e colinho-da-ca-site.vercel.app
+### CORS
+- localhost:8080
+- colinho-da-ca-site.vercel.app
 
-## Scripts SQL (database/scripts/)
+## 🔒 Segurança
+
+### User Secrets (Desenvolvimento)
+```bash
+dotnet user-secrets set "Jwt:Secret" "sua-chave-secreta"
+dotnet user-secrets set "Email:SmtpUser" "seu-usuario"
+```
+
+### Variáveis de Ambiente (Produção - Render)
+```
+Jwt__Secret
+Email__SmtpUser
+Email__SmtpPassword
+ConnectionStrings__ColinhoDaCaRender
+```
+
+## 🗃️ Scripts SQL (database/scripts/)
+
 1. 01_TabelaClientes.sql
 2. 02_TabelaPets.sql
-3. 03_TabelaReservas.sql
-4. 05_TabelaUsuarios.sql
-5. 06_RemoverColunaEndereco.sql
-6. 07_AdicionarClienteIdUsuarios.sql
-7. 08_RemoverNomeEmailUsuarios.sql
-8. 09_AdicionarAtivoEPerfis.sql
+3. 03_CamposDataInclusaoAlteracao.sql
+4. 04_TabelaReservas.sql
+5. 05_TabelaUsuarios.sql
+6. 06_RemoverColunaEndereco.sql
+7. 07_AdicionarClienteIdUsuarios.sql
+8. 08_RemoverNomeEmailUsuarios.sql
+9. 09_AdicionarAtivoEPerfis.sql
+10. 10_AdicionarCamposReservas.sql
+11. **11_TabelaRacas.sql** - Cria tabela e insere 36 raças
+12. **12_AlterarPetsRacaId.sql** - Adiciona RacaId, remove Raca string
+13. **13_AdicionarStatusReservas.sql** - Adiciona Status e campos de pagamento
+14. **14_TabelaReservaStatusHistorico.sql** - Cria tabela de histórico
 
-## Padrões de Código
-- Commands para entrada de dados
+## 🧪 Testes
+
+### Testes Integrados (ColinhoDaCa.TestesIntegrados)
+- **Tecnologias**: xUnit, Testcontainers, FluentAssertions, Bogus
+- **Cobertura**: Auth, Clientes, Pets, Racas, Reservas, Fluxo Completo
+- **Execução**: `dotnet test`
+- **Banco**: PostgreSQL em container isolado
+- **Incluído na Solution**: ✅ Sim
+
+### Testes de Carga (ColinhoDaCa.TestesCarga.K6)
+- **Tecnologias**: K6 (JavaScript)
+- **Cenários**: Auth (10-50 VUs), Fluxo Completo (20 VUs), Stress (300 VUs)
+- **Execução**: `k6 run scripts/auth-load-test.js`
+- **Métricas**: p(95), p(99), taxa de erro, throughput
+- **Incluído na Solution**: ❌ Não (projeto JavaScript)
+
+### Metas de Performance
+- p(95) < 500ms
+- p(99) < 1000ms
+- Taxa de erro < 1%
+- Suportar 100+ usuários simultâneos
+
+## 📁 Estrutura do Projeto
+
+```
+colinho-da-ca-api/
+├── src/
+│   ├── ColinhoDaCaApi/              # API e Controllers
+│   ├── ColinhoDaCa.Application/     # Use Cases e Services
+│   ├── ColinhoDaCa.Domain/          # Entidades e Interfaces
+│   ├── ColinhoDaCa.Infra.Data/      # Repositórios e EF Core
+│   └── ColinhoDaCa.IoC/             # Injeção de Dependências
+├── tests/
+│   ├── ColinhoDaCa.TestesIntegrados/    # xUnit + Testcontainers
+│   └── ColinhoDaCa.TestesCarga.K6/      # K6 Load Tests
+├── database/
+│   └── scripts/                     # Scripts SQL numerados
+├── CONTEXT.md                       # Este arquivo
+├── SECRETS-GUIDE.md                 # Guia de segurança
+├── USER-SECRETS-LOCAL.md            # Setup local
+└── RENDER-SECRETS-SETUP.md          # Setup produção
+```
+
+## 🎯 Padrões de Código
+
+### Commands e Queries
+- Commands para entrada de dados (POST, PUT)
+- Queries para filtros (GET)
 - DTOs para saída
-- Services com interface
-- Repository pattern
-- Unit of Work
+
+### Services
+- Interface + Implementação
 - Validações antes de persistir
 - Logs de erro
-- Exceptions com mensagens claras
+- Try-catch com rethrow
+
+### Repositories
+- Repository pattern
+- Unit of Work
+- Métodos assíncronos
+
+### Exceções
+- Mensagens claras em português
+- ValidationException para erros de negócio (400)
+- EntityNotFoundException para recursos não encontrados (404)
+- Exception genérica para erros internos (500)
+
+### Auditoria
+- DataInclusao e DataAlteracao em todas as entidades
+- ReservaStatusHistorico registra quem e quando alterou status
+- UsuarioId extraído do token JWT via IHttpContextAccessor
+
+## 🚀 Deploy
+
+### Desenvolvimento
+```bash
+dotnet run --project src/ColinhoDaCaApi
+```
+
+### Produção (Render)
+- Build Command: `dotnet publish -c Release -o out`
+- Start Command: `dotnet out/ColinhoDaCaApi.dll`
+- Variáveis de ambiente configuradas no painel
+
+## 📚 Documentação Adicional
+
+- **SECRETS-GUIDE.md**: Proteção de dados sensíveis
+- **USER-SECRETS-LOCAL.md**: Configuração local passo a passo
+- **RENDER-SECRETS-SETUP.md**: Configuração no Render
+- **tests/README.md**: Guia completo de testes
+- **tests/ColinhoDaCa.TestesCarga.K6/README.md**: Guia K6 detalhado
+
+## 🔄 Últimas Atualizações
+
+- ✅ Sistema de Raças com 36 raças pré-cadastradas
+- ✅ Fluxo completo de status de reservas (5 estados)
+- ✅ Histórico de status com auditoria (quem e quando)
+- ✅ Timeline de status no retorno da API
+- ✅ Envio de emails em confirmação e aprovação
+- ✅ JWT com todos os dados do usuário
+- ✅ Validações de email e CPF duplicados
+- ✅ Middleware global de exceções
+- ✅ Testes integrados com Testcontainers
+- ✅ Testes de carga com K6
+- ✅ Documentação completa

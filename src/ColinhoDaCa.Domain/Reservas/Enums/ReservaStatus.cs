@@ -6,5 +6,6 @@ public enum ReservaStatus
     ReservaConfirmada = 2,
     PagamentoPendente = 3,
     PagamentoAprovado = 4,
-    ReservaFinalizada = 5
+    ReservaFinalizada = 5,
+    ReservaCancelada = 6
 }
