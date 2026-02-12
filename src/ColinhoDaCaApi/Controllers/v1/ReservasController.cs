@@ -1,4 +1,5 @@
 using ColinhoDaCa.Application.UseCases.Reservas.v1.AlterarReserva;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.AplicarCupom;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.AprovarPagamento;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.CadastrarReserva;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.CancelarReserva;
@@ -27,6 +28,7 @@ public class ReservasController : Controller
     private readonly IConfirmarReservaService _confirmarReservaService;
     private readonly IEnviarComprovanteService _enviarComprovanteService;
     private readonly IAprovarPagamentoService _aprovarPagamentoService;
+    private readonly IAplicarCupomService _aplicarCupomService;
     private readonly IConcederDescontoService _concederDescontoService;
     private readonly ICancelarReservaService _cancelarReservaService;
 
@@ -38,6 +40,7 @@ public class ReservasController : Controller
         IConfirmarReservaService confirmarReservaService,
         IEnviarComprovanteService enviarComprovanteService,
         IAprovarPagamentoService aprovarPagamentoService,
+        IAplicarCupomService aplicarCupomService,
         IConcederDescontoService concederDescontoService,
         ICancelarReservaService cancelarReservaService)
     {
@@ -49,6 +52,7 @@ public class ReservasController : Controller
         _confirmarReservaService = confirmarReservaService;
         _enviarComprovanteService = enviarComprovanteService;
         _aprovarPagamentoService = aprovarPagamentoService;
+        _aplicarCupomService = aplicarCupomService;
         _concederDescontoService = concederDescontoService;
         _cancelarReservaService = cancelarReservaService;
     }
@@ -148,5 +152,14 @@ public class ReservasController : Controller
         await _cancelarReservaService.Handle(id);
 
         return Ok(new { mensagem = "Reserva cancelada com sucesso" });
+    }
+
+    [HttpPost("{id}/aplicar-cupom")]
+    [Consumes("application/json")]
+    public async Task<ActionResult> AplicarCupom([FromRoute] long id, [FromBody] AplicarCupomCommand command)
+    {
+        var result = await _aplicarCupomService.Handle(id, command);
+
+        return Ok(result);
     }
 }

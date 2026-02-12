@@ -38,11 +38,19 @@ Sistema completo de gerenciamento para pet shop com funcionalidades de cadastro 
 - 36 raças pré-cadastradas (12 pequenas, 10 médias, 12 grandes, 2 SRD)
 
 ### Reservas
-- Id, ClienteId, DataInicial, DataFinal, QuantidadeDiarias, QuantidadePets, ValorTotal (decimal), Observacoes
-- **Status** (enum): ReservaCriada, ReservaConfirmada, PagamentoPendente, PagamentoAprovado, ReservaFinalizada
+- Id, ClienteId, DataInicial, DataFinal, QuantidadeDiarias, QuantidadePets, ValorTotal, **ValorDesconto**, **ValorFinal**, Observacoes
+- **CupomId** (FK nullable para Cupons)
+- **Status** (enum): ReservaCriada, ReservaConfirmada, PagamentoPendente, PagamentoAprovado, ReservaFinalizada, ReservaCancelada
 - ComprovantePagamento, DataPagamento, ObservacoesPagamento
 - DataInclusao, DataAlteracao
 - Relacionamento N:N com Pets através de ReservaPets
+
+### Cupons
+- Id, Codigo (único), Descricao, Tipo (enum), Percentual, ValorFixo, MinimoValorTotal, MinimoPets, MinimoDiarias
+- DataInicio, DataFim (validação de período)
+- Ativo (bool)
+- DataInclusao, DataAlteracao
+- **4 Tipos**: PercentualSobreTotal, PercentualPorPetComMinimo, PercentualPorPetComDiarias, ValorFixoComMinimo
 
 ### ReservaStatusHistorico
 - Id, ReservaId, Status, UsuarioId, DataAlteracao
@@ -91,14 +99,23 @@ Sistema completo de gerenciamento para pet shop com funcionalidades de cadastro 
 - GET /api/v1/racas?racaId={id} - Busca raça específica
 
 ### Reservas
-- GET /api/v1/reservas - Lista com paginação, retorna Status, StatusTimeline e Historico
-- POST /api/v1/reservas - Cadastra reserva (Status=ReservaCriada, registra histórico)
-- PUT /api/v1/reservas/{id} - Atualiza reserva (apenas se Status=ReservaCriada)
+- GET /api/v1/reservas - Lista com paginação, retorna Status, StatusTimeline, Historico e **Pets com RacaNome**
+- POST /api/v1/reservas - Cadastra reserva (Status=ReservaCriada, aceita ValorDesconto, ValorFinal, CupomId)
+- PUT /api/v1/reservas/{id} - Atualiza reserva (apenas se Status=ReservaCriada, aceita todos os campos)
 - DELETE /api/v1/reservas/{id} - Remove reserva
 - **POST /api/v1/reservas/{id}/confirmar** - ADM confirma (1→2→3) + envia email
 - **POST /api/v1/reservas/{id}/comprovante** - Cliente envia comprovante
 - **POST /api/v1/reservas/{id}/aprovar-pagamento** - ADM aprova (3→4→5) + envia email
 - **GET /api/v1/reservas/{id}/comprovante** - Visualiza comprovante
+- **POST /api/v1/reservas/{id}/desconto** - Concede desconto manual (apenas Status=ReservaCriada)
+- **POST /api/v1/reservas/{id}/cancelar** - Cancela reserva (Status=ReservaCancelada)
+- **POST /api/v1/reservas/{id}/aplicar-cupom** - Valida cupom e retorna valores (tempo real, não persiste)
+
+### Cupons
+- GET /api/v1/cupons - Lista com paginação
+- POST /api/v1/cupons - Cadastra cupom (valida código único)
+- PUT /api/v1/cupons/{id} - Atualiza cupom
+- POST /api/v1/cupons/{id}/inativar - Inativa cupom
 
 ### Sobre
 - POST /api/v1/sobre/enviar-email - Envia email de contato
@@ -116,6 +133,8 @@ Sistema completo de gerenciamento para pet shop com funcionalidades de cadastro 
 4. PagamentoAprovado
    ↓ Automático
 5. ReservaFinalizada (Email de confirmação enviado)
+
+6. ReservaCancelada (Cancelamento manual)
 ```
 
 ### Regras de Transição
@@ -123,6 +142,8 @@ Sistema completo de gerenciamento para pet shop com funcionalidades de cadastro 
 - **Confirmar**: Status=1 → 2 → 3 (ADM)
 - **Enviar Comprovante**: Status=3 (Cliente)
 - **Aprovar Pagamento**: Status=3 → 4 → 5 (ADM, requer comprovante)
+- **Conceder Desconto**: Apenas Status=1 (ReservaCriada)
+- **Cancelar**: Qualquer status → 6 (ReservaCancelada)
 
 ### StatusTimeline (Retorno da API)
 ```json
@@ -231,6 +252,7 @@ Sistema completo de gerenciamento para pet shop com funcionalidades de cadastro 
 - Cliente **1:N** Pets
 - Reserva **N:N** Pets (ReservaPets)
 - Reserva **1:N** ReservaStatusHistorico
+- Reserva **N:1** Cupom (CupomId nullable)
 - Usuario **N:N** Perfis (UsuarioPerfis)
 - Pet **N:1** Raca
 
@@ -285,6 +307,8 @@ ConnectionStrings__ColinhoDaCaRender
 12. **12_AlterarPetsRacaId.sql** - Adiciona RacaId, remove Raca string
 13. **13_AdicionarStatusReservas.sql** - Adiciona Status e campos de pagamento
 14. **14_TabelaReservaStatusHistorico.sql** - Cria tabela de histórico
+15. **15_AdicionarCamposDesconto.sql** - Adiciona ValorDesconto e ValorFinal
+16. **16_TabelaCupons.sql** - Cria tabela Cupons, adiciona CupomId em Reservas, insere 4 cupons exemplo
 
 ## 🧪 Testes
 
@@ -381,9 +405,15 @@ dotnet run --project src/ColinhoDaCaApi
 ## 🔄 Últimas Atualizações
 
 - ✅ Sistema de Raças com 36 raças pré-cadastradas
-- ✅ Fluxo completo de status de reservas (5 estados)
+- ✅ Fluxo completo de status de reservas (6 estados incluindo Cancelada)
 - ✅ Histórico de status com auditoria (quem e quando)
 - ✅ Timeline de status no retorno da API
+- ✅ Sistema de Cupons com 4 tipos de desconto
+- ✅ Validação de cupons em tempo real (não persiste)
+- ✅ Campos ValorDesconto, ValorFinal e CupomId em Reservas
+- ✅ CRUD completo de Cupons com endpoint de inativação
+- ✅ Validação de período de validade de cupons (DataInicio/DataFim)
+- ✅ Pets retornam RacaNome na listagem de reservas
 - ✅ Envio de emails em confirmação e aprovação
 - ✅ JWT com todos os dados do usuário
 - ✅ Validações de email e CPF duplicados

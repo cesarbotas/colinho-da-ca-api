@@ -9,6 +9,9 @@ public class CadastrarReservaCommand
     public int QuantidadeDiarias { get; set; }
     public int QuantidadePets { get; set; }
     public decimal ValorTotal { get; set; }
+    public decimal ValorDesconto { get; set; }
+    public decimal ValorFinal { get; set; }
+    public long? CupomId { get; set; }
     public string Observacoes { get; set; }
     public List<long> PetIds { get; set; }
 }

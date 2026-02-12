@@ -48,7 +48,7 @@ public class EmailService : IEmailService
 
             mailMessage.To.Add(destinatario);
 
-            //await client.SendMailAsync(mailMessage);
+            await client.SendMailAsync(mailMessage);
         }
         catch (Exception ex)
         {
