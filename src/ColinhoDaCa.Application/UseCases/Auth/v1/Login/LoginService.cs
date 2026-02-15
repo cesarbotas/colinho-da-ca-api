@@ -87,13 +87,12 @@ public class LoginService : ILoginService
                 DataLogin = DateTime.UtcNow
             };
 
-            await _loginHistoricoRepository.AddAsync(loginHistorico);
-            await _unitOfWork.SaveChangesAsync();
+            await _loginHistoricoRepository.InsertAsync(loginHistorico);
+            await _unitOfWork.CommitAsync();
 
             return new LoginResponse
             {
-                Token = token,
-                //Usuario = usuarioResponse
+                Token = token
             };
         }
         catch (Exception ex)

@@ -10,7 +10,7 @@ CREATE TABLE LoginHistorico (
     ClientIP VARCHAR(45),
     DataLogin TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     
-    CONSTRAINT FK_LoginHistorico_Usuario FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id)
+    CONSTRAINT FK_LoginHistorico_Usuario FOREIGN KEY (UsuarioId) REFERENCES "Usuarios"("Id")
 );
 
 CREATE INDEX IX_LoginHistorico_UsuarioId ON LoginHistorico(UsuarioId);
