@@ -1,6 +1,7 @@
 using ColinhoDaCa.Domain._Shared.Entities;
 using ColinhoDaCa.Domain.Clientes.Repositories;
 using ColinhoDaCa.Domain.Cupons.Repositories;
+using ColinhoDaCa.Domain.LoginHistorico.Repositories;
 using ColinhoDaCa.Domain.Pets.Repositories;
 using ColinhoDaCa.Domain.Racas.Repositories;
 using ColinhoDaCa.Domain.Reservas.Repositories;
@@ -9,6 +10,7 @@ using ColinhoDaCa.Infra.Data._Shared.Postgres.UoW;
 using ColinhoDaCa.Infra.Data.Context;
 using ColinhoDaCa.Infra.Data.Context.Repositories.Clientes;
 using ColinhoDaCa.Infra.Data.Context.Repositories.Cupons;
+using ColinhoDaCa.Infra.Data.Context.Repositories.LoginHistorico;
 using ColinhoDaCa.Infra.Data.Context.Repositories.Pets;
 using ColinhoDaCa.Infra.Data.Context.Repositories.Reservas;
 using ColinhoDaCa.Infra.Data.Context.Repositories.Usuarios;
@@ -64,6 +66,8 @@ internal static class PersistenceExtensions
         services.AddScoped<IReservaReadRepository, ReservaRepository>();
 
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+
+        services.AddScoped<ILoginHistoricoRepository, LoginHistoricoRepository>();
 
         #endregion
 

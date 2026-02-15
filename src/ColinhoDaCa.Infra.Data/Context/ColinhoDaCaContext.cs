@@ -1,5 +1,6 @@
 using ColinhoDaCa.Domain.Clientes.Entities;
 using ColinhoDaCa.Domain.Cupons.Entities;
+using ColinhoDaCa.Domain.LoginHistorico.Entities;
 using ColinhoDaCa.Domain.Pets.Entities;
 using ColinhoDaCa.Domain.Racas.Entities;
 using ColinhoDaCa.Domain.Reservas.Entities;
@@ -28,6 +29,7 @@ public class ColinhoDaCaContext : DbContext
     public DbSet<UsuarioDb> Usuarios { get; set; }
     public DbSet<PerfilDb> Perfis { get; set; }
     public DbSet<UsuarioPerfilDb> UsuarioPerfis { get; set; }
+    public DbSet<LoginHistoricoDb> LoginHistorico { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

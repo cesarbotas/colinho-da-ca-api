@@ -1,6 +1,9 @@
 using ColinhoDaCa.Application.Services.Auth;
+using ColinhoDaCa.Domain._Shared.Entities;
 using ColinhoDaCa.Domain._Shared.Exceptions;
 using ColinhoDaCa.Domain.Clientes.Repositories;
+using ColinhoDaCa.Domain.LoginHistorico.Entities;
+using ColinhoDaCa.Domain.LoginHistorico.Repositories;
 using ColinhoDaCa.Domain.Usuarios.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -13,18 +16,24 @@ public class LoginService : ILoginService
     private readonly IClienteRepository _clienteRepository;
     private readonly IPasswordService _passwordService;
     private readonly IJwtService _jwtService;
+    private readonly ILoginHistoricoRepository _loginHistoricoRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     public LoginService(ILogger<LoginService> logger,
         IUsuarioRepository usuarioRepository,
         IClienteRepository clienteRepository,
         IPasswordService passwordService,
-        IJwtService jwtService)
+        IJwtService jwtService,
+        ILoginHistoricoRepository loginHistoricoRepository,
+        IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _usuarioRepository = usuarioRepository;
         _clienteRepository = clienteRepository;
         _passwordService = passwordService;
         _jwtService = jwtService;
+        _loginHistoricoRepository = loginHistoricoRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<LoginResponse> Handle(LoginCommand command)
@@ -63,6 +72,23 @@ public class LoginService : ILoginService
             };
 
             var token = _jwtService.GenerateToken(usuarioResponse);
+
+            // Gravar histórico de login
+            var loginHistorico = new LoginHistoricoDb
+            {
+                UsuarioId = usuario.Id,
+                Email = command.Email,
+                UserAgent = command.DeviceInfo?.UserAgent,
+                Platform = command.DeviceInfo?.Platform,
+                Language = command.DeviceInfo?.Language,
+                ScreenResolution = command.DeviceInfo?.ScreenResolution,
+                Timezone = command.DeviceInfo?.Timezone,
+                ClientIP = command.DeviceInfo?.ClientIP,
+                DataLogin = DateTime.UtcNow
+            };
+
+            await _loginHistoricoRepository.AddAsync(loginHistorico);
+            await _unitOfWork.SaveChangesAsync();
 
             return new LoginResponse
             {
