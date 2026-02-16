@@ -5,17 +5,21 @@ using ColinhoDaCa.Domain.Reservas.Entities;
 using ColinhoDaCa.Domain.Reservas.Repositories;
 using ColinhoDaCa.Infra.Data._Shared.Postgres.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ColinhoDaCa.Infra.Data.Context.Repositories.Reservas;
 
 public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IReservaReadRepository
 {
     private readonly ColinhoDaCaContext _context;
+    private readonly ILogger<ReservaRepository> _logger;
 
-    public ReservaRepository(ColinhoDaCaContext context) 
+    public ReservaRepository(ColinhoDaCaContext context,
+    ILogger<ReservaRepository> logger) 
         : base(context)
     {
         _context = context;
+        _logger = logger;
     }
 
     public IQueryable<ReservaDb> AsQueryable()
@@ -140,8 +144,10 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
                 Data = result
             };
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "[PesquisarReservasDto] - Erro ao pesquisar reservas: {Message}", ex.Message);
+
             throw;
         }
     }
