@@ -57,6 +57,26 @@ public class ClienteRepository : Repository<Cliente>, IClienteRepository, IClien
                 queryResult = queryResult.Where(c => c.Id == query.Id);
             }
 
+            if (query.ClienteId.HasValue && query.ClienteId > 0)
+            {
+                queryResult = queryResult.Where(c => c.Id == query.ClienteId);
+            }
+
+            if (!string.IsNullOrEmpty(query.Nome))
+            {
+                queryResult = queryResult.Where(c => c.Nome.ToLower().Contains(query.Nome.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(query.Cpf))
+            {
+                queryResult = queryResult.Where(c => c.Cpf.ToLower().Contains(query.Cpf.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(query.Email))
+            {
+                queryResult = queryResult.Where(c => c.Email.ToLower().Contains(query.Email.ToLower()));
+            }
+
             var totalItens = await queryResult
                 .CountAsync();
 

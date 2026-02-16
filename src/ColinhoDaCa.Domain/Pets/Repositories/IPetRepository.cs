@@ -5,5 +5,5 @@ namespace ColinhoDaCa.Domain.Pets.Repositories;
 
 public interface IPetRepository : IRepository<Pet>
 {
-
+    Task<bool> HasReservationsAsync(long petId);
 }

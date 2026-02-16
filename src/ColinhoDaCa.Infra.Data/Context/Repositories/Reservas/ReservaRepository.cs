@@ -40,7 +40,12 @@ public class ReservaRepository : Repository<Reserva>, IReservaRepository, IReser
         {
             // Query principal otimizada
             var reservasQuery = _context.Reservas
-                .Where(r => query.ClienteId == null || r.ClienteId == query.ClienteId)
+                .Join(_context.Clientes, r => r.ClienteId, c => c.Id, (r, c) => new { Reserva = r, Cliente = c })
+                .Where(rc => query.ClienteId == null || rc.Reserva.ClienteId == query.ClienteId)
+                .Where(rc => string.IsNullOrEmpty(query.ClienteNome) || rc.Cliente.Nome.ToLower().Contains(query.ClienteNome.ToLower()))
+                .Where(rc => query.DataInicial == null || rc.Reserva.DataInicial >= query.DataInicial)
+                .Where(rc => query.DataFinal == null || rc.Reserva.DataFinal <= query.DataFinal)
+                .Select(rc => rc.Reserva)
                 .OrderByDescending(r => r.Id);
 
             var totalItens = await reservasQuery.CountAsync();

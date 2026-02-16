@@ -1,5 +1,6 @@
 using ColinhoDaCa.Domain._Shared.Entities;
 using ColinhoDaCa.Domain.Pets.Repositories;
+using ColinhoDaCa.Domain.Reservas.Entities;
 using Microsoft.Extensions.Logging;
 
 namespace ColinhoDaCa.Application.UseCases.Pets.v1.ExcluirPet;
@@ -30,7 +31,20 @@ public class ExcluirPetService : IExcluirPetService
                 throw new Exception("Pet não encontrado");
             }
 
-            _petRepository.Delete(pet);
+            // Check if pet has any reservations
+            var hasReservations = await _petRepository.HasReservationsAsync(id);
+
+            if (hasReservations)
+            {
+                // Inactivate pet if has reservations
+                pet.Inativar();
+                _petRepository.Update(pet);
+            }
+            else
+            {
+                // Delete pet if no reservations
+                _petRepository.Delete(pet);
+            }
 
             await _unitOfWork.CommitAsync();
         }
