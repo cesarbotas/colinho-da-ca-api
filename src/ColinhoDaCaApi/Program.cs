@@ -3,10 +3,23 @@ using ColinhoDaCaApi.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Serilog;
 
 try
 {
     var builder = WebApplication.CreateBuilder(args);
+
+    // Configure Serilog
+    builder.Host.UseSerilog((context, configuration) =>
+        configuration
+            .ReadFrom.Configuration(context.Configuration)
+            .WriteTo.Console(new Serilog.Formatting.Json.JsonFormatter())
+            .WriteTo.File(
+                new Serilog.Formatting.Json.JsonFormatter(),
+                "logs/colinho-api-.log",
+                rollingInterval: RollingInterval.Day)
+            .Enrich.WithProperty("Application", "ColinhoDaCaApi")
+            .Enrich.FromLogContext());
 
     builder.Services.RegistraDependencias(builder.Configuration);
 
@@ -79,10 +92,10 @@ try
 }
 catch (Exception ex)
 {
-    Console.WriteLine(ex.ToString());
+    Log.Fatal(ex, "Application terminated unexpectedly");
     //Log.Fatal(ex, $"Aplica��o finalizada de forma inesperada: {ex.Message}");
 }
 finally
 {
-    //Log.CloseAndFlush();
+    Log.CloseAndFlush();
 }
