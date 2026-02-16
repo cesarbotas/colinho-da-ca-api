@@ -9,8 +9,18 @@ public class RacaConfiguration : IEntityTypeConfiguration<RacaDb>
     public void Configure(EntityTypeBuilder<RacaDb> builder)
     {
         builder.ToTable("Racas");
+
         builder.HasKey(r => r.Id);
-        builder.Property(r => r.Nome).IsRequired().HasMaxLength(100);
-        builder.Property(r => r.Porte).HasMaxLength(1);
+
+        builder.Property(c => c.Id)
+            .HasColumnName("Id")
+            .ValueGeneratedOnAdd();
+
+        builder.Property(r => r.Nome)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(r => r.Porte)
+            .HasMaxLength(1);
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ColinhoDaCa.Infra.Data.Context.Repositories.Pets;
 
-public class PetRepository : Repository<PetDb>, IPetRepository, IPetReadRepository
+public class PetRepository : Repository<Pet>, IPetRepository, IPetReadRepository
 {
     private readonly ColinhoDaCaContext _context;
 
@@ -18,7 +18,7 @@ public class PetRepository : Repository<PetDb>, IPetRepository, IPetReadReposito
         _context = context;
     }
 
-    public IQueryable<PetDb> AsQueryable()
+    public IQueryable<Pet> AsQueryable()
     {
         return _context.Pets
             .AsQueryable();

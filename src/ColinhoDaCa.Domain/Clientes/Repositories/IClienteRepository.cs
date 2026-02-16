@@ -3,8 +3,8 @@ using ColinhoDaCa.Domain.Clientes.Entities;
 
 namespace ColinhoDaCa.Domain.Clientes.Repositories;
 
-public interface IClienteRepository : IRepository<ClienteDb>
+public interface IClienteRepository : IRepository<Cliente>
 {
-    Task<ClienteDb> GetByCpfAsync(string cpf);
-    Task<ClienteDb> GetByEmailAsync(string email);
+    Task<Cliente> GetByCpfAsync(string cpf);
+    Task<Cliente> GetByEmailAsync(string email);
 }

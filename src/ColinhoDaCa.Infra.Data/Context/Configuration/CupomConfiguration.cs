@@ -12,6 +12,10 @@ public class CupomConfiguration : IEntityTypeConfiguration<CupomDb>
 
         builder.HasKey(c => c.Id);
 
+        builder.Property(c => c.Id)
+            .HasColumnName("Id")
+            .ValueGeneratedOnAdd();
+
         builder.Property(c => c.Codigo)
             .IsRequired()
             .HasMaxLength(50);

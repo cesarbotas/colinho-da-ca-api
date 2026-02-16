@@ -12,4 +12,7 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task<int> CommitAsync(CancellationToken cancellationToken = default)
         => await _dbContext.SaveChangesAsync(cancellationToken);
+
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        => await _dbContext.SaveChangesAsync(cancellationToken);
 }

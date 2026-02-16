@@ -6,16 +6,17 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ColinhoDaCa.Infra.Data.Context.Configuration;
 
-public class PetConfiguration : IEntityTypeConfiguration<PetDb>
+public class PetConfiguration : IEntityTypeConfiguration<Pet>
 {
-    public void Configure(EntityTypeBuilder<PetDb> builder)
+    public void Configure(EntityTypeBuilder<Pet> builder)
     {
         builder.ToTable("Pets", "public");
 
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Id)
-            .UseIdentityAlwaysColumn();
+            .HasColumnName("Id")
+            .ValueGeneratedOnAdd();
 
         builder.Property(p => p.Nome)
             .IsRequired()
@@ -46,14 +47,14 @@ public class PetConfiguration : IEntityTypeConfiguration<PetDb>
             .IsRequired()
             .HasColumnType("timestamp without time zone");
 
-        builder.HasOne<ClienteDb>()
+        builder.HasOne<Cliente>()
             .WithMany()
-            .HasForeignKey(p => p.ClienteId)
+            .HasForeignKey("ClienteId")
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<RacaDb>()
             .WithMany()
-            .HasForeignKey(p => p.RacaId)
+            .HasForeignKey("RacaId")
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -5,110 +5,136 @@ using ColinhoDaCa.Domain.Reservas.Entities;
 using ColinhoDaCa.Domain.Reservas.Repositories;
 using ColinhoDaCa.Infra.Data._Shared.Postgres.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ColinhoDaCa.Infra.Data.Context.Repositories.Reservas;
 
-public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IReservaReadRepository
+public class ReservaRepository : Repository<Reserva>, IReservaRepository, IReservaReadRepository
 {
     private readonly ColinhoDaCaContext _context;
+    private readonly ILogger<ReservaRepository> _logger;
 
-    public ReservaRepository(ColinhoDaCaContext context) 
+    public ReservaRepository(ColinhoDaCaContext context,
+    ILogger<ReservaRepository> logger) 
         : base(context)
     {
         _context = context;
+        _logger = logger;
     }
 
-    public IQueryable<ReservaDb> AsQueryable()
+    public IQueryable<Reserva> AsQueryable()
     {
         return _context.Reservas
             .AsQueryable();
+    }
+
+    public async Task<Reserva?> GetWithRelationsAsync(long id)
+    {
+        return await _context.Reservas
+            .FirstOrDefaultAsync(r => r.Id == id);
     }
 
     public async Task<ResultadoPaginadoDto<ReservasDto>> PesquisarReservasDto(ListarReservaQuery query)
     {
         try
         {
-            var queryResult =
-                from r in _context.Reservas
-                join c in _context.Clientes on r.ClienteId equals c.Id
-                where query.ClienteId == null || r.ClienteId == query.ClienteId
-                select new
-                {
-                    r.Id,
-                    r.ClienteId,
-                    ClienteNome = c.Nome,
-                    r.DataInicial,
-                    r.DataFinal,
-                    r.QuantidadeDiarias,
-                    r.QuantidadePets,
-                    r.ValorTotal,
-                    r.ValorDesconto,
-                    r.ValorFinal,
-                    r.Observacoes,
-                    r.Status,
-                    r.ComprovantePagamento,
-                    r.DataPagamento,
-                    r.ObservacoesPagamento,
-                    Pets = (from rp in _context.ReservaPets
-                            join p in _context.Pets on rp.PetId equals p.Id
-                            join ra in _context.Racas on p.RacaId equals ra.Id into racaGroup
-                            from ra in racaGroup.DefaultIfEmpty()
-                            where rp.ReservaId == r.Id
-                            select new PetReservaDto
-                            {
-                                Id = p.Id,
-                                Nome = p.Nome,
-                                RacaNome = ra != null ? ra.Nome : null
-                            }).ToList(),
-                    Historico = (from h in _context.ReservaStatusHistorico
-                                 join u in _context.Usuarios on h.UsuarioId equals u.Id
-                                 join cl in _context.Clientes on u.ClienteId equals cl.Id
-                                 where h.ReservaId == r.Id
-                                 orderby h.DataAlteracao
-                                 select new StatusHistoricoDto
-                                 {
-                                     Status = (int)h.Status,
-                                     UsuarioId = h.UsuarioId,
-                                     UsuarioNome = cl.Nome,
-                                     DataAlteracao = h.DataAlteracao
-                                 }).ToList()
-                };
+            // Query principal otimizada
+            var reservasQuery = _context.Reservas
+                .Where(r => query.ClienteId == null || r.ClienteId == query.ClienteId)
+                .OrderByDescending(r => r.Id);
 
-            var totalItens = await queryResult.CountAsync();
+            var totalItens = await reservasQuery.CountAsync();
 
-            var result = await queryResult
+            var reservas = await reservasQuery
                 .Skip((query.Paginacao.NumeroPagina - 1) * query.Paginacao.QuantidadeRegistros)
                 .Take(query.Paginacao.QuantidadeRegistros)
-                .Select(x => new ReservasDto
-                {
-                    Id = x.Id,
-                    ClienteId = x.ClienteId,
-                    ClienteNome = x.ClienteNome,
-                    DataInicial = x.DataInicial,
-                    DataFinal = x.DataFinal,
-                    QuantidadeDiarias = x.QuantidadeDiarias,
-                    QuantidadePets = x.QuantidadePets,
-                    ValorTotal = x.ValorTotal,
-                    ValorDesconto = x.ValorDesconto,
-                    ValorFinal = x.ValorFinal,
-                    Observacoes = x.Observacoes,
-                    Status = (int)x.Status,
-                    ComprovantePagamento = x.ComprovantePagamento,
-                    DataPagamento = x.DataPagamento,
-                    ObservacoesPagamento = x.ObservacoesPagamento,
-                    StatusTimeline = new Dictionary<int, bool>
-                    {
-                        { 1, (int)x.Status >= 1 },
-                        { 2, (int)x.Status >= 2 },
-                        { 3, (int)x.Status >= 3 },
-                        { 4, (int)x.Status >= 4 },
-                        { 5, (int)x.Status >= 5 },
-                        { 6, (int)x.Status == 6 }
-                    },
-                    Historico = x.Historico,
-                    Pets = x.Pets
-                })
                 .ToListAsync();
+
+            // Buscar dados relacionados separadamente
+            var clienteIds = reservas.Select(r => r.ClienteId).Distinct().ToList();
+            var clientes = await _context.Clientes
+                .Where(c => clienteIds.Contains(c.Id))
+                .ToDictionaryAsync(c => c.Id, c => c.Nome);
+
+            var reservaIds = reservas.Select(r => r.Id).ToList();
+            
+            var reservaPets = await _context.ReservaPets
+                .Where(rp => reservaIds.Contains(rp.ReservaId))
+                .ToListAsync();
+            
+            var petIds = reservaPets.Select(rp => rp.PetId).Distinct().ToList();
+            var pets = await _context.Pets
+                .Where(p => petIds.Contains(p.Id))
+                .ToDictionaryAsync(p => p.Id, p => new { p.Nome, p.RacaId });
+            
+            var racaIds = pets.Values.Where(p => p.RacaId.HasValue).Select(p => p.RacaId.Value).Distinct().ToList();
+            var racas = await _context.Racas
+                .Where(r => racaIds.Contains(r.Id))
+                .ToDictionaryAsync(r => r.Id, r => r.Nome);
+            
+            var statusHistorico = await _context.ReservaStatusHistorico
+                .Where(h => reservaIds.Contains(h.ReservaId))
+                .OrderBy(h => h.DataAlteracao)
+                .ToListAsync();
+            
+            var usuarioIds = statusHistorico.Select(h => h.UsuarioId).Distinct().ToList();
+            var usuarios = await _context.Usuarios
+                .Where(u => usuarioIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => u.ClienteId);
+            
+            var usuarioClienteIds = usuarios.Values.Distinct().ToList();
+            var usuarioClientes = await _context.Clientes
+                .Where(c => usuarioClienteIds.Contains(c.Id))
+                .ToDictionaryAsync(c => c.Id, c => c.Nome);
+
+            var result = reservas.Select(r => new ReservasDto
+            {
+                Id = r.Id,
+                ClienteId = r.ClienteId,
+                ClienteNome = clientes.GetValueOrDefault(r.ClienteId, ""),
+                DataInicial = r.DataInicial,
+                DataFinal = r.DataFinal,
+                QuantidadeDiarias = r.QuantidadeDiarias,
+                QuantidadePets = r.QuantidadePets,
+                ValorTotal = r.ValorTotal,
+                ValorDesconto = r.ValorDesconto,
+                ValorFinal = r.ValorFinal,
+                Observacoes = r.Observacoes,
+                Status = (int)r.Status,
+                ComprovantePagamento = r.ComprovantePagamento,
+                DataPagamento = r.DataPagamento,
+                ObservacoesPagamento = r.ObservacoesPagamento,
+                StatusTimeline = new Dictionary<int, bool>
+                {
+                    { 1, (int)r.Status >= 1 },
+                    { 2, (int)r.Status >= 2 },
+                    { 3, (int)r.Status >= 3 },
+                    { 4, (int)r.Status >= 4 },
+                    { 5, (int)r.Status >= 5 },
+                    { 6, (int)r.Status == 6 }
+                },
+                Pets = reservaPets
+                    .Where(rp => rp.ReservaId == r.Id)
+                    .Select(rp => new PetReservaDto
+                    {
+                        Id = rp.PetId,
+                        Nome = pets.GetValueOrDefault(rp.PetId)?.Nome ?? "",
+                        RacaNome = pets.GetValueOrDefault(rp.PetId)?.RacaId.HasValue == true 
+                            ? racas.GetValueOrDefault(pets[rp.PetId].RacaId.Value, "")
+                            : null
+                    }).ToList(),
+                Historico = statusHistorico
+                    .Where(h => h.ReservaId == r.Id)
+                    .Select(h => new StatusHistoricoDto
+                    {
+                        Status = (int)h.Status,
+                        UsuarioId = h.UsuarioId,
+                        UsuarioNome = usuarios.ContainsKey(h.UsuarioId) 
+                            ? usuarioClientes.GetValueOrDefault(usuarios[h.UsuarioId], "")
+                            : "",
+                        DataAlteracao = h.DataAlteracao
+                    }).ToList()
+            }).ToList();
 
             return new ResultadoPaginadoDto<ReservasDto>
             {
@@ -118,8 +144,10 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
                 Data = result
             };
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "[PesquisarReservasDto] - Erro ao pesquisar reservas: {Message}", ex.Message);
+
             throw;
         }
     }

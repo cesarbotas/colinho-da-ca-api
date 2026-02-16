@@ -1,12 +1,13 @@
+using ColinhoDaCa.Domain.Perfis.Entities;
 using ColinhoDaCa.Domain.Usuarios.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ColinhoDaCa.Infra.Data.Context.Configuration;
 
-public class UsuarioPerfilConfiguration : IEntityTypeConfiguration<UsuarioPerfilDb>
+public class UsuarioPerfilConfiguration : IEntityTypeConfiguration<UsuarioPerfil>
 {
-    public void Configure(EntityTypeBuilder<UsuarioPerfilDb> builder)
+    public void Configure(EntityTypeBuilder<UsuarioPerfil> builder)
     {
         builder.ToTable("UsuarioPerfis", "public");
 
@@ -18,9 +19,14 @@ public class UsuarioPerfilConfiguration : IEntityTypeConfiguration<UsuarioPerfil
         builder.Property(up => up.PerfilId)
             .IsRequired();
 
-        builder.HasOne<ColinhoDaCa.Domain.Perfis.Entities.PerfilDb>()
+        builder.HasOne<Usuario>()
             .WithMany()
-            .HasForeignKey(up => up.PerfilId)
+            .HasForeignKey("UsuarioId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne<Perfil>()
+            .WithMany()
+            .HasForeignKey("PerfilId")
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

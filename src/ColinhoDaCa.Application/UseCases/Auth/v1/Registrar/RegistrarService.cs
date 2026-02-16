@@ -49,17 +49,17 @@ public class RegistrarService : IRegistrarService
                 throw new Exception("CPF já cadastrado");
             }
 
-            var cliente = ClienteDb.Create(command.Nome, command.Email, command.Celular, command.Cpf, "");
+            var cliente = Cliente.Create(command.Nome, command.Email, command.Celular, command.Cpf, "");
             await _clienteRepository.InsertAsync(cliente);
             await _unitOfWork.CommitAsync();
 
             var senhaHash = _passwordService.HashPassword(command.Senha);
-            var usuario = UsuarioDb.Create(senhaHash, cliente.Id);
+            var usuario = Usuario.Create(senhaHash, cliente.Id);
             await _usuarioRepository.InsertAsync(usuario);
             await _unitOfWork.CommitAsync();
 
-            var perfilCliente = new UsuarioPerfilDb { UsuarioId = usuario.Id, PerfilId = 2 };
-            usuario.UsuarioPerfis.Add(perfilCliente);
+            var perfilCliente = UsuarioPerfil.Create(usuario.Id, 2);
+            usuario.AdicionarPerfil(perfilCliente);
             _usuarioRepository.Update(usuario);
 
             await _unitOfWork.CommitAsync();

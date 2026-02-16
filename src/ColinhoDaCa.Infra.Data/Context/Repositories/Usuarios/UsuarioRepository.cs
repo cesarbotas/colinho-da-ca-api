@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ColinhoDaCa.Infra.Data.Context.Repositories.Usuarios;
 
-public class UsuarioRepository : Repository<UsuarioDb>, IUsuarioRepository
+public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
 {
     private readonly ColinhoDaCaContext _context;
 
@@ -15,16 +15,15 @@ public class UsuarioRepository : Repository<UsuarioDb>, IUsuarioRepository
         _context = context;
     }
 
-    public async Task<UsuarioDb> GetByClienteIdAsync(long clienteId)
+    public async Task<Usuario> GetByClienteIdAsync(long clienteId)
     {
         return await _context.Usuarios
             .FirstOrDefaultAsync(u => u.ClienteId == clienteId);
     }
 
-    public async Task<UsuarioDb> GetByClienteIdWithPerfisAsync(long clienteId)
+    public async Task<Usuario> GetByClienteIdWithPerfisAsync(long clienteId)
     {
         return await _context.Usuarios
-            .Include(u => u.UsuarioPerfis)
             .FirstOrDefaultAsync(u => u.ClienteId == clienteId);
     }
 

@@ -3,10 +3,10 @@ using ColinhoDaCa.Domain.Usuarios.Entities;
 
 namespace ColinhoDaCa.Domain.Usuarios.Repositories;
 
-public interface IUsuarioRepository : IRepository<UsuarioDb>
+public interface IUsuarioRepository : IRepository<Usuario>
 {
-    Task<UsuarioDb> GetByClienteIdAsync(long clienteId);
-    Task<UsuarioDb> GetByClienteIdWithPerfisAsync(long clienteId);
+    Task<Usuario> GetByClienteIdAsync(long clienteId);
+    Task<Usuario> GetByClienteIdWithPerfisAsync(long clienteId);
     Task<List<PerfilUsuarioDto>> GetPerfisUsuarioAsync(long usuarioId);
 }
 
