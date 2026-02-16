@@ -1,3 +1,12 @@
+## 📝 **IMPORTANTE - Manutenção da Documentação**
+
+**SEMPRE que houver qualquer mudança no projeto:**
+1. ✅ **Atualizar CONTEXT.md** - Documentar novas funcionalidades, endpoints, tabelas
+2. ✅ **Atualizar Postman Collection** - Adicionar/modificar requests, incluir scripts automáticos
+3. ✅ **Manter sincronizado** - Documentação deve refletir exatamente o estado atual da API
+
+---
+
 # Contexto do Projeto - Colinho da Cá API
 
 ## 📋 Visão Geral
@@ -61,26 +70,42 @@ Sistema completo de gerenciamento para pet shop com funcionalidades de cadastro 
 - DataInclusao, DataAlteracao
 - Relacionamento N:N com Perfis através de UsuarioPerfis
 
-### Perfis
-- Id, Nome, Descricao
-- Perfis padrão: Administrador (Id=1), Cliente (Id=2)
+### LoginHistorico
+- Id, UsuarioId, Email, UserAgent, Platform, Language, ScreenResolution, Timezone, ClientIP, DataLogin
+- Registra todas as informações de login com dados do dispositivo
 
-## 🔐 Autenticação e Autorização
+### RefreshTokens
+- Id, UsuarioId, Token, ExpiresAt, IsRevoked, CreatedAt, RevokedAt
+- Controla tokens de refresh para OAuth2 (expiração 7 dias)
 
-### JWT Token
-- Contém **TODOS** os dados do usuário (id, email, clienteId, nome, celular, cpf, perfis)
-- Expiração: 24 horas
-- Claims: NameIdentifier, Email, Name, clienteId, celular, cpf, perfis (JSON)
+## 🔐 Autenticação OAuth2
+
+### Access Token (JWT)
+- **Expiração**: 30 minutos (era 24h)
+- **Claims**: NameIdentifier, Email, Name, clienteId, celular, cpf, perfis (JSON)
+- **Roles**: Incluídas baseadas nos perfis para autorização futura
+
+### Refresh Token
+- **Expiração**: 7 dias
+- **Segurança**: Tokens únicos por usuário, revogação automática
+- **Rotação**: Novo refresh token a cada uso
+
+### Histórico de Login
+- Grava todas as informações de dispositivo e IP
+- Timestamp UTC de cada login
+- Vinculado ao usuário para auditoria
 
 ### Endpoints Protegidos
-- Todos os endpoints exceto `/auth/registrar` e `/auth/login` requerem `[Authorize]`
+- Todos os endpoints exceto `/auth/registrar`, `/auth/login` e `/racas` requerem `[Authorize]`
 - Token extraído via `IHttpContextAccessor` para auditoria
+- **Racas**: Endpoint público para facilitar uso em formulários
 
 ## 🌐 Endpoints Principais
 
-### Auth
+### Auth (OAuth2)
 - POST /api/v1/auth/registrar - Cria Cliente e Usuario com perfil Cliente
-- POST /api/v1/auth/login - Retorna JWT (sem dados do usuário no body, tudo no token)
+- POST /api/v1/auth/login - Retorna access_token + refresh_token + grava histórico
+- POST /api/v1/auth/refresh - Renova tokens usando refresh_token
 
 ### Clientes
 - GET /api/v1/clientes - Lista com paginação e filtro por Id
@@ -207,13 +232,22 @@ Sistema completo de gerenciamento para pet shop com funcionalidades de cadastro 
 5. Adiciona perfil "Cliente" (Id=2)
 6. Registra histórico de status inicial
 
-### Login
+### Login OAuth2
 1. Busca Cliente por email
 2. Busca Usuario por ClienteId com perfis
 3. Valida se Usuario está ativo
 4. Valida senha (SHA256)
-5. Gera JWT com TODOS os dados do usuário
-6. Retorna apenas token (dados no JWT)
+5. **Revoga refresh tokens anteriores**
+6. **Gera access token (30 min) + refresh token (7 dias)**
+7. **Grava histórico de login com dados do dispositivo**
+8. Retorna tokens no padrão OAuth2
+
+### Refresh Token
+1. Valida refresh token (não expirado, não revogado)
+2. Busca usuário e valida se ativo
+3. **Revoga refresh token atual**
+4. **Gera novos access + refresh tokens**
+5. Retorna novos tokens
 
 ### Cadastro de Cliente
 1. Valida email único
@@ -255,6 +289,8 @@ Sistema completo de gerenciamento para pet shop com funcionalidades de cadastro 
 - Reserva **N:1** Cupom (CupomId nullable)
 - Usuario **N:N** Perfis (UsuarioPerfis)
 - Pet **N:1** Raca
+- LoginHistorico **N:1** Usuario
+- RefreshToken **N:1** Usuario
 
 ## ⚙️ Configurações (appsettings.json)
 
@@ -263,7 +299,7 @@ Sistema completo de gerenciamento para pet shop com funcionalidades de cadastro 
 
 ### JWT
 - Secret: chave de 32+ caracteres
-- ExpirationHours: 24
+- ~~ExpirationHours: 24~~ (removido, agora fixo 30 min)
 
 ### Email
 - SmtpHost: smtp-relay.brevo.com
@@ -309,6 +345,9 @@ ConnectionStrings__ColinhoDaCaRender
 14. **14_TabelaReservaStatusHistorico.sql** - Cria tabela de histórico
 15. **15_AdicionarCamposDesconto.sql** - Adiciona ValorDesconto e ValorFinal
 16. **16_TabelaCupons.sql** - Cria tabela Cupons, adiciona CupomId em Reservas, insere 4 cupons exemplo
+17. **17_TabelaLoginHistorico.sql** - Cria tabela de histórico de login
+18. **18_TabelaRefreshTokens.sql** - Cria tabela de refresh tokens OAuth2
+19. **19_AdicionarGrantsTabelas.sql** - Adiciona GRANT permissions faltantes
 
 ## 🧪 Testes
 
@@ -404,6 +443,10 @@ dotnet run --project src/ColinhoDaCaApi
 
 ## 🔄 Últimas Atualizações
 
+- ✅ OAuth2 implementado com access token (30 min) e refresh token (7 dias)
+- ✅ Histórico de login com informações de dispositivo e IP
+- ✅ Roles preparadas para autorização baseada em perfis
+- ✅ Rotação automática de refresh tokens
 - ✅ Sistema de Raças com 36 raças pré-cadastradas
 - ✅ Fluxo completo de status de reservas (6 estados incluindo Cancelada)
 - ✅ Histórico de status com auditoria (quem e quando)

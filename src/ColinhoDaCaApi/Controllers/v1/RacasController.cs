@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace ColinhoDaCaApi.Controllers.v1;
 
 [ApiController]
-[Authorize]
 [Route("api/v1/[controller]")]
 public class RacasController : ControllerBase
 {

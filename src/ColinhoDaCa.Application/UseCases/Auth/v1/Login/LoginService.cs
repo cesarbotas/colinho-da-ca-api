@@ -1,6 +1,11 @@
 using ColinhoDaCa.Application.Services.Auth;
+using ColinhoDaCa.Domain._Shared.Entities;
 using ColinhoDaCa.Domain._Shared.Exceptions;
 using ColinhoDaCa.Domain.Clientes.Repositories;
+using ColinhoDaCa.Domain.LoginHistorico.Entities;
+using ColinhoDaCa.Domain.LoginHistorico.Repositories;
+using ColinhoDaCa.Domain.RefreshTokens.Entities;
+using ColinhoDaCa.Domain.RefreshTokens.Repositories;
 using ColinhoDaCa.Domain.Usuarios.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -13,18 +18,27 @@ public class LoginService : ILoginService
     private readonly IClienteRepository _clienteRepository;
     private readonly IPasswordService _passwordService;
     private readonly IJwtService _jwtService;
+    private readonly ILoginHistoricoRepository _loginHistoricoRepository;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     public LoginService(ILogger<LoginService> logger,
         IUsuarioRepository usuarioRepository,
         IClienteRepository clienteRepository,
         IPasswordService passwordService,
-        IJwtService jwtService)
+        IJwtService jwtService,
+        ILoginHistoricoRepository loginHistoricoRepository,
+        IRefreshTokenRepository refreshTokenRepository,
+        IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _usuarioRepository = usuarioRepository;
         _clienteRepository = clienteRepository;
         _passwordService = passwordService;
         _jwtService = jwtService;
+        _loginHistoricoRepository = loginHistoricoRepository;
+        _refreshTokenRepository = refreshTokenRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<LoginResponse> Handle(LoginCommand command)
@@ -62,12 +76,44 @@ public class LoginService : ILoginService
                 }).ToList()
             };
 
-            var token = _jwtService.GenerateToken(usuarioResponse);
+            var accessToken = _jwtService.GenerateAccessToken(usuarioResponse);
+            var refreshToken = _jwtService.GenerateRefreshToken();
+
+            // Revogar tokens anteriores do usuário
+            await _refreshTokenRepository.RevokeAllUserTokensAsync(usuario.Id);
+
+            // Criar novo refresh token
+            var refreshTokenEntity = new RefreshTokenDb
+            {
+                UsuarioId = usuario.Id,
+                Token = refreshToken,
+                ExpiresAt = DateTime.UtcNow.AddDays(7), // 7 dias
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _refreshTokenRepository.InsertAsync(refreshTokenEntity);
+
+            // Gravar histórico de login
+            var loginHistorico = new LoginHistoricoDb
+            {
+                UsuarioId = usuario.Id,
+                Email = command.Email,
+                UserAgent = command.DeviceInfo?.UserAgent,
+                Platform = command.DeviceInfo?.Platform,
+                Language = command.DeviceInfo?.Language,
+                ScreenResolution = command.DeviceInfo?.ScreenResolution,
+                Timezone = command.DeviceInfo?.Timezone,
+                ClientIP = command.DeviceInfo?.ClientIP,
+                DataLogin = DateTime.UtcNow
+            };
+
+            await _loginHistoricoRepository.InsertAsync(loginHistorico);
+            await _unitOfWork.CommitAsync();
 
             return new LoginResponse
             {
-                Token = token,
-                //Usuario = usuarioResponse
+                AccessToken = accessToken,
+                RefreshToken = refreshToken
             };
         }
         catch (Exception ex)

@@ -31,6 +31,7 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
             var queryResult =
                 from r in _context.Reservas
                 join c in _context.Clientes on r.ClienteId equals c.Id
+                where query.ClienteId == null || r.ClienteId == query.ClienteId
                 select new
                 {
                     r.Id,
