@@ -48,12 +48,12 @@ public class PetConfiguration : IEntityTypeConfiguration<PetDb>
 
         builder.HasOne<ClienteDb>()
             .WithMany()
-            .HasForeignKey(p => p.ClienteId)
+            .HasForeignKey("ClienteId")
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<RacaDb>()
             .WithMany()
-            .HasForeignKey(p => p.RacaId)
+            .HasForeignKey("RacaId")
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

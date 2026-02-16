@@ -28,16 +28,11 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<UsuarioDb>
 
         builder.HasOne<ColinhoDaCa.Domain.Clientes.Entities.ClienteDb>()
             .WithMany()
-            .HasForeignKey(u => u.ClienteId)
+            .HasForeignKey("ClienteId")
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(u => u.ClienteId)
             .IsUnique();
-
-        builder.HasMany(u => u.UsuarioPerfis)
-            .WithOne()
-            .HasForeignKey(up => up.UsuarioId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(u => u.DataInclusao)
             .IsRequired()

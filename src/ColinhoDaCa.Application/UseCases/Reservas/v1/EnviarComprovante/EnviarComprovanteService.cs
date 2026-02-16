@@ -67,22 +67,6 @@ public class EnviarComprovanteService : IEnviarComprovanteService
             var cliente = await _clienteRepository.GetAsync(c => c.Id == reserva.ClienteId);
             if (cliente != null)
             {
-                var pets = new List<(string Nome, string Raca)>();
-                foreach (var reservaPet in reserva.ReservaPets)
-                {
-                    var pet = await _petRepository.GetAsync(p => p.Id == reservaPet.PetId);
-                    if (pet != null)
-                    {
-                        var racaNome = "Sem raça";
-                        if (pet.RacaId.HasValue)
-                        {
-                            var raca = await _racaRepository.GetByIdAsync(pet.RacaId.Value);
-                            if (raca != null) racaNome = raca.Nome;
-                        }
-                        pets.Add((pet.Nome, racaNome));
-                    }
-                }
-
                 var assunto = $"Comprovante Recebido #{reserva.Id.ToString().PadLeft(6, '0')} - Colinho da Cá";
                 var corpo = EmailTemplateService.GerarEmailComprovanteRecebido(
                     cliente.Nome,
@@ -95,7 +79,7 @@ public class EnviarComprovanteService : IEnviarComprovanteService
                     reserva.ValorDesconto,
                     reserva.ValorFinal,
                     command.ObservacoesPagamento,
-                    pets);
+                    new List<(string Nome, string Raca)>());
                 var emailDestino = _configuration["Email:EmailDestino"];
                 await _emailService.EnviarEmailAsync(emailDestino, assunto, corpo);
             }

@@ -4,58 +4,63 @@ namespace ColinhoDaCa.Domain.Reservas.Entities;
 
 public class ReservaDb
 {
-    public long Id { get; set; }
-    public long ClienteId { get; set; }
-    public DateTime DataInicial { get; set; }
-    public DateTime DataFinal { get; set; }
-    public int QuantidadeDiarias { get; set; }
-    public int QuantidadePets { get; set; }
-    public decimal ValorTotal { get; set; }
-    public decimal ValorDesconto { get; set; }
-    public decimal ValorFinal { get; set; }
-    public string Observacoes { get; set; }
-    public ReservaStatus Status { get; set; }
-    public long? CupomId { get; set; }
-    public string? ComprovantePagamento { get; set; }
-    public DateTime? DataPagamento { get; set; }
-    public string? ObservacoesPagamento { get; set; }
-    public DateTime DataInclusao { get; set; }
-    public DateTime DataAlteracao { get; set; }
-    public List<ReservaPetDb> ReservaPets { get; set; }
-    public List<ReservaStatusHistoricoDb> StatusHistorico { get; set; }
+    private List<ReservaStatusHistoricoDb> _statusHistorico;
 
-    public ReservaDb()
+    public long Id { get; protected set; }
+    public long ClienteId { get; protected set; }
+    public DateTime DataInicial { get; protected set; }
+    public DateTime DataFinal { get; protected set; }
+    public int QuantidadeDiarias { get; protected set; }
+    public int QuantidadePets { get; protected set; }
+    public decimal ValorTotal { get; protected set; }
+    public decimal ValorDesconto { get; protected set; }
+    public decimal ValorFinal { get; protected set; }
+    public string Observacoes { get; protected set; }
+    public ReservaStatus Status { get; protected set; }
+    public long? CupomId { get; protected set; }
+    public string? ComprovantePagamento { get; protected set; }
+    public DateTime? DataPagamento { get; protected set; }
+    public string? ObservacoesPagamento { get; protected set; }
+    public DateTime DataInclusao { get; protected set; }
+    public DateTime DataAlteracao { get; protected set; }
+    
+    public IReadOnlyList<ReservaStatusHistoricoDb> StatusHistorico => _statusHistorico;
+
+    protected ReservaDb()
     {
-        ReservaPets = new List<ReservaPetDb>();
-        StatusHistorico = new List<ReservaStatusHistoricoDb>();
+        Id = default!;
+        ClienteId = default!;
+        DataInicial = default!;
+        DataFinal = default!;
+        Observacoes = default!;
+        
+        _statusHistorico = new();
+    }
+
+    private ReservaDb(long clienteId, DateTime dataInicial, DateTime dataFinal, int quantidadeDiarias, int quantidadePets, decimal valorTotal, decimal valorDesconto, decimal valorFinal, long? cupomId, string obs)
+    {
+        var now = DateTime.Now;
+        
+        ClienteId = clienteId;
+        DataInicial = dataInicial;
+        DataFinal = dataFinal;
+        QuantidadeDiarias = quantidadeDiarias;
+        QuantidadePets = quantidadePets;
+        ValorTotal = valorTotal;
+        ValorDesconto = valorDesconto;
+        ValorFinal = valorFinal;
+        CupomId = cupomId;
+        Observacoes = obs ?? throw new ArgumentNullException(nameof(obs));
+        Status = ReservaStatus.ReservaCriada;
+        DataInclusao = now;
+        DataAlteracao = now;
+        
+        _statusHistorico = new();
     }
 
     public static ReservaDb Create(long clienteId, DateTime dataInicial, DateTime dataFinal, int quantidadeDiarias, int quantidadePets, decimal valorTotal, decimal valorDesconto, decimal valorFinal, long? cupomId, string obs, List<long> petIds, long usuarioId)
     {
-        var now = DateTime.Now;
-
-        var reserva = new ReservaDb
-        {
-            ClienteId = clienteId,
-            DataInicial = dataInicial,
-            DataFinal = dataFinal,
-            QuantidadeDiarias = quantidadeDiarias,
-            QuantidadePets = quantidadePets,
-            ValorTotal = valorTotal,
-            ValorDesconto = valorDesconto,
-            ValorFinal = valorFinal,
-            CupomId = cupomId,
-            Observacoes = obs,
-            Status = ReservaStatus.ReservaCriada,
-            DataInclusao = now,
-            DataAlteracao = now
-        };
-        
-        foreach (var petId in petIds)
-        {
-            reserva.ReservaPets.Add(new ReservaPetDb { PetId = petId });
-        }
-        
+        var reserva = new ReservaDb(clienteId, dataInicial, dataFinal, quantidadeDiarias, quantidadePets, valorTotal, valorDesconto, valorFinal, cupomId, obs);
         return reserva;
     }
 
@@ -72,27 +77,20 @@ public class ReservaDb
         CupomId = cupomId;
         Observacoes = obs;
         DataAlteracao = DateTime.Now;
-        
-        ReservaPets.Clear();
-
-        foreach (var petId in petIds)
-        {
-            ReservaPets.Add(new ReservaPetDb { PetId = petId, ReservaId = Id });
-        }
     }
 
     public void ConfirmarReserva(long usuarioId)
     {
         Status = ReservaStatus.ReservaConfirmada;
         DataAlteracao = DateTime.Now;
-        StatusHistorico.Add(ReservaStatusHistoricoDb.Create(Id, ReservaStatus.ReservaConfirmada, usuarioId));
+        _statusHistorico.Add(ReservaStatusHistoricoDb.Create(Id, ReservaStatus.ReservaConfirmada, usuarioId));
     }
 
     public void AlterarParaPagamentoPendente(long usuarioId)
     {
         Status = ReservaStatus.PagamentoPendente;
         DataAlteracao = DateTime.Now;
-        StatusHistorico.Add(ReservaStatusHistoricoDb.Create(Id, ReservaStatus.PagamentoPendente, usuarioId));
+        _statusHistorico.Add(ReservaStatusHistoricoDb.Create(Id, ReservaStatus.PagamentoPendente, usuarioId));
     }
 
     public void EnviarComprovantePagamento(string comprovante, string observacoes)
@@ -107,14 +105,19 @@ public class ReservaDb
     {
         Status = ReservaStatus.PagamentoAprovado;
         DataAlteracao = DateTime.Now;
-        StatusHistorico.Add(ReservaStatusHistoricoDb.Create(Id, ReservaStatus.PagamentoAprovado, usuarioId));
+        _statusHistorico.Add(ReservaStatusHistoricoDb.Create(Id, ReservaStatus.PagamentoAprovado, usuarioId));
     }
 
     public void FinalizarReserva(long usuarioId)
     {
         Status = ReservaStatus.ReservaFinalizada;
         DataAlteracao = DateTime.Now;
-        StatusHistorico.Add(ReservaStatusHistoricoDb.Create(Id, ReservaStatus.ReservaFinalizada, usuarioId));
+        _statusHistorico.Add(ReservaStatusHistoricoDb.Create(Id, ReservaStatus.ReservaFinalizada, usuarioId));
+    }
+
+    public void AdicionarStatusHistorico(ReservaStatusHistoricoDb statusHistorico)
+    {
+        _statusHistorico.Add(statusHistorico);
     }
 
     public void ConcederDesconto(decimal valorDesconto)
@@ -136,6 +139,6 @@ public class ReservaDb
     {
         Status = ReservaStatus.ReservaCancelada;
         DataAlteracao = DateTime.Now;
-        StatusHistorico.Add(ReservaStatusHistoricoDb.Create(Id, ReservaStatus.ReservaCancelada, usuarioId));
+        _statusHistorico.Add(ReservaStatusHistoricoDb.Create(Id, ReservaStatus.ReservaCancelada, usuarioId));
     }
 }

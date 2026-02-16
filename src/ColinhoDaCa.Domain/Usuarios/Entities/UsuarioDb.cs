@@ -2,36 +2,47 @@ namespace ColinhoDaCa.Domain.Usuarios.Entities;
 
 public class UsuarioDb
 {
-    public long Id { get; set; }
-    public string SenhaHash { get; set; }
-    public long ClienteId { get; set; }
-    public bool Ativo { get; set; }
-    public DateTime DataInclusao { get; set; }
-    public DateTime DataAlteracao { get; set; }
-    public List<UsuarioPerfilDb> UsuarioPerfis { get; set; }
+    private List<UsuarioPerfilDb> _usuarioPerfis;
 
-    public UsuarioDb()
+    public long Id { get; protected set; }
+    public string SenhaHash { get; protected set; }
+    public long ClienteId { get; protected set; }
+    public bool Ativo { get; protected set; }
+    public DateTime DataInclusao { get; protected set; }
+    public DateTime DataAlteracao { get; protected set; }
+    
+    public IReadOnlyList<UsuarioPerfilDb> UsuarioPerfis => _usuarioPerfis;
+
+    protected UsuarioDb()
     {
-        UsuarioPerfis = new List<UsuarioPerfilDb>();
+        Id = default!;
+        SenhaHash = default!;
+        ClienteId = default!;
+        
+        _usuarioPerfis = new();
+    }
+
+    private UsuarioDb(string senhaHash, long clienteId)
+    {
+        var now = DateTime.Now;
+        
+        SenhaHash = senhaHash ?? throw new ArgumentNullException(nameof(senhaHash));
+        ClienteId = clienteId;
+        Ativo = true;
+        DataInclusao = now;
+        DataAlteracao = now;
+        
+        _usuarioPerfis = new();
     }
 
     public static UsuarioDb Create(string senhaHash, long clienteId)
     {
-        var now = DateTime.Now;
-
-        return new UsuarioDb
-        {
-            SenhaHash = senhaHash,
-            ClienteId = clienteId,
-            Ativo = true,
-            DataInclusao = now,
-            DataAlteracao = now
-        };
+        return new UsuarioDb(senhaHash, clienteId);
     }
 
     public void AlterarSenha(string senhaHash)
     {
-        SenhaHash = senhaHash;
+        SenhaHash = senhaHash ?? throw new ArgumentNullException(nameof(senhaHash));
         DataAlteracao = DateTime.Now;
     }
 
@@ -45,5 +56,19 @@ public class UsuarioDb
     {
         Ativo = false;
         DataAlteracao = DateTime.Now;
+    }
+
+    public void AdicionarPerfil(UsuarioPerfilDb usuarioPerfil)
+    {
+        _usuarioPerfis.Add(usuarioPerfil);
+    }
+
+    public void RemoverPerfil(long perfilId)
+    {
+        var perfil = _usuarioPerfis.FirstOrDefault(up => up.PerfilId == perfilId);
+        if (perfil != null)
+        {
+            _usuarioPerfis.Remove(perfil);
+        }
     }
 }

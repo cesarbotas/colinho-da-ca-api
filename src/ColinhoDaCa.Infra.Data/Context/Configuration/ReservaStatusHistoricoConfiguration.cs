@@ -11,13 +11,15 @@ public class ReservaStatusHistoricoConfiguration : IEntityTypeConfiguration<Rese
     {
         builder.ToTable("ReservaStatusHistorico");
         builder.HasKey(h => h.Id);
-        builder.Property(h => h.ReservaId).IsRequired();
+        builder.Property(h => h.ReservaId)
+            .HasColumnName("ReservaId")
+            .IsRequired();
         builder.Property(h => h.Status).IsRequired().HasConversion<int>();
         builder.Property(h => h.UsuarioId).IsRequired();
         builder.Property(h => h.DataAlteracao).IsRequired().HasColumnType("timestamp without time zone");
 
         builder.HasOne<ReservaDb>()
-            .WithMany(r => r.StatusHistorico)
+            .WithMany()
             .HasForeignKey(h => h.ReservaId)
             .OnDelete(DeleteBehavior.Cascade);
 

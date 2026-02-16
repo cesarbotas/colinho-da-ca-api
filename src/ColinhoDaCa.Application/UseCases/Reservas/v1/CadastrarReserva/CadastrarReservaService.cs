@@ -58,28 +58,28 @@ public class CadastrarReservaService : ICadastrarReservaService
             var usuarioDb = await _usuarioRepository.GetAsync(u => u.ClienteId == command.ClienteId);
             if (usuarioDb != null)
             {
-                reserva.StatusHistorico.Add(ReservaStatusHistoricoDb.Create(reserva.Id, ReservaStatus.ReservaCriada, usuarioDb.Id));
+                var statusHistorico = ReservaStatusHistoricoDb.Create(reserva.Id, ReservaStatus.ReservaCriada, usuarioDb.Id);
+                reserva.AdicionarStatusHistorico(statusHistorico);
                 await _unitOfWork.CommitAsync();
             }
 
             var cliente = await _clienteRepository.GetAsync(c => c.Id == command.ClienteId);
             if (cliente != null)
             {
-                var pets = new List<(string Nome, string Raca)>();
-                foreach (var petId in command.PetIds)
-                {
-                    var pet = await _petRepository.GetAsync(p => p.Id == petId);
-                    if (pet != null)
-                    {
-                        var racaNome = "Sem raça";
-                        if (pet.RacaId.HasValue)
-                        {
-                            var raca = await _racaRepository.GetByIdAsync(pet.RacaId.Value);
-                            if (raca != null) racaNome = raca.Nome;
-                        }
-                        pets.Add((pet.Nome, racaNome));
-                    }
-                }
+            // Otimizar consultas - buscar todos os pets e raças de uma vez
+            var petsQuery = await _petRepository.GetAllAsync();
+            var petsReserva = petsQuery.Where(p => command.PetIds.Contains(p.Id)).ToList();
+            
+            var racaIds = petsReserva.Where(p => p.RacaId.HasValue).Select(p => p.RacaId.Value).Distinct().ToList();
+            var racasQuery = await _racaRepository.GetAllAsync();
+            var racas = racasQuery.Where(r => racaIds.Contains(r.Id)).ToDictionary(r => r.Id, r => r.Nome);
+
+                var pets = petsReserva.Select(pet => (
+                    Nome: pet.Nome,
+                    Raca: pet.RacaId.HasValue && racas.ContainsKey(pet.RacaId.Value) 
+                        ? racas[pet.RacaId.Value] 
+                        : "Sem raça"
+                )).ToList();
 
                 var assunto = $"Nova Reserva Criada #{reserva.Id.ToString().PadLeft(6, '0')} - Colinho da Cá";
                 var corpo = EmailTemplateService.GerarEmailNovaReserva(

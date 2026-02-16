@@ -18,9 +18,14 @@ public class UsuarioPerfilConfiguration : IEntityTypeConfiguration<UsuarioPerfil
         builder.Property(up => up.PerfilId)
             .IsRequired();
 
+        builder.HasOne<UsuarioDb>()
+            .WithMany()
+            .HasForeignKey("UsuarioId")
+            .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasOne<ColinhoDaCa.Domain.Perfis.Entities.PerfilDb>()
             .WithMany()
-            .HasForeignKey(up => up.PerfilId)
+            .HasForeignKey("PerfilId")
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

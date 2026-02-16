@@ -5,5 +5,5 @@ namespace ColinhoDaCa.Domain.Reservas.Repositories;
 
 public interface IReservaRepository : IRepository<ReservaDb>
 {
-
+    Task<ReservaDb?> GetWithRelationsAsync(long id);
 }

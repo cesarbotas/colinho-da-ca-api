@@ -58,8 +58,8 @@ public class RegistrarService : IRegistrarService
             await _usuarioRepository.InsertAsync(usuario);
             await _unitOfWork.CommitAsync();
 
-            var perfilCliente = new UsuarioPerfilDb { UsuarioId = usuario.Id, PerfilId = 2 };
-            usuario.UsuarioPerfis.Add(perfilCliente);
+            var perfilCliente = UsuarioPerfilDb.Create(usuario.Id, 2);
+            usuario.AdicionarPerfil(perfilCliente);
             _usuarioRepository.Update(usuario);
 
             await _unitOfWork.CommitAsync();

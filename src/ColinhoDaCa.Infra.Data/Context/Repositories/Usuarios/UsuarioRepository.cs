@@ -24,7 +24,6 @@ public class UsuarioRepository : Repository<UsuarioDb>, IUsuarioRepository
     public async Task<UsuarioDb> GetByClienteIdWithPerfisAsync(long clienteId)
     {
         return await _context.Usuarios
-            .Include(u => u.UsuarioPerfis)
             .FirstOrDefaultAsync(u => u.ClienteId == clienteId);
     }
 

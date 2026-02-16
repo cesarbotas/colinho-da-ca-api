@@ -4,20 +4,29 @@ namespace ColinhoDaCa.Domain.Reservas.Entities;
 
 public class ReservaStatusHistoricoDb
 {
-    public long Id { get; set; }
-    public long ReservaId { get; set; }
-    public ReservaStatus Status { get; set; }
-    public long UsuarioId { get; set; }
-    public DateTime DataAlteracao { get; set; }
+    public long Id { get; protected set; }
+    public long ReservaId { get; protected set; }
+    public ReservaStatus Status { get; protected set; }
+    public long UsuarioId { get; protected set; }
+    public DateTime DataAlteracao { get; protected set; }
+    
+    protected ReservaStatusHistoricoDb()
+    {
+        Id = default!;
+        ReservaId = default!;
+        UsuarioId = default!;
+    }
+    
+    private ReservaStatusHistoricoDb(long reservaId, ReservaStatus status, long usuarioId)
+    {
+        ReservaId = reservaId;
+        Status = status;
+        UsuarioId = usuarioId;
+        DataAlteracao = DateTime.Now;
+    }
 
     public static ReservaStatusHistoricoDb Create(long reservaId, ReservaStatus status, long usuarioId)
     {
-        return new ReservaStatusHistoricoDb
-        {
-            ReservaId = reservaId,
-            Status = status,
-            UsuarioId = usuarioId,
-            DataAlteracao = DateTime.Now
-        };
+        return new ReservaStatusHistoricoDb(reservaId, status, usuarioId);
     }
 }
