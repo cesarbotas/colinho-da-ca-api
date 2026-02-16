@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: colinho_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/scripts:/docker-entrypoint-initdb.d
+
+  api:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__ColinhoDaCaRender=Host=postgres;Database=colinho_test;Username=postgres;Password=postgres123
+      - Jwt__Secret=super-secret-key-for-jwt-token-generation-minimum-256-bits
+      - Email__SmtpHost=smtp-relay.brevo.com
+      - Email__SmtpPort=587
+      - Email__SmtpUser=test@test.com
+      - Email__SmtpPassword=password
+      - Email__EmailDestino=admin@test.com
+      - Email__RemetenteNome=Colinho da Ca
+      - Email__RemetenteEmail=noreply@test.com
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:

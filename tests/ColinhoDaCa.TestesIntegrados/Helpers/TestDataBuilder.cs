@@ -1,59 +1,73 @@
 using Bogus;
-using Bogus.Extensions.Brazil;
+using ColinhoDaCa.Application.UseCases.Auth.v1.Login;
+using ColinhoDaCa.Application.UseCases.Clientes.v1.AlterarCliente;
+using ColinhoDaCa.Application.UseCases.Clientes.v1.CadastrarCliente;
+using ColinhoDaCa.Application.UseCases.Pets.v1.CadastrarPet;
+using ColinhoDaCa.Application.UseCases.Reservas.v1.CadastrarReserva;
 
 namespace ColinhoDaCa.TestesIntegrados.Helpers;
 
 public static class TestDataBuilder
 {
-    public static Faker<RegistrarCommand> RegistrarCommandFaker => new Faker<RegistrarCommand>("pt_BR")
-        .RuleFor(r => r.Nome, f => f.Name.FullName())
-        .RuleFor(r => r.Email, f => f.Internet.Email())
-        .RuleFor(r => r.Celular, f => f.Phone.PhoneNumber("11#########"))
-        .RuleFor(r => r.Cpf, f => f.Person.Cpf(false))
-        .RuleFor(r => r.Senha, f => "Senha@123");
+    private static readonly Faker _faker = new("pt_BR");
 
-    public static Faker<CadastrarClienteCommand> ClienteCommandFaker => new Faker<CadastrarClienteCommand>("pt_BR")
-        .RuleFor(c => c.Nome, f => f.Name.FullName())
-        .RuleFor(c => c.Email, f => f.Internet.Email())
-        .RuleFor(c => c.Celular, f => f.Phone.PhoneNumber("11#########"))
-        .RuleFor(c => c.Cpf, f => f.Person.Cpf(false))
-        .RuleFor(c => c.Observacoes, f => f.Lorem.Sentence());
+    public static LoginCommand CreateLoginCommand()
+    {
+        return new LoginCommand
+        {
+            Email = "admin@test.com",
+            Senha = "Admin123!"
+        };
+    }
 
-    public static Faker<CadastrarPetCommand> PetCommandFaker => new Faker<CadastrarPetCommand>("pt_BR")
-        .RuleFor(p => p.Nome, f => f.Name.FirstName())
-        .RuleFor(p => p.RacaId, f => f.Random.Long(1, 36))
-        .RuleFor(p => p.Idade, f => f.Random.Int(1, 15))
-        .RuleFor(p => p.Peso, f => f.Random.Double(1, 50))
-        .RuleFor(p => p.Porte, f => f.PickRandom("P", "M", "G"))
-        .RuleFor(p => p.Observacoes, f => f.Lorem.Sentence())
-        .RuleFor(p => p.ClienteId, 1);
-}
+    public static CadastrarClienteCommand CreateClienteCommand()
+    {
+        return new CadastrarClienteCommand
+        {
+            Nome = _faker.Person.FullName,
+            Email = _faker.Internet.Email(),
+            Celular = _faker.Phone.PhoneNumber("11#########"),
+            Cpf = _faker.Random.Replace("###########"),
+            Observacoes = _faker.Lorem.Sentence()
+        };
+    }
 
-public class RegistrarCommand
-{
-    public string Nome { get; set; }
-    public string Email { get; set; }
-    public string Celular { get; set; }
-    public string Cpf { get; set; }
-    public string Senha { get; set; }
-}
+    public static AlterarClienteCommand CreateAlterarClienteCommand()
+    {
+        return new AlterarClienteCommand
+        {
+            Nome = _faker.Person.FullName,
+            Email = _faker.Internet.Email(),
+            Celular = _faker.Phone.PhoneNumber("11#########"),
+            Cpf = _faker.Random.Replace("###########"),
+            Observacoes = _faker.Lorem.Sentence()
+        };
+    }
 
-public class CadastrarClienteCommand
-{
-    public string Nome { get; set; }
-    public string Email { get; set; }
-    public string Celular { get; set; }
-    public string Cpf { get; set; }
-    public string Observacoes { get; set; }
-}
+    public static CadastrarPetCommand CreatePetCommand(long clienteId)
+    {
+        return new CadastrarPetCommand
+        {
+            Nome = _faker.Name.FirstName(),
+            RacaId = 1,
+            Idade = _faker.Random.Int(1, 15),
+            Peso = _faker.Random.Double(1, 50),
+            Porte = _faker.PickRandom("Pequeno", "Médio", "Grande"),
+            Observacoes = _faker.Lorem.Sentence(),
+            ClienteId = clienteId
+        };
+    }
 
-public class CadastrarPetCommand
-{
-    public string Nome { get; set; }
-    public long? RacaId { get; set; }
-    public int Idade { get; set; }
-    public double Peso { get; set; }
-    public string Porte { get; set; }
-    public string Observacoes { get; set; }
-    public long ClienteId { get; set; }
+    public static CadastrarReservaCommand CreateReservaCommand(long clienteId, long[] petIds)
+    {
+        var dataInicial = _faker.Date.Future(1);
+        return new CadastrarReservaCommand
+        {
+            ClienteId = clienteId,
+            DataInicial = dataInicial,
+            DataFinal = dataInicial.AddDays(_faker.Random.Int(1, 7)),
+            Observacoes = _faker.Lorem.Sentence(),
+            PetIds = petIds.ToList()
+        };
+    }
 }
