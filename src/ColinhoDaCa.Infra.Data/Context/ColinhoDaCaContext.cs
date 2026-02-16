@@ -3,6 +3,7 @@ using ColinhoDaCa.Domain.Cupons.Entities;
 using ColinhoDaCa.Domain.LoginHistorico.Entities;
 using ColinhoDaCa.Domain.Pets.Entities;
 using ColinhoDaCa.Domain.Racas.Entities;
+using ColinhoDaCa.Domain.RefreshTokens.Entities;
 using ColinhoDaCa.Domain.Reservas.Entities;
 using ColinhoDaCa.Domain.Usuarios.Entities;
 using ColinhoDaCa.Domain.Perfis.Entities;
@@ -30,6 +31,7 @@ public class ColinhoDaCaContext : DbContext
     public DbSet<PerfilDb> Perfis { get; set; }
     public DbSet<UsuarioPerfilDb> UsuarioPerfis { get; set; }
     public DbSet<LoginHistoricoDb> LoginHistorico { get; set; }
+    public DbSet<RefreshTokenDb> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

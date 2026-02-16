@@ -4,6 +4,8 @@ using ColinhoDaCa.Domain._Shared.Exceptions;
 using ColinhoDaCa.Domain.Clientes.Repositories;
 using ColinhoDaCa.Domain.LoginHistorico.Entities;
 using ColinhoDaCa.Domain.LoginHistorico.Repositories;
+using ColinhoDaCa.Domain.RefreshTokens.Entities;
+using ColinhoDaCa.Domain.RefreshTokens.Repositories;
 using ColinhoDaCa.Domain.Usuarios.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -17,6 +19,7 @@ public class LoginService : ILoginService
     private readonly IPasswordService _passwordService;
     private readonly IJwtService _jwtService;
     private readonly ILoginHistoricoRepository _loginHistoricoRepository;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public LoginService(ILogger<LoginService> logger,
@@ -25,6 +28,7 @@ public class LoginService : ILoginService
         IPasswordService passwordService,
         IJwtService jwtService,
         ILoginHistoricoRepository loginHistoricoRepository,
+        IRefreshTokenRepository refreshTokenRepository,
         IUnitOfWork unitOfWork)
     {
         _logger = logger;
@@ -33,6 +37,7 @@ public class LoginService : ILoginService
         _passwordService = passwordService;
         _jwtService = jwtService;
         _loginHistoricoRepository = loginHistoricoRepository;
+        _refreshTokenRepository = refreshTokenRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -71,7 +76,22 @@ public class LoginService : ILoginService
                 }).ToList()
             };
 
-            var token = _jwtService.GenerateToken(usuarioResponse);
+            var accessToken = _jwtService.GenerateAccessToken(usuarioResponse);
+            var refreshToken = _jwtService.GenerateRefreshToken();
+
+            // Revogar tokens anteriores do usuário
+            await _refreshTokenRepository.RevokeAllUserTokensAsync(usuario.Id);
+
+            // Criar novo refresh token
+            var refreshTokenEntity = new RefreshTokenDb
+            {
+                UsuarioId = usuario.Id,
+                Token = refreshToken,
+                ExpiresAt = DateTime.UtcNow.AddDays(7), // 7 dias
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _refreshTokenRepository.InsertAsync(refreshTokenEntity);
 
             // Gravar histórico de login
             var loginHistorico = new LoginHistoricoDb
@@ -92,7 +112,8 @@ public class LoginService : ILoginService
 
             return new LoginResponse
             {
-                Token = token
+                AccessToken = accessToken,
+                RefreshToken = refreshToken
             };
         }
         catch (Exception ex)

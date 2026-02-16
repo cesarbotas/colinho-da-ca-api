@@ -24,6 +24,7 @@ using ColinhoDaCa.Application.UseCases.Reservas.v1.ConcederDesconto;
 using ColinhoDaCa.Application.UseCases.Reservas.v1.CancelarReserva;
 using ColinhoDaCa.Application.UseCases.Sobre.v1.EnviarEmail;
 using ColinhoDaCa.Application.UseCases.Auth.v1.Login;
+using ColinhoDaCa.Application.UseCases.Auth.v1.RefreshToken;
 using ColinhoDaCa.Application.UseCases.Auth.v1.Registrar;
 using ColinhoDaCa.Application.Services.Email;
 using ColinhoDaCa.Application.Services.Auth;
@@ -61,6 +62,7 @@ internal static class UseCaseExtensions
             .AddScoped<IInativarCupomService, InativarCupomService>()
             .AddScoped<IEnviarEmailService, EnviarEmailService>()
             .AddScoped<ILoginService, LoginService>()
+            .AddScoped<IRefreshTokenService, RefreshTokenService>()
             .AddScoped<IRegistrarService, RegistrarService>()
             .AddScoped<IEmailService, EmailService>()
             .AddScoped<IPasswordService, PasswordService>()
