@@ -1,6 +1,6 @@
 namespace ColinhoDaCa.Domain.Perfis.Entities;
 
-public class PerfilDb
+public class Perfil
 {
     public long Id { get; set; }
     public string Nome { get; set; }

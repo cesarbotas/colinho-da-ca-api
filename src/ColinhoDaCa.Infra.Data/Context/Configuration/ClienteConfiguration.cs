@@ -4,16 +4,17 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ColinhoDaCa.Infra.Data.Context.Configuration;
 
-public class ClienteConfiguration : IEntityTypeConfiguration<ClienteDb>
+public class ClienteConfiguration : IEntityTypeConfiguration<Cliente>
 {
-    public void Configure(EntityTypeBuilder<ClienteDb> builder)
+    public void Configure(EntityTypeBuilder<Cliente> builder)
     {
         builder.ToTable("Clientes", "public");
 
         builder.HasKey(c => c.Id);
 
         builder.Property(c => c.Id)
-            .UseIdentityAlwaysColumn();
+            .HasColumnName("Id")
+            .ValueGeneratedOnAdd();
 
         builder.Property(c => c.Nome)
             .IsRequired()

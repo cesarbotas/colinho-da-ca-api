@@ -50,15 +50,15 @@ public class CadastrarReservaService : ICadastrarReservaService
     {
         try
         {
-            var reserva = ReservaDb.Create(command.ClienteId, command.DataInicial, command.DataFinal, command.QuantidadeDiarias, command.QuantidadePets, command.ValorTotal, command.ValorDesconto, command.ValorFinal, command.CupomId, command.Observacoes, command.PetIds, command.UsuarioId);
+            var reserva = Reserva.Create(command.ClienteId, command.DataInicial, command.DataFinal, command.QuantidadeDiarias, command.QuantidadePets, command.ValorTotal, command.ValorDesconto, command.ValorFinal, command.CupomId, command.Observacoes, command.PetIds, command.UsuarioId);
 
             await _reservaRepository.InsertAsync(reserva);
             await _unitOfWork.CommitAsync();
 
-            var usuarioDb = await _usuarioRepository.GetAsync(u => u.ClienteId == command.ClienteId);
+            var usuarioDb = await _usuarioRepository.GetAsync(u => u.ClienteId == command.ClienteId, includeDetails: false);
             if (usuarioDb != null)
             {
-                var statusHistorico = ReservaStatusHistoricoDb.Create(reserva.Id, ReservaStatus.ReservaCriada, usuarioDb.Id);
+                var statusHistorico = ReservaStatusHistorico.Create(reserva.Id, ReservaStatus.ReservaCriada, usuarioDb.Id);
                 reserva.AdicionarStatusHistorico(statusHistorico);
                 await _unitOfWork.CommitAsync();
             }

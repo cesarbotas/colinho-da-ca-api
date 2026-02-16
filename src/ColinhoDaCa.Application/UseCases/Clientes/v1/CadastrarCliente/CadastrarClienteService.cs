@@ -37,7 +37,7 @@ public class CadastrarClienteService : ICadastrarClienteService
                 throw new ValidationException("CPF já cadastrado");
             }
 
-            var cliente = ClienteDb.Create(command.Nome, command.Email, command.Celular, command.Cpf, command.Observacoes);
+            var cliente = Cliente.Create(command.Nome, command.Email, command.Celular, command.Cpf, command.Observacoes);
 
             await _clienteRepository.InsertAsync(cliente);
 

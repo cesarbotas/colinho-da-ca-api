@@ -1,6 +1,6 @@
 namespace ColinhoDaCa.Domain.Pets.Entities;
 
-public class PetDb
+public class Pet
 {
     public long Id { get; protected set; }
     public string Nome { get; protected set; }
@@ -13,7 +13,7 @@ public class PetDb
     public DateTime DataInclusao { get; protected set; }
     public DateTime DataAlteracao { get; protected set; }
     
-    protected PetDb()
+    protected Pet()
     {
         Id = default!;
         Nome = default!;
@@ -22,7 +22,7 @@ public class PetDb
         ClienteId = default!;
     }
     
-    private PetDb(string nome, long? racaId, int idade, double peso, string porte, string obs, long clienteId)
+    private Pet(string nome, long? racaId, int idade, double peso, string porte, string obs, long clienteId)
     {
         var now = DateTime.Now;
         
@@ -37,9 +37,9 @@ public class PetDb
         DataAlteracao = now;
     }
 
-    public static PetDb Create(string nome, long? racaId, int idade, double peso, string porte, string obs, long clienteId)
+    public static Pet Create(string nome, long? racaId, int idade, double peso, string porte, string obs, long clienteId)
     {
-        return new PetDb(nome, racaId, idade, peso, porte, obs, clienteId);
+        return new Pet(nome, racaId, idade, peso, porte, obs, clienteId);
     }
 
     public void Alterar(string nome, long? racaId, int idade, double peso, string porte, string obs, long clienteId)

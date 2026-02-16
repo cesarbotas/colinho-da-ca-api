@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ColinhoDaCa.Infra.Data.Context.Repositories.Reservas;
 
-public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IReservaReadRepository
+public class ReservaRepository : Repository<Reserva>, IReservaRepository, IReservaReadRepository
 {
     private readonly ColinhoDaCaContext _context;
     private readonly ILogger<ReservaRepository> _logger;
@@ -22,13 +22,13 @@ public class ReservaRepository : Repository<ReservaDb>, IReservaRepository, IRes
         _logger = logger;
     }
 
-    public IQueryable<ReservaDb> AsQueryable()
+    public IQueryable<Reserva> AsQueryable()
     {
         return _context.Reservas
             .AsQueryable();
     }
 
-    public async Task<ReservaDb?> GetWithRelationsAsync(long id)
+    public async Task<Reserva?> GetWithRelationsAsync(long id)
     {
         return await _context.Reservas
             .FirstOrDefaultAsync(r => r.Id == id);

@@ -37,6 +37,8 @@ internal static class PersistenceExtensions
                     errorCodesToAdd: null                       // Lista opcional de códigos de erro adicionais para considerar no retry
                 );
             })
+            .EnableSensitiveDataLogging()
+            .LogTo(Console.WriteLine)
         );
 
         return services;

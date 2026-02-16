@@ -7,6 +7,6 @@ namespace ColinhoDaCa.Domain.Pets.Repositories;
 
 public interface IPetReadRepository
 {
-    IQueryable<PetDb> AsQueryable();
+    IQueryable<Pet> AsQueryable();
     Task<ResultadoPaginadoDto<PetsDto>> PesquisarPetsDto(ListarPetQuery query);
 }

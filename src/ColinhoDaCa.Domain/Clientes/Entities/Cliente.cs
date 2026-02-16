@@ -1,6 +1,6 @@
 ﻿namespace ColinhoDaCa.Domain.Clientes.Entities;
 
-public class ClienteDb
+public class Cliente
 {
     public long Id { get; protected set; }
     public string Nome { get; protected set; }
@@ -11,7 +11,7 @@ public class ClienteDb
     public DateTime DataInclusao { get; protected set; }
     public DateTime DataAlteracao { get; protected set; }
 
-    protected ClienteDb()
+    protected Cliente()
     {
         Id = default!;
         Nome = default!;
@@ -21,7 +21,7 @@ public class ClienteDb
         Observacoes = default!;
     }
     
-    private ClienteDb(string nome, string email, string celular, string cpf, string obs)
+    private Cliente(string nome, string email, string celular, string cpf, string obs)
     {
         var now = DateTime.Now;
 
@@ -34,9 +34,9 @@ public class ClienteDb
         DataAlteracao = now;
     }
 
-    public static ClienteDb Create(string nome, string email, string celular, string cpf, string obs)
+    public static Cliente Create(string nome, string email, string celular, string cpf, string obs)
     {
-        return new ClienteDb(nome, email, celular, cpf, obs);
+        return new Cliente(nome, email, celular, cpf, obs);
     }
 
     public void Alterar(string nome, string email, string celular, string cpf, string obs)

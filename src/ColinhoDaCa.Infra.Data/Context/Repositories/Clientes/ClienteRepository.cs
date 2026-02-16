@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ColinhoDaCa.Infra.Data.Context.Repositories.Clientes;
 
-public class ClienteRepository : Repository<ClienteDb>, IClienteRepository, IClienteReadRepository
+public class ClienteRepository : Repository<Cliente>, IClienteRepository, IClienteReadRepository
 {
     private readonly ColinhoDaCaContext _context;
 
@@ -18,19 +18,19 @@ public class ClienteRepository : Repository<ClienteDb>, IClienteRepository, ICli
         _context = context;
     }
 
-    public IQueryable<ClienteDb> AsQueryable()
+    public IQueryable<Cliente> AsQueryable()
     {
         return _context.Clientes
             .AsQueryable();
     }
 
-    public async Task<ClienteDb> GetByCpfAsync(string cpf)
+    public async Task<Cliente> GetByCpfAsync(string cpf)
     {
         return await _context.Clientes
             .FirstOrDefaultAsync(c => c.Cpf == cpf);
     }
 
-    public async Task<ClienteDb> GetByEmailAsync(string email)
+    public async Task<Cliente> GetByEmailAsync(string email)
     {
         return await _context.Clientes
             .FirstOrDefaultAsync(c => c.Email == email);

@@ -1,24 +1,24 @@
 namespace ColinhoDaCa.Domain.Usuarios.Entities;
 
-public class UsuarioPerfilDb
+public class UsuarioPerfil
 {
     public long UsuarioId { get; protected set; }
     public long PerfilId { get; protected set; }
     
-    protected UsuarioPerfilDb()
+    protected UsuarioPerfil()
     {
         UsuarioId = default!;
         PerfilId = default!;
     }
     
-    private UsuarioPerfilDb(long usuarioId, long perfilId)
+    private UsuarioPerfil(long usuarioId, long perfilId)
     {
         UsuarioId = usuarioId;
         PerfilId = perfilId;
     }
     
-    public static UsuarioPerfilDb Create(long usuarioId, long perfilId)
+    public static UsuarioPerfil Create(long usuarioId, long perfilId)
     {
-        return new UsuarioPerfilDb(usuarioId, perfilId);
+        return new UsuarioPerfil(usuarioId, perfilId);
     }
 }

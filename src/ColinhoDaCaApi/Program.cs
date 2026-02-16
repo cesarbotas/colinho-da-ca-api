@@ -13,7 +13,9 @@ try
     builder.Host.UseSerilog((context, configuration) =>
         configuration
             .ReadFrom.Configuration(context.Configuration)
-            .WriteTo.Console(new Serilog.Formatting.Json.JsonFormatter())
+            .WriteTo.Console(
+                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}",
+                theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code)
             .WriteTo.File(
                 new Serilog.Formatting.Json.JsonFormatter(),
                 "logs/colinho-api-.log",

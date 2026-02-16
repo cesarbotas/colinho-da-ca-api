@@ -1,19 +1,23 @@
+using ColinhoDaCa.Domain.Clientes.Entities;
+
 namespace ColinhoDaCa.Domain.Usuarios.Entities;
 
-public class UsuarioDb
+public class Usuario
 {
-    private List<UsuarioPerfilDb> _usuarioPerfis;
+    private List<UsuarioPerfil> _usuarioPerfis;
 
     public long Id { get; protected set; }
     public string SenhaHash { get; protected set; }
     public long ClienteId { get; protected set; }
+    public Cliente Cliente { get; protected set; }
     public bool Ativo { get; protected set; }
     public DateTime DataInclusao { get; protected set; }
     public DateTime DataAlteracao { get; protected set; }
     
-    public IReadOnlyList<UsuarioPerfilDb> UsuarioPerfis => _usuarioPerfis;
+    public IReadOnlyList<UsuarioPerfil> UsuarioPerfis => _usuarioPerfis;
 
-    protected UsuarioDb()
+
+    protected Usuario()
     {
         Id = default!;
         SenhaHash = default!;
@@ -22,7 +26,7 @@ public class UsuarioDb
         _usuarioPerfis = new();
     }
 
-    private UsuarioDb(string senhaHash, long clienteId)
+    private Usuario(string senhaHash, long clienteId)
     {
         var now = DateTime.Now;
         
@@ -35,9 +39,9 @@ public class UsuarioDb
         _usuarioPerfis = new();
     }
 
-    public static UsuarioDb Create(string senhaHash, long clienteId)
+    public static Usuario Create(string senhaHash, long clienteId)
     {
-        return new UsuarioDb(senhaHash, clienteId);
+        return new Usuario(senhaHash, clienteId);
     }
 
     public void AlterarSenha(string senhaHash)
@@ -58,7 +62,7 @@ public class UsuarioDb
         DataAlteracao = DateTime.Now;
     }
 
-    public void AdicionarPerfil(UsuarioPerfilDb usuarioPerfil)
+    public void AdicionarPerfil(UsuarioPerfil usuarioPerfil)
     {
         _usuarioPerfis.Add(usuarioPerfil);
     }
