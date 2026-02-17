@@ -1,5 +1,6 @@
 using ColinhoDaCa.TestesIntegrados.Fixtures;
 using ColinhoDaCa.TestesIntegrados.Helpers;
+using ColinhoDaCa.TestesIntegrados.Models;
 using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
@@ -35,7 +36,7 @@ public class AuthTests : IClassFixture<IntegrationTestFactory>
         var registerCommand = TestDataBuilder.RegistrarCommandFaker.Generate();
         await _client.PostAsJsonAsync("/api/v1/auth/registrar", registerCommand);
 
-        var loginCommand = new { email = registerCommand.Email, senha = registerCommand.Senha };
+        var loginCommand = TestDataBuilder.CreateLoginCommand(registerCommand.Email, registerCommand.Senha);
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/v1/auth/login", loginCommand);
@@ -43,14 +44,16 @@ public class AuthTests : IClassFixture<IntegrationTestFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        result.Token.Should().NotBeNullOrEmpty();
+        result.Should().NotBeNull();
+        result.AccessToken.Should().NotBeNullOrEmpty();
+        result.RefreshToken.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
     public async Task Login_ComCredenciaisInvalidas_DeveRetornar400()
     {
         // Arrange
-        var loginCommand = new { email = "invalido@test.com", senha = "senhaerrada" };
+        var loginCommand = TestDataBuilder.CreateLoginCommand("invalido@test.com", "senhaerrada");
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/v1/auth/login", loginCommand);
@@ -58,9 +61,35 @@ public class AuthTests : IClassFixture<IntegrationTestFactory>
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-}
 
-public class LoginResponse
-{
-    public string Token { get; set; }
+    [Fact]
+    public async Task Registrar_ComCpfInvalido_DeveRetornar500()
+    {
+        // Arrange
+        var command = TestDataBuilder.RegistrarCommandFaker.Generate();
+        command.Cpf = "12345678901"; // CPF inválido
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/v1/auth/registrar", command);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+    }
+
+    [Fact]
+    public async Task Registrar_ComCpfDuplicado_DeveRetornar500()
+    {
+        // Arrange
+        var command1 = TestDataBuilder.RegistrarCommandFaker.Generate();
+        var command2 = TestDataBuilder.RegistrarCommandFaker.Generate();
+        command2.Cpf = command1.Cpf; // Mesmo CPF
+        command2.Email = "outro@email.com"; // Email diferente
+
+        // Act
+        await _client.PostAsJsonAsync("/api/v1/auth/registrar", command1);
+        var response = await _client.PostAsJsonAsync("/api/v1/auth/registrar", command2);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+    }
 }

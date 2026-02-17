@@ -51,7 +51,7 @@ public class PetsIntegrationTests : IClassFixture<IntegrationTestFactory>
         // Arrange
         var token = await _client.GetAuthTokenAsync();
         var clienteId = await _client.CreateTestClienteAsync(token);
-        var petId = await _client.CreateTestPetAsync(token, clienteId);
+        var petId = await _client.CreateTestPetAsync(clienteId, token);
 
         // Act
         var response = await _client.DeleteWithAuthAsync($"/api/v1/pets/{petId}", token);
