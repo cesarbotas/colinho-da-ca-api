@@ -47,7 +47,7 @@ public class SimpleEntitiesTests
     public void RacaDb_DeveDefinirPropriedadesCorretamente()
     {
         // Arrange
-        var raca = new RacaDb();
+        var raca = new Raca();
         var id = 1L;
         var nome = "Golden Retriever";
         var porte = "Grande";

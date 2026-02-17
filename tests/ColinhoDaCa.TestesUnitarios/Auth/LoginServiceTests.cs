@@ -4,7 +4,7 @@ using ColinhoDaCa.Domain._Shared.Entities;
 using ColinhoDaCa.Domain._Shared.Exceptions;
 using ColinhoDaCa.Domain.Clientes.Entities;
 using ColinhoDaCa.Domain.Clientes.Repositories;
-using ColinhoDaCa.Domain.LoginHistorico.Repositories;
+using ColinhoDaCa.Domain.LoginHistoricos.Repositories;
 using ColinhoDaCa.Domain.RefreshTokens.Repositories;
 using ColinhoDaCa.Domain.Usuarios.Entities;
 using ColinhoDaCa.Domain.Usuarios.Repositories;

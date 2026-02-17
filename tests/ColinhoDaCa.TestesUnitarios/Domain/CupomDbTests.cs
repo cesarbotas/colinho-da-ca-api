@@ -17,7 +17,7 @@ public class CupomDbTests
         var percentual = 10m;
 
         // Act
-        var cupom = CupomDb.Create(codigo, descricao, tipo, percentual, null, null, null, null, null, null);
+        var cupom = Cupom.Create(codigo, descricao, tipo, percentual, null, null, null, null, null, null);
 
         // Assert
         cupom.Codigo.Should().Be(codigo);
@@ -31,7 +31,7 @@ public class CupomDbTests
     public void CalcularDesconto_PercentualSobreTotal_DeveRetornarDescontoCorreto()
     {
         // Arrange
-        var cupom = CupomDb.Create("DESC10", "10% desconto", TipoCupom.PercentualSobreTotal, 10m, null, null, null, null, null, null);
+        var cupom = Cupom.Create("DESC10", "10% desconto", TipoCupom.PercentualSobreTotal, 10m, null, null, null, null, null, null);
         var valorTotal = 100m;
 
         // Act
@@ -45,7 +45,7 @@ public class CupomDbTests
     public void CalcularDesconto_CupomInativo_DeveRetornarZero()
     {
         // Arrange
-        var cupom = CupomDb.Create("DESC10", "10% desconto", TipoCupom.PercentualSobreTotal, 10m, null, null, null, null, null, null);
+        var cupom = Cupom.Create("DESC10", "10% desconto", TipoCupom.PercentualSobreTotal, 10m, null, null, null, null, null, null);
         cupom.Inativar();
 
         // Act
@@ -59,7 +59,7 @@ public class CupomDbTests
     public void CalcularDesconto_ValorFixoComMinimo_ComValorSuficiente_DeveRetornarValorFixo()
     {
         // Arrange
-        var cupom = CupomDb.Create("FIXO20", "R$ 20 desconto", TipoCupom.ValorFixoComMinimo, 0m, 20m, 50m, null, null, null, null);
+        var cupom = Cupom.Create("FIXO20", "R$ 20 desconto", TipoCupom.ValorFixoComMinimo, 0m, 20m, 50m, null, null, null, null);
 
         // Act
         var desconto = cupom.CalcularDesconto(100m, 1, 1);
@@ -72,7 +72,7 @@ public class CupomDbTests
     public void CalcularDesconto_ValorFixoComMinimo_ComValorInsuficiente_DeveRetornarZero()
     {
         // Arrange
-        var cupom = CupomDb.Create("FIXO20", "R$ 20 desconto", TipoCupom.ValorFixoComMinimo, 0m, 20m, 100m, null, null, null, null);
+        var cupom = Cupom.Create("FIXO20", "R$ 20 desconto", TipoCupom.ValorFixoComMinimo, 0m, 20m, 100m, null, null, null, null);
 
         // Act
         var desconto = cupom.CalcularDesconto(50m, 1, 1);
@@ -85,7 +85,7 @@ public class CupomDbTests
     public void CalcularDesconto_PercentualPorPetComMinimo_ComPetsSuficientes_DeveRetornarDesconto()
     {
         // Arrange
-        var cupom = CupomDb.Create("PET10", "10% por pet", TipoCupom.PercentualPorPetComMinimo, 10m, null, null, 2, null, null, null);
+        var cupom = Cupom.Create("PET10", "10% por pet", TipoCupom.PercentualPorPetComMinimo, 10m, null, null, 2, null, null, null);
 
         // Act
         var desconto = cupom.CalcularDesconto(100m, 2, 1);
@@ -98,7 +98,7 @@ public class CupomDbTests
     public void Inativar_DeveDefinirAtivoComoFalse()
     {
         // Arrange
-        var cupom = CupomDb.Create("DESC10", "10% desconto", TipoCupom.PercentualSobreTotal, 10m, null, null, null, null, null, null);
+        var cupom = Cupom.Create("DESC10", "10% desconto", TipoCupom.PercentualSobreTotal, 10m, null, null, null, null, null, null);
 
         // Act
         cupom.Inativar();
@@ -111,7 +111,7 @@ public class CupomDbTests
     public void Alterar_DeveAtualizarPropriedades()
     {
         // Arrange
-        var cupom = CupomDb.Create("DESC10", "10% desconto", TipoCupom.PercentualSobreTotal, 10m, null, null, null, null, null, null);
+        var cupom = Cupom.Create("DESC10", "10% desconto", TipoCupom.PercentualSobreTotal, 10m, null, null, null, null, null, null);
         var novoPercentual = 15m;
 
         // Act
