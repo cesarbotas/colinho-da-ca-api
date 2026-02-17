@@ -1,6 +1,6 @@
 namespace ColinhoDaCa.Domain.RefreshTokens.Entities;
 
-public class RefreshTokenDb
+public class RefreshToken
 {
     public long Id { get; set; }
     public long UsuarioId { get; set; }
@@ -9,4 +9,6 @@ public class RefreshTokenDb
     public bool IsRevoked { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? RevokedAt { get; set; }
+
+    public RefreshToken() { }
 }

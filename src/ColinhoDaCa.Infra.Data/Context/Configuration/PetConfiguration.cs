@@ -52,7 +52,7 @@ public class PetConfiguration : IEntityTypeConfiguration<Pet>
             .HasForeignKey("ClienteId")
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne<RacaDb>()
+        builder.HasOne<Raca>()
             .WithMany()
             .HasForeignKey("RacaId")
             .OnDelete(DeleteBehavior.Restrict);

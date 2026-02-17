@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ColinhoDaCa.Infra.Data.Context.Configuration;
 
-public class CupomConfiguration : IEntityTypeConfiguration<CupomDb>
+public class CupomConfiguration : IEntityTypeConfiguration<Cupom>
 {
-    public void Configure(EntityTypeBuilder<CupomDb> builder)
+    public void Configure(EntityTypeBuilder<Cupom> builder)
     {
         builder.ToTable("Cupons");
 

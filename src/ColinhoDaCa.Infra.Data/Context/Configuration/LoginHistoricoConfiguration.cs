@@ -1,12 +1,12 @@
-using ColinhoDaCa.Domain.LoginHistorico.Entities;
+using ColinhoDaCa.Domain.LoginHistoricos.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ColinhoDaCa.Infra.Data.Context.Configuration;
 
-public class LoginHistoricoConfiguration : IEntityTypeConfiguration<LoginHistoricoDb>
+public class LoginHistoricoConfiguration : IEntityTypeConfiguration<LoginHistorico>
 {
-    public void Configure(EntityTypeBuilder<LoginHistoricoDb> builder)
+    public void Configure(EntityTypeBuilder<LoginHistorico> builder)
     {
         builder.ToTable("LoginHistorico");
         

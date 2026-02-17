@@ -1,5 +1,5 @@
 using ColinhoDaCa.Application.UseCases.Auth.v1.Login;
-using ColinhoDaCa.Application.UseCases.Auth.v1.RefreshToken;
+using ColinhoDaCa.Application.UseCases.Auth.v1.RefreshTokens;
 using ColinhoDaCa.Application.UseCases.Auth.v1.Registrar;
 using Microsoft.AspNetCore.Mvc;
 

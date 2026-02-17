@@ -14,12 +14,12 @@ public class RacaRepository : IRacaRepository
         _context = context;
     }
 
-    public async Task<List<RacaDb>> GetAllAsync()
+    public async Task<List<Raca>> GetAllAsync()
     {
         return await _context.Racas.OrderBy(r => r.Nome).ToListAsync();
     }
 
-    public async Task<RacaDb> GetByIdAsync(long id)
+    public async Task<Raca> GetByIdAsync(long id)
     {
         return await _context.Racas.FirstOrDefaultAsync(r => r.Id == id);
     }

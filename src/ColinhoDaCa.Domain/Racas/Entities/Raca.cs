@@ -1,6 +1,6 @@
 namespace ColinhoDaCa.Domain.Racas.Entities;
 
-public class RacaDb
+public class Raca
 {
     public long Id { get; set; }
     public string Nome { get; set; }

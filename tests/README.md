@@ -1,90 +1,156 @@
 # Projetos de Testes - Colinho da Cá API
 
-## 📁 Estrutura
+## 📁 Estrutura Completa
 
 ```
 tests/
-├── ColinhoDaCa.TestesIntegrados/          # Testes integrados com xUnit + Testcontainers
-└── ColinhoDaCa.TestesCarga.K6/            # Testes de carga com K6
+├── ColinhoDaCa.TestesUnitarios/           # Testes unitários (60%+ cobertura)
+│   ├── Domain/                            # Entidades de domínio
+│   ├── Services/                          # Serviços de aplicação
+│   ├── UseCases/                          # Casos de uso
+│   ├── Auth/                              # Autenticação
+│   └── Controllers/                       # Controladores
+├── ColinhoDaCa.TestesIntegrados/          # Testes integrados
+└── ColinhoDaCa.TestesCarga.K6/            # Testes de carga
 ```
 
-## 🧪 ColinhoDaCa.TestesIntegrados
+## 🧪 ColinhoDaCa.TestesUnitarios
+
+**Cobertura de Testes:**
+- ✅ **Domain**: Cliente, Pet, Usuario, Reserva entities
+- ✅ **Services**: PasswordService, JwtService, EmailService
+- ✅ **UseCases**: CRUD operations, business logic
+- ✅ **Auth**: Login, Registration, Token refresh
+- ✅ **Controllers**: API endpoints validation
 
 **Tecnologias:**
-- xUnit
-- Testcontainers (PostgreSQL)
-- FluentAssertions
-- Bogus
-- Microsoft.AspNetCore.Mvc.Testing
+- xUnit + FluentAssertions
+- Moq (mocking)
+- Coverlet (coverage)
 
 **Executar:**
 ```bash
-cd ColinhoDaCa.TestesIntegrados
-dotnet test
+./run-unit-tests.sh
 ```
 
-**Incluído na Solution:** ✅ Sim (`ColinhoDaCa.sln`)
+**Meta de Cobertura:** ≥60%
 
-**Documentação:** [EXECUTAR.md](ColinhoDaCa.TestesIntegrados/EXECUTAR.md)
+---
+
+## 🔗 ColinhoDaCa.TestesIntegrados
+
+**Cobertura Completa:**
+- ✅ Auth (Login, Register, Refresh)
+- ✅ Clientes (CRUD + validações)
+- ✅ Pets (CRUD + regras de negócio)
+- ✅ Reservas (Fluxo completo)
+- ✅ Status codes corretos
+- ✅ Validações de entrada
+- ✅ Regras de negócio
+
+**Executar:**
+```bash
+./run-tests.sh
+```
 
 ---
 
 ## ⚡ ColinhoDaCa.TestesCarga.K6
 
-**Tecnologias:**
-- K6 (JavaScript)
-- Docker (opcional)
-
-**Executar:**
-```bash
-cd ColinhoDaCa.TestesCarga.K6
-k6 run scripts/auth-load-test.js
-```
-
-**Incluído na Solution:** ❌ Não (projeto JavaScript, não .NET)
-
-**Documentação:** [README.md](ColinhoDaCa.TestesCarga.K6/README.md)
+**Cenários:**
+- Load testing (usuários normais)
+- Stress testing (picos de carga)
+- Fluxo completo de reservas
 
 ---
 
 ## 🚀 Executar Todos os Testes
 
-### Testes Integrados
+### Sequência Completa
 ```bash
-dotnet test tests/ColinhoDaCa.TestesIntegrados/ColinhoDaCa.TestesIntegrados.csproj
-```
+# 1. Testes unitários com cobertura
+./run-unit-tests.sh
 
-### Testes de Carga
-```bash
+# 2. Testes integrados + Docker
+./run-tests.sh
+
+# 3. Testes de carga (opcional)
 cd tests/ColinhoDaCa.TestesCarga.K6
-run-all-tests.bat
+./run-all-tests.bat
 ```
 
 ---
 
-## 📊 Comparação
+## 📊 Métricas de Qualidade
 
-| Aspecto | Testes Integrados | Testes de Carga |
-|---------|-------------------|-----------------|
-| **Objetivo** | Validar funcionalidade | Validar performance |
-| **Tecnologia** | .NET/xUnit | K6/JavaScript |
-| **Banco de Dados** | Testcontainers | API real |
-| **Duração** | ~2 minutos | ~5-20 minutos |
-| **Quando Executar** | A cada commit | Antes de deploy |
-| **CI/CD** | Sim | Opcional |
-
----
-
-## 🎯 Metas de Qualidade
+### Testes Unitários
+- ✅ Cobertura ≥ 60%
+- ✅ Todos os domínios testados
+- ✅ Mocks para dependências
+- ✅ Execução < 30 segundos
 
 ### Testes Integrados
-- ✅ Cobertura > 80%
-- ✅ Todos os endpoints testados
-- ✅ Fluxos completos validados
+- ✅ Todas as rotas testadas
+- ✅ Status codes validados
+- ✅ Fluxos end-to-end
 - ✅ Execução < 2 minutos
 
 ### Testes de Carga
 - ✅ p(95) < 500ms
 - ✅ Taxa de erro < 1%
-- ✅ Suportar 100+ usuários simultâneos
-- ✅ Throughput > 100 req/s
+- ✅ 100+ usuários simultâneos
+
+---
+
+## 🎯 Estrutura de Testes por Camada
+
+### Domain Layer
+```
+Domain/
+├── ClienteTests.cs          # Entidade Cliente
+├── PetTests.cs              # Entidade Pet + regras
+├── UsuarioTests.cs          # Entidade Usuario
+└── ReservaTests.cs          # Entidade Reserva + status
+```
+
+### Application Layer
+```
+Services/
+├── PasswordServiceTests.cs  # Hash de senhas
+├── JwtServiceTests.cs       # Tokens JWT
+└── EmailServiceTests.cs     # Envio de emails
+
+UseCases/
+├── CadastrarClienteServiceTests.cs
+├── ExcluirPetServiceTests.cs
+├── CadastrarReservaServiceTests.cs
+└── LoginServiceTests.cs
+```
+
+### Infrastructure Layer
+```
+Repositories/
+├── ClienteRepositoryTests.cs
+├── PetRepositoryTests.cs
+└── ReservaRepositoryTests.cs
+
+Controllers/
+├── AuthControllerTests.cs
+├── ClientesControllerTests.cs
+├── PetsControllerTests.cs
+└── ReservasControllerTests.cs
+```
+
+---
+
+## 📈 Relatórios
+
+### Coverage Report
+- **Local**: `tests/ColinhoDaCa.TestesUnitarios/TestResults/CoverageReport/index.html`
+- **Métricas**: Line, Branch, Method coverage
+- **Filtros**: Por namespace, classe, método
+
+### Test Results
+- **Console**: Resultados em tempo real
+- **XML**: Compatível com CI/CD
+- **HTML**: Relatório visual detalhado

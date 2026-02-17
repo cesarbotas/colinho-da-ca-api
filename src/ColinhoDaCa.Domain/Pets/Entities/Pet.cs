@@ -10,6 +10,7 @@ public class Pet
     public string Porte { get; protected set; }
     public string Observacoes { get; protected set; }
     public long ClienteId { get; protected set; }
+    public bool Ativo { get; protected set; }
     public DateTime DataInclusao { get; protected set; }
     public DateTime DataAlteracao { get; protected set; }
     
@@ -33,6 +34,7 @@ public class Pet
         Porte = porte ?? throw new ArgumentNullException(nameof(porte));
         Observacoes = obs ?? throw new ArgumentNullException(nameof(obs));
         ClienteId = clienteId;
+        Ativo = true;
         DataInclusao = now;
         DataAlteracao = now;
     }
@@ -51,6 +53,12 @@ public class Pet
         Porte = porte ?? throw new ArgumentNullException(nameof(porte));
         Observacoes = obs ?? throw new ArgumentNullException(nameof(obs));
         ClienteId = clienteId;
+        DataAlteracao = DateTime.Now;
+    }
+
+    public void Inativar()
+    {
+        Ativo = false;
         DataAlteracao = DateTime.Now;
     }
 }
