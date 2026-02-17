@@ -55,10 +55,12 @@ public class LoginServiceTests
         // Arrange
         var command = new LoginCommand { Email = "test@test.com", Senha = "password123" };
         var cliente = Cliente.Create("Test", "test@test.com", "11999999999", "12345678901", "Test");
-        var usuario = UsuarioDb.Create(1, "hashedPassword");
+        var usuario = Usuario.Create(1, "hashedPassword");
 
         _clienteRepositoryMock.Setup(x => x.GetByEmailAsync(command.Email))
             .ReturnsAsync(cliente);
+        _usuarioRepositoryMock.Setup(x => x.GetPerfisUsuarioAsync(usuario.Id))
+            .ReturnsAsync(new List<PerfilResponse>());
         _usuarioRepositoryMock.Setup(x => x.GetByClienteIdWithPerfisAsync(cliente.Id))
             .ReturnsAsync(usuario);
         _passwordServiceMock.Setup(x => x.VerifyPassword(command.Senha, usuario.SenhaHash))

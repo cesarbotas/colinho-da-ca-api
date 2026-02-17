@@ -60,12 +60,12 @@ public class CadastrarClienteService : ICadastrarClienteService
             var hashedPassword = _passwordService.HashPassword(defaultPassword);
 
             // Create user account
-            var usuario = UsuarioDb.Create(cliente.Id, hashedPassword);
+            var usuario = Usuario.Create(cliente.Id, hashedPassword);
             await _usuarioRepository.InsertAsync(usuario);
             await _unitOfWork.CommitAsync();
 
             // Send email with credentials
-            await _emailService.SendAsync(
+            await _emailService.EnviarEmailAsync(
                 cliente.Email,
                 "Conta criada - Colinho da Cá",
                 $"Sua conta foi criada.\nEmail: {cliente.Email}\nSenha temporária: {defaultPassword}\n\nAltere sua senha no primeiro acesso.");

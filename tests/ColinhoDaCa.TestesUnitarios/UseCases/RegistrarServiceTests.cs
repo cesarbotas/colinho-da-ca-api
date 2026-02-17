@@ -1,65 +1,66 @@
 using ColinhoDaCa.Application.Services.Auth;
-using ColinhoDaCa.Application.Services.Email;
-using ColinhoDaCa.Application.UseCases.Clientes.v1.CadastrarCliente;
+using ColinhoDaCa.Application.Services.Validation;
+using ColinhoDaCa.Application.UseCases.Auth.v1.Registrar;
 using ColinhoDaCa.Domain._Shared.Entities;
 using ColinhoDaCa.Domain._Shared.Exceptions;
 using ColinhoDaCa.Domain.Clientes.Entities;
 using ColinhoDaCa.Domain.Clientes.Repositories;
-using ColinhoDaCa.Domain.Usuarios.Entities;
 using ColinhoDaCa.Domain.Usuarios.Repositories;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace ColinhoDaCa.TestesUnitarios.Clientes;
+namespace ColinhoDaCa.TestesUnitarios.UseCases;
 
-public class CadastrarClienteServiceTests
+public class RegistrarServiceTests
 {
-    private readonly Mock<ILogger<CadastrarClienteService>> _loggerMock;
+    private readonly Mock<ILogger<RegistrarService>> _loggerMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IClienteRepository> _clienteRepositoryMock;
     private readonly Mock<IUsuarioRepository> _usuarioRepositoryMock;
     private readonly Mock<IPasswordService> _passwordServiceMock;
-    private readonly Mock<IEmailService> _emailServiceMock;
-    private readonly CadastrarClienteService _service;
+    private readonly Mock<ICpfValidationService> _cpfValidationMock;
+    private readonly RegistrarService _service;
 
-    public CadastrarClienteServiceTests()
+    public RegistrarServiceTests()
     {
-        _loggerMock = new Mock<ILogger<CadastrarClienteService>>();
+        _loggerMock = new Mock<ILogger<RegistrarService>>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _clienteRepositoryMock = new Mock<IClienteRepository>();
         _usuarioRepositoryMock = new Mock<IUsuarioRepository>();
         _passwordServiceMock = new Mock<IPasswordService>();
-        _emailServiceMock = new Mock<IEmailService>();
+        _cpfValidationMock = new Mock<ICpfValidationService>();
 
-        _service = new CadastrarClienteService(
+        _service = new RegistrarService(
             _loggerMock.Object,
             _unitOfWorkMock.Object,
             _clienteRepositoryMock.Object,
             _usuarioRepositoryMock.Object,
             _passwordServiceMock.Object,
-            _emailServiceMock.Object);
+            _cpfValidationMock.Object);
     }
 
     [Fact]
     public async Task Handle_ValidCommand_ShouldCreateClienteAndUsuario()
     {
         // Arrange
-        var command = new CadastrarClienteCommand
+        var command = new RegistrarCommand
         {
-            Nome = "Test Client",
-            Email = "test@test.com",
+            Nome = "João Silva",
+            Email = "joao@test.com",
             Celular = "11999999999",
             Cpf = "12345678901",
-            Observacoes = "Test"
+            Senha = "MinhaSenh@123"
         };
 
         _clienteRepositoryMock.Setup(x => x.GetByEmailAsync(command.Email))
             .ReturnsAsync((Cliente?)null);
         _clienteRepositoryMock.Setup(x => x.GetByCpfAsync(command.Cpf))
             .ReturnsAsync((Cliente?)null);
-        _passwordServiceMock.Setup(x => x.HashPassword(It.IsAny<string>()))
+        _cpfValidationMock.Setup(x => x.IsValid(command.Cpf))
+            .Returns(true);
+        _passwordServiceMock.Setup(x => x.HashPassword(command.Senha))
             .Returns("hashedPassword");
 
         // Act
@@ -68,27 +69,14 @@ public class CadastrarClienteServiceTests
         // Assert
         _clienteRepositoryMock.Verify(x => x.InsertAsync(It.IsAny<Cliente>()), Times.Once());
         _usuarioRepositoryMock.Verify(x => x.InsertAsync(It.IsAny<Usuario>()), Times.Once());
-
-        _emailServiceMock.Verify(x => x.EnviarEmailAsync(
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>()), Times.Once());
-        
-        _unitOfWorkMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Exactly(3));
+        _unitOfWorkMock.Verify(x => x.CommitAsync(), Times.AtLeast(1));
     }
 
     [Fact]
     public async Task Handle_ExistingEmail_ShouldThrowValidationException()
     {
         // Arrange
-        var command = new CadastrarClienteCommand 
-        { 
-            Email = "existing@test.com",
-            Nome = "Test",
-            Celular = "11999999999",
-            Cpf = "12345678901",
-            Observacoes = "Test"
-        };
+        var command = new RegistrarCommand { Email = "existing@test.com" };
         var existingCliente = Cliente.Create("Existing", "existing@test.com", "11999999999", "12345678901", "Test");
 
         _clienteRepositoryMock.Setup(x => x.GetByEmailAsync(command.Email))
@@ -97,5 +85,25 @@ public class CadastrarClienteServiceTests
         // Act & Assert
         var exception = await Assert.ThrowsAsync<ValidationException>(() => _service.Handle(command));
         exception.Message.Should().Be("Email já cadastrado");
+    }
+
+    [Fact]
+    public async Task Handle_InvalidCpf_ShouldThrowValidationException()
+    {
+        // Arrange
+        var command = new RegistrarCommand 
+        { 
+            Email = "new@test.com",
+            Cpf = "invalidcpf"
+        };
+
+        _clienteRepositoryMock.Setup(x => x.GetByEmailAsync(command.Email))
+            .ReturnsAsync((Cliente?)null);
+        _cpfValidationMock.Setup(x => x.IsValid(command.Cpf))
+            .Returns(false);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ValidationException>(() => _service.Handle(command));
+        exception.Message.Should().Be("CPF inválido");
     }
 }

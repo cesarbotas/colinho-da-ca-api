@@ -39,7 +39,7 @@ public class Usuario
         _usuarioPerfis = new();
     }
 
-    public static Usuario Create(string senhaHash, long clienteId)
+    public static Usuario Create(long clienteId, string senhaHash)
     {
         return new Usuario(senhaHash, clienteId);
     }
