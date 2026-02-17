@@ -43,5 +43,11 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
         builder.Property(u => u.DataAlteracao)
             .IsRequired()
             .HasColumnType("timestamp without time zone");
+
+        // Configurar relacionamento com UsuarioPerfis
+        builder.HasMany(u => u.UsuarioPerfis)
+            .WithOne()
+            .HasForeignKey(up => up.UsuarioId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

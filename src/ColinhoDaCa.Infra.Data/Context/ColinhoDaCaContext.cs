@@ -1,6 +1,6 @@
 using ColinhoDaCa.Domain.Clientes.Entities;
 using ColinhoDaCa.Domain.Cupons.Entities;
-using ColinhoDaCa.Domain.LoginHistorico.Entities;
+using ColinhoDaCa.Domain.LoginHistoricos.Entities;
 using ColinhoDaCa.Domain.Pets.Entities;
 using ColinhoDaCa.Domain.Racas.Entities;
 using ColinhoDaCa.Domain.RefreshTokens.Entities;
@@ -22,16 +22,16 @@ public class ColinhoDaCaContext : DbContext
 
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<Pet> Pets { get; set; }
-    public DbSet<RacaDb> Racas { get; set; }
+    public DbSet<Raca> Racas { get; set; }
     public DbSet<Reserva> Reservas { get; set; }
     public DbSet<ReservaPet> ReservaPets { get; set; }
     public DbSet<ReservaStatusHistorico> ReservaStatusHistorico { get; set; }
-    public DbSet<CupomDb> Cupons { get; set; }
+    public DbSet<Cupom> Cupons { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Perfil> Perfis { get; set; }
     public DbSet<UsuarioPerfil> UsuarioPerfis { get; set; }
-    public DbSet<LoginHistoricoDb> LoginHistorico { get; set; }
-    public DbSet<RefreshTokenDb> RefreshTokens { get; set; }
+    public DbSet<LoginHistorico> LoginHistorico { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

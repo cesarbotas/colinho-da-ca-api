@@ -2,8 +2,8 @@ using ColinhoDaCa.Application.Services.Auth;
 using ColinhoDaCa.Domain._Shared.Entities;
 using ColinhoDaCa.Domain._Shared.Exceptions;
 using ColinhoDaCa.Domain.Clientes.Repositories;
-using ColinhoDaCa.Domain.LoginHistorico.Entities;
-using ColinhoDaCa.Domain.LoginHistorico.Repositories;
+using ColinhoDaCa.Domain.LoginHistoricos.Entities;
+using ColinhoDaCa.Domain.LoginHistoricos.Repositories;
 using ColinhoDaCa.Domain.RefreshTokens.Entities;
 using ColinhoDaCa.Domain.RefreshTokens.Repositories;
 using ColinhoDaCa.Domain.Usuarios.Repositories;
@@ -83,7 +83,7 @@ public class LoginService : ILoginService
             await _refreshTokenRepository.RevokeAllUserTokensAsync(usuario.Id);
 
             // Criar novo refresh token
-            var refreshTokenEntity = new RefreshTokenDb
+            var refreshTokenEntity = new RefreshToken
             {
                 UsuarioId = usuario.Id,
                 Token = refreshToken,
@@ -94,7 +94,7 @@ public class LoginService : ILoginService
             await _refreshTokenRepository.InsertAsync(refreshTokenEntity);
 
             // Gravar histórico de login
-            var loginHistorico = new LoginHistoricoDb
+            var loginHistorico = new LoginHistorico
             {
                 UsuarioId = usuario.Id,
                 Email = command.Email,

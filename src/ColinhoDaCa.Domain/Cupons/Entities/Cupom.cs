@@ -2,7 +2,7 @@ using ColinhoDaCa.Domain.Cupons.Enums;
 
 namespace ColinhoDaCa.Domain.Cupons.Entities;
 
-public class CupomDb
+public class Cupom
 {
     public long Id { get; set; }
     public string Codigo { get; set; }
@@ -19,10 +19,10 @@ public class CupomDb
     public DateTime DataInclusao { get; set; }
     public DateTime DataAlteracao { get; set; }
 
-    public static CupomDb Create(string codigo, string descricao, TipoCupom tipo, decimal percentual, decimal? valorFixo, decimal? minimoValorTotal, int? minimoPets, int? minimoDiarias, DateTime? dataInicio, DateTime? dataFim)
+    public static Cupom Create(string codigo, string descricao, TipoCupom tipo, decimal percentual, decimal? valorFixo, decimal? minimoValorTotal, int? minimoPets, int? minimoDiarias, DateTime? dataInicio, DateTime? dataFim)
     {
         var now = DateTime.Now;
-        return new CupomDb
+        return new Cupom
         {
             Codigo = codigo,
             Descricao = descricao,

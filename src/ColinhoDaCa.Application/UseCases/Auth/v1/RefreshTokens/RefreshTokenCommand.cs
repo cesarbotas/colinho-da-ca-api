@@ -1,4 +1,4 @@
-namespace ColinhoDaCa.Application.UseCases.Auth.v1.RefreshToken;
+namespace ColinhoDaCa.Application.UseCases.Auth.v1.RefreshTokens;
 
 public class RefreshTokenCommand
 {

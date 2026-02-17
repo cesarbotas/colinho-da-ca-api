@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ColinhoDaCa.Infra.Data.Context.Configuration;
 
-public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshTokenDb>
+public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 {
-    public void Configure(EntityTypeBuilder<RefreshTokenDb> builder)
+    public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
         builder.ToTable("RefreshTokens");
         

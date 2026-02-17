@@ -1,5 +1,6 @@
 using ColinhoDaCa.TestesIntegrados.Fixtures;
 using ColinhoDaCa.TestesIntegrados.Helpers;
+using ColinhoDaCa.TestesIntegrados.Models;
 using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
@@ -20,11 +21,11 @@ public class RacasTests : IClassFixture<IntegrationTestFactory>
         var registerCommand = TestDataBuilder.RegistrarCommandFaker.Generate();
         await _client.PostAsJsonAsync("/api/v1/auth/registrar", registerCommand);
 
-        var loginCommand = new { email = registerCommand.Email, senha = registerCommand.Senha };
+        var loginCommand = TestDataBuilder.CreateLoginCommand(registerCommand.Email, registerCommand.Senha);
         var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", loginCommand);
         var result = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
         
-        return result.Token;
+        return result.AccessToken;
     }
 
     [Fact]
@@ -76,6 +77,6 @@ public class RacasTests : IClassFixture<IntegrationTestFactory>
 public class RacaDto
 {
     public long Id { get; set; }
-    public string Nome { get; set; }
-    public string Porte { get; set; }
+    public string Nome { get; set; } = string.Empty;
+    public string? Porte { get; set; }
 }

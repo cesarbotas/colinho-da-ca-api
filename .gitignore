@@ -162,6 +162,10 @@ coverage*.json
 coverage*.xml
 coverage*.info
 
+# Code Coverage Reports
+**/coverage/
+**/TestResults/
+
 # Visual Studio code coverage results
 *.coverage
 *.coveragexml

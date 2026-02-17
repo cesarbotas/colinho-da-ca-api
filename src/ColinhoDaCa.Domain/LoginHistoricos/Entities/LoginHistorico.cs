@@ -1,6 +1,6 @@
-namespace ColinhoDaCa.Domain.LoginHistorico.Entities;
+namespace ColinhoDaCa.Domain.LoginHistoricos.Entities;
 
-public class LoginHistoricoDb
+public class LoginHistorico
 {
     public long Id { get; set; }
     public long UsuarioId { get; set; }

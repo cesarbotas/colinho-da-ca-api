@@ -4,9 +4,9 @@ namespace ColinhoDaCa.Domain.Cupons.Repositories;
 
 public interface ICupomRepository
 {
-    Task<CupomDb?> GetByCodigoAsync(string codigo);
-    Task<CupomDb?> GetAsync(Func<CupomDb, bool> predicate);
-    Task<List<CupomDb>> GetAllAsync();
-    Task InsertAsync(CupomDb cupom);
-    void Update(CupomDb cupom);
+    Task<Cupom?> GetByCodigoAsync(string codigo);
+    Task<Cupom?> GetAsync(Func<Cupom, bool> predicate);
+    Task<List<Cupom>> GetAllAsync();
+    Task InsertAsync(Cupom cupom);
+    void Update(Cupom cupom);
 }
