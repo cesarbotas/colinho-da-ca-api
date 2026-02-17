@@ -4,6 +4,6 @@ namespace ColinhoDaCa.Domain.Racas.Repositories;
 
 public interface IRacaRepository
 {
-    Task<List<RacaDb>> GetAllAsync();
-    Task<RacaDb> GetByIdAsync(long id);
+    Task<List<Raca>> GetAllAsync();
+    Task<Raca> GetByIdAsync(long id);
 }

@@ -8,7 +8,7 @@ using ColinhoDaCa.Domain.RefreshTokens.Repositories;
 using ColinhoDaCa.Domain.Usuarios.Repositories;
 using Microsoft.Extensions.Logging;
 
-namespace ColinhoDaCa.Application.UseCases.Auth.v1.RefreshToken;
+namespace ColinhoDaCa.Application.UseCases.Auth.v1.RefreshTokens;
 
 public class RefreshTokenService : IRefreshTokenService
 {
@@ -83,7 +83,7 @@ public class RefreshTokenService : IRefreshTokenService
             refreshToken.RevokedAt = DateTime.UtcNow;
 
             // Criar novo refresh token
-            var newRefreshTokenEntity = new RefreshTokenDb
+            var newRefreshTokenEntity = new RefreshToken
             {
                 UsuarioId = usuario.Id,
                 Token = newRefreshToken,

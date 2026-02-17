@@ -13,28 +13,28 @@ public class CupomRepository : ICupomRepository
         _context = context;
     }
 
-    public async Task<CupomDb?> GetByCodigoAsync(string codigo)
+    public async Task<Cupom?> GetByCodigoAsync(string codigo)
     {
         return await _context.Cupons
             .FirstOrDefaultAsync(c => c.Codigo == codigo);
     }
 
-    public async Task<CupomDb?> GetAsync(Func<CupomDb, bool> predicate)
+    public async Task<Cupom?> GetAsync(Func<Cupom, bool> predicate)
     {
         return await Task.FromResult(_context.Cupons.FirstOrDefault(predicate));
     }
 
-    public async Task<List<CupomDb>> GetAllAsync()
+    public async Task<List<Cupom>> GetAllAsync()
     {
         return await _context.Cupons.ToListAsync();
     }
 
-    public async Task InsertAsync(CupomDb cupom)
+    public async Task InsertAsync(Cupom cupom)
     {
         await _context.Cupons.AddAsync(cupom);
     }
 
-    public void Update(CupomDb cupom)
+    public void Update(Cupom cupom)
     {
         _context.Cupons.Update(cupom);
     }

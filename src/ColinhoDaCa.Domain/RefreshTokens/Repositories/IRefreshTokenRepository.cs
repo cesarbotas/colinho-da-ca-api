@@ -3,8 +3,8 @@ using ColinhoDaCa.Domain.RefreshTokens.Entities;
 
 namespace ColinhoDaCa.Domain.RefreshTokens.Repositories;
 
-public interface IRefreshTokenRepository : IRepository<RefreshTokenDb>
+public interface IRefreshTokenRepository : IRepository<RefreshToken>
 {
-    Task<RefreshTokenDb?> GetByTokenAsync(string token);
+    Task<RefreshToken?> GetByTokenAsync(string token);
     Task RevokeAllUserTokensAsync(long usuarioId);
 }

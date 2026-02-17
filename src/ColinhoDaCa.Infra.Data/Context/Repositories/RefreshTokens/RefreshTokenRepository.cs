@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ColinhoDaCa.Infra.Data.Context.Repositories.RefreshTokens;
 
-public class RefreshTokenRepository : Repository<RefreshTokenDb>, IRefreshTokenRepository
+public class RefreshTokenRepository : Repository<RefreshToken>, IRefreshTokenRepository
 {
     private readonly ColinhoDaCaContext _context;
 
@@ -14,7 +14,7 @@ public class RefreshTokenRepository : Repository<RefreshTokenDb>, IRefreshTokenR
         _context = context;
     }
 
-    public async Task<RefreshTokenDb?> GetByTokenAsync(string token)
+    public async Task<RefreshToken?> GetByTokenAsync(string token)
     {
         return await _context.RefreshTokens
             .FirstOrDefaultAsync(rt => rt.Token == token && !rt.IsRevoked && rt.ExpiresAt > DateTime.UtcNow);

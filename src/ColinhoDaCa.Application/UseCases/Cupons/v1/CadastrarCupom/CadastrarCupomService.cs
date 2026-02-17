@@ -23,7 +23,7 @@ public class CadastrarCupomService : ICadastrarCupomService
         if (cupomExistente != null)
             throw new ValidationException("Código de cupom já existe");
 
-        var cupom = CupomDb.Create(
+        var cupom = Cupom.Create(
             command.Codigo,
             command.Descricao,
             (TipoCupom)command.Tipo,

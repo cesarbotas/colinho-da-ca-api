@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ColinhoDaCa.Infra.Data.Context.Configuration;
 
-public class RacaConfiguration : IEntityTypeConfiguration<RacaDb>
+public class RacaConfiguration : IEntityTypeConfiguration<Raca>
 {
-    public void Configure(EntityTypeBuilder<RacaDb> builder)
+    public void Configure(EntityTypeBuilder<Raca> builder)
     {
         builder.ToTable("Racas");
 
