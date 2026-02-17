@@ -60,7 +60,7 @@ public class LoginServiceTests
         _clienteRepositoryMock.Setup(x => x.GetByEmailAsync(command.Email))
             .ReturnsAsync(cliente);
         _usuarioRepositoryMock.Setup(x => x.GetPerfisUsuarioAsync(usuario.Id))
-            .ReturnsAsync(new List<PerfilResponse>());
+            .ReturnsAsync(new List<PerfilUsuarioDto>());
         _usuarioRepositoryMock.Setup(x => x.GetByClienteIdWithPerfisAsync(cliente.Id))
             .ReturnsAsync(usuario);
         _passwordServiceMock.Setup(x => x.VerifyPassword(command.Senha, usuario.SenhaHash))

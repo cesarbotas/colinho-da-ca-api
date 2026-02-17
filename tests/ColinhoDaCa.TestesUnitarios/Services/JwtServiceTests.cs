@@ -50,8 +50,8 @@ public class JwtServiceTests
         var tokenHandler = new JwtSecurityTokenHandler();
         var jsonToken = tokenHandler.ReadJwtToken(token);
         
-        jsonToken.Claims.Should().Contain(c => c.Type == ClaimTypes.NameIdentifier && c.Value == "1");
-        jsonToken.Claims.Should().Contain(c => c.Type == ClaimTypes.Email && c.Value == "joao@test.com");
+        jsonToken.Claims.Should().Contain(c => c.Type == "nameid" && c.Value == "1");
+        jsonToken.Claims.Should().Contain(c => c.Type == "email" && c.Value == "joao@test.com");
     }
 
     [Fact]

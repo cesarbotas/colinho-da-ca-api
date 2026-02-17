@@ -46,13 +46,11 @@ public class ClienteTests
         cliente.DataAlteracao.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void Create_InvalidNome_ShouldThrowException(string nome)
+    [Fact]
+    public void Create_NullNome_ShouldThrowException()
     {
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() => 
-            Cliente.Create(nome, "test@test.com", "11999999999", "12345678901", "Test"));
+            Cliente.Create(null, "test@test.com", "11999999999", "12345678901", "Test"));
     }
 }

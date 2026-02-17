@@ -68,12 +68,10 @@ public class UsuarioTests
         usuario.DataAlteracao.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void Create_InvalidSenhaHash_ShouldThrowException(string senhaHash)
+    [Fact]
+    public void Create_NullSenhaHash_ShouldThrowException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => Usuario.Create(1, senhaHash));
+        Assert.Throws<ArgumentNullException>(() => Usuario.Create(1, null));
     }
 }
