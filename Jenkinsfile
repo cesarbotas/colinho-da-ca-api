@@ -44,6 +44,43 @@ pipeline {
             }
         }
         
+        stage('Test Coverage') {
+            steps {
+                sh '''
+                export PATH="$PATH:$HOME/.dotnet"
+                dotnet test tests/ColinhoDaCa.TestesUnitarios/ColinhoDaCa.TestesUnitarios.csproj \
+                    --collect:"XPlat Code Coverage" \
+                    --results-directory ./coverage \
+                    --verbosity normal
+                '''
+                
+                script {
+                    def coverageFile = sh(
+                        script: 'find ./coverage -name "coverage.cobertura.xml" | head -1',
+                        returnStdout: true
+                    ).trim()
+                    
+                    if (coverageFile) {
+                        def coverage = sh(
+                            script: "grep -o 'line-rate=\"[0-9.]*\"' ${coverageFile} | head -1 | grep -o '[0-9.]*'",
+                            returnStdout: true
+                        ).trim()
+                        
+                        def coveragePercent = (coverage as Double) * 100
+                        echo "Cobertura de testes: ${coveragePercent.round(2)}%"
+                        
+                        if (coveragePercent < 20) {
+                            error "Cobertura de testes (${coveragePercent.round(2)}%) está abaixo do mínimo exigido (20%)"
+                        }
+                        
+                        echo 'Cobertura de testes aprovada ✅'
+                    } else {
+                        echo '⚠️ Arquivo de cobertura não encontrado - continuando...'
+                    }
+                }
+            }
+        }
+        
         stage('Publish') {
             steps {
                 sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet publish src/ColinhoDaCaApi/ColinhoDaCaApi.csproj -c Release -o out'
