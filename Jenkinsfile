@@ -22,6 +22,7 @@ pipeline {
                         echo 'Dependências restauradas ✅'
                     } catch (Exception e) {
                         echo '⚠️ .NET não encontrado - instalando...'
+                        sh 'apt-get update && apt-get install -y libicu-dev'
                         sh 'curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0'
                         sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet restore src/ColinhoDaCa.sln'
                         echo 'Dependências restauradas ✅'
