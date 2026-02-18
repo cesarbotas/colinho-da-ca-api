@@ -7,6 +7,6 @@ namespace ColinhoDaCa.Domain.Clientes.Repositories;
 
 public interface IClienteReadRepository
 {
-    IQueryable<ClienteDb> AsQueryable();
+    IQueryable<Cliente> AsQueryable();
     Task<ResultadoPaginadoDto<ClientesDto>> PesquisarClientesDto(ListarClienteQuery query);
 }

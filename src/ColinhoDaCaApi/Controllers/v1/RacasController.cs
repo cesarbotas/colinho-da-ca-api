@@ -1,4 +1,5 @@
 using ColinhoDaCa.Application.UseCases.Racas.v1.Listar;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ColinhoDaCaApi.Controllers.v1;

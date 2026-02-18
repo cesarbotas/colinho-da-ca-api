@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    container_name: jenkins
+    restart: unless-stopped
+    user: root
+    ports:
+      - "8090:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    networks:
+      - ci-network
+
+  docker-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    container_name: jenkins-agent
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - jenkins_home:/var/jenkins_home
+    networks:
+      - ci-network
+    depends_on:
+      - jenkins
+
+  postgres:
+    image: postgres:16
+    container_name: postgres-ci
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: colinhodaca
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ci-network
+
+volumes:
+  jenkins_home:
+  postgres_data:
+
+networks:
+  ci-network:
+    driver: bridge

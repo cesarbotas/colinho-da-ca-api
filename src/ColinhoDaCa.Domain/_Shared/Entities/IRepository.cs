@@ -20,6 +20,12 @@ public interface IRepository<TEntity>
     Task InsertAsync(IEnumerable<TEntity> entities);
 
     /// <summary>
+    /// Obtém todas as entidades assincronamente.
+    /// </summary>
+    /// <returns>Uma tarefa que representa a operação assíncrona. O resultado da tarefa contém a lista de entidades.</returns>
+    Task<List<TEntity>> GetAllAsync();
+
+    /// <summary>
     /// Obtém uma entidade com a chave especificada assincronamente.
     /// </summary>
     /// <param name="id">A chave da entidade.</param>

@@ -2,8 +2,10 @@ namespace ColinhoDaCa.Application.UseCases.Auth.v1.Login;
 
 public class LoginResponse
 {
-    public string Token { get; set; }
-    public UsuarioResponse? Usuario { get; set; }
+    public string AccessToken { get; set; }
+    public string RefreshToken { get; set; }
+    public int ExpiresIn { get; set; } = 1800; // 30 minutos em segundos
+    public string TokenType { get; set; } = "Bearer";
 }
 
 public class UsuarioResponse

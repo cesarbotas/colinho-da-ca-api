@@ -12,4 +12,5 @@ public class PetsDto
     public string Observacoes { get; set; }
     public long ClienteId { get; set; }
     public string ClienteNome { get; set; }
+    public bool Ativo { get; set; }
 }

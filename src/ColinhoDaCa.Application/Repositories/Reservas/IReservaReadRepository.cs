@@ -7,6 +7,6 @@ namespace ColinhoDaCa.Domain.Reservas.Repositories;
 
 public interface IReservaReadRepository
 {
-    IQueryable<ReservaDb> AsQueryable();
+    IQueryable<Reserva> AsQueryable();
     Task<ResultadoPaginadoDto<ReservasDto>> PesquisarReservasDto(ListarReservaQuery query);
 }

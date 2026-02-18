@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ColinhoDaCa.Infra.Data.Context.Repositories.Clientes;
 
-public class ClienteRepository : Repository<ClienteDb>, IClienteRepository, IClienteReadRepository
+public class ClienteRepository : Repository<Cliente>, IClienteRepository, IClienteReadRepository
 {
     private readonly ColinhoDaCaContext _context;
 
@@ -18,19 +18,19 @@ public class ClienteRepository : Repository<ClienteDb>, IClienteRepository, ICli
         _context = context;
     }
 
-    public IQueryable<ClienteDb> AsQueryable()
+    public IQueryable<Cliente> AsQueryable()
     {
         return _context.Clientes
             .AsQueryable();
     }
 
-    public async Task<ClienteDb> GetByCpfAsync(string cpf)
+    public async Task<Cliente> GetByCpfAsync(string cpf)
     {
         return await _context.Clientes
             .FirstOrDefaultAsync(c => c.Cpf == cpf);
     }
 
-    public async Task<ClienteDb> GetByEmailAsync(string email)
+    public async Task<Cliente> GetByEmailAsync(string email)
     {
         return await _context.Clientes
             .FirstOrDefaultAsync(c => c.Email == email);
@@ -55,6 +55,26 @@ public class ClienteRepository : Repository<ClienteDb>, IClienteRepository, ICli
             if (query.Id.HasValue && query.Id > 0)
             {
                 queryResult = queryResult.Where(c => c.Id == query.Id);
+            }
+
+            if (query.ClienteId.HasValue && query.ClienteId > 0)
+            {
+                queryResult = queryResult.Where(c => c.Id == query.ClienteId);
+            }
+
+            if (!string.IsNullOrEmpty(query.Nome))
+            {
+                queryResult = queryResult.Where(c => c.Nome.ToLower().Contains(query.Nome.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(query.Cpf))
+            {
+                queryResult = queryResult.Where(c => c.Cpf.ToLower().Contains(query.Cpf.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(query.Email))
+            {
+                queryResult = queryResult.Where(c => c.Email.ToLower().Contains(query.Email.ToLower()));
             }
 
             var totalItens = await queryResult

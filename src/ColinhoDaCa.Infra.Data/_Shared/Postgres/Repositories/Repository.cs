@@ -26,6 +26,11 @@ public class Repository<TEntity> : IRepository<TEntity>
         await _context.Set<TEntity>().AddRangeAsync(entities);
     }
 
+    public virtual async Task<List<TEntity>> GetAllAsync()
+    {
+        return await _context.Set<TEntity>().ToListAsync();
+    }
+
     public virtual async Task<TEntity> GetAsync(long key)
     {
         return await _context

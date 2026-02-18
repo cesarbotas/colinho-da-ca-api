@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ColinhoDaCa.Infra.Data.Context.Repositories.Pets;
 
-public class PetRepository : Repository<PetDb>, IPetRepository, IPetReadRepository
+public class PetRepository : Repository<Pet>, IPetRepository, IPetReadRepository
 {
     private readonly ColinhoDaCaContext _context;
 
@@ -18,7 +18,7 @@ public class PetRepository : Repository<PetDb>, IPetRepository, IPetReadReposito
         _context = context;
     }
 
-    public IQueryable<PetDb> AsQueryable()
+    public IQueryable<Pet> AsQueryable()
     {
         return _context.Pets
             .AsQueryable();
@@ -29,7 +29,7 @@ public class PetRepository : Repository<PetDb>, IPetRepository, IPetReadReposito
         try
         {
             var queryResult =
-                from p in _context.Pets
+                from p in _context.Pets.Where(p => p.Ativo)
                 join c in _context.Clientes on p.ClienteId equals c.Id
                 join r in _context.Racas on p.RacaId equals r.Id into racaGroup
                 from r in racaGroup.DefaultIfEmpty()
@@ -43,6 +43,7 @@ public class PetRepository : Repository<PetDb>, IPetRepository, IPetReadReposito
                     Peso = p.Peso,
                     Porte = p.Porte,
                     Observacoes = p.Observacoes,
+                    Ativo = p.Ativo,
                     ClienteId = p.ClienteId,
                     ClienteNome = c.Nome
                 };
@@ -50,7 +51,19 @@ public class PetRepository : Repository<PetDb>, IPetRepository, IPetReadReposito
             if (query.ClienteId.HasValue && query.ClienteId > 0)
             {
                 queryResult = queryResult
-                    .Where(p => p.ClienteId == query.ClienteId);
+                    .Where(p => p.ClienteId == query.ClienteId && p.Ativo);
+            }
+
+            if (!string.IsNullOrEmpty(query.ClienteNome))
+            {
+                queryResult = queryResult
+                    .Where(p => p.ClienteNome.ToLower().Contains(query.ClienteNome.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(query.PetNome))
+            {
+                queryResult = queryResult
+                    .Where(p => p.Nome.ToLower().Contains(query.PetNome.ToLower()));
             }
 
             var totalItens = await queryResult
@@ -73,5 +86,11 @@ public class PetRepository : Repository<PetDb>, IPetRepository, IPetReadReposito
         {
             throw;
         }
+    }
+
+    public async Task<bool> HasReservationsAsync(long petId)
+    {
+        return await _context.ReservaPets
+            .AnyAsync(rp => rp.PetId == petId);
     }
 }

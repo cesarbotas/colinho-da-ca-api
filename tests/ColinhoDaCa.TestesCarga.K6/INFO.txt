@@ -1,0 +1,16 @@
+# ColinhoDaCa.TestesCarga.K6
+
+Este é um projeto de testes de carga usando K6 (JavaScript).
+Não é um projeto .NET, portanto não pode ser adicionado à solution .sln.
+
+## Localização
+`tests/ColinhoDaCa.TestesCarga.K6/`
+
+## Como Executar
+```bash
+cd tests/ColinhoDaCa.TestesCarga.K6
+k6 run scripts/auth-load-test.js
+```
+
+## Documentação
+Veja README.md na pasta do projeto.

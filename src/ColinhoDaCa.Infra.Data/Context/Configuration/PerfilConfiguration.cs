@@ -4,16 +4,17 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ColinhoDaCa.Infra.Data.Context.Configuration;
 
-public class PerfilConfiguration : IEntityTypeConfiguration<PerfilDb>
+public class PerfilConfiguration : IEntityTypeConfiguration<Perfil>
 {
-    public void Configure(EntityTypeBuilder<PerfilDb> builder)
+    public void Configure(EntityTypeBuilder<Perfil> builder)
     {
         builder.ToTable("Perfis", "public");
 
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Id)
-            .UseIdentityAlwaysColumn();
+            .HasColumnName("Id")
+            .ValueGeneratedOnAdd();
 
         builder.Property(p => p.Nome)
             .IsRequired()

@@ -1,0 +1,543 @@
+{
+	"info": {
+		"name": "Colinho da Cá API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"description": "API completa para gerenciamento de hotel para pets"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Registrar",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"João Silva\",\n  \"email\": \"joao@email.com\",\n  \"celular\": \"11999999999\",\n  \"cpf\": \"12345678909\",\n  \"senha\": \"senha123\",\n  \"observacoes\": \"Cliente novo\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/auth/registrar",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "auth", "registrar"]
+						}
+					}
+				},
+				{
+					"name": "Login OAuth2",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"joao@email.com\",\n  \"senha\": \"senha123\",\n  \"deviceInfo\": {\n    \"userAgent\": \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36\",\n    \"platform\": \"MacIntel\",\n    \"language\": \"pt-BR\",\n    \"screenResolution\": \"1920x1080\",\n    \"timezone\": \"America/Sao_Paulo\",\n    \"clientIP\": \"192.168.1.100\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/auth/login",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "auth", "login"]
+						},
+						"event": [
+							{
+								"listen": "test",
+								"script": {
+									"exec": [
+										"if (pm.response.code === 200) {",
+										"    var jsonData = pm.response.json();",
+										"    pm.environment.set('BearerToken', jsonData.accessToken);",
+										"    pm.environment.set('RefreshToken', jsonData.refreshToken);",
+										"}"
+									],
+									"type": "text/javascript"
+								}
+							}
+						]
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{RefreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/auth/refresh",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "auth", "refresh"]
+						},
+						"event": [
+							{
+								"listen": "test",
+								"script": {
+									"exec": [
+										"if (pm.response.code === 200) {",
+										"    var jsonData = pm.response.json();",
+										"    pm.environment.set('BearerToken', jsonData.accessToken);",
+										"    pm.environment.set('RefreshToken', jsonData.refreshToken);",
+										"}"
+									],
+									"type": "text/javascript"
+								}
+							}
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Clientes",
+			"item": [
+				{
+					"name": "Listar Clientes",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/clientes?Paginacao.NumeroPagina=1&Paginacao.QuantidadeRegistros=10",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "clientes"],
+							"query": [
+								{"key": "Paginacao.NumeroPagina", "value": "1"},
+								{"key": "Paginacao.QuantidadeRegistros", "value": "10"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Cadastrar Cliente",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Maria Santos\",\n  \"email\": \"maria@email.com\",\n  \"celular\": \"11988888888\",\n  \"cpf\": \"98765432100\",\n  \"observacoes\": \"Cliente VIP\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/clientes",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "clientes"]
+						}
+					}
+				},
+				{
+					"name": "Alterar Cliente",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Maria Santos Silva\",\n  \"email\": \"maria@email.com\",\n  \"celular\": \"11988888888\",\n  \"cpf\": \"98765432100\",\n  \"observacoes\": \"Cliente VIP - Atualizado\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/clientes/1",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "clientes", "1"]
+						}
+					}
+				},
+				{
+					"name": "Excluir Cliente",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/clientes/1",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "clientes", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Pets",
+			"item": [
+				{
+					"name": "Listar Pets",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/pets?Paginacao.NumeroPagina=1&Paginacao.QuantidadeRegistros=10&ClienteId=1",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "pets"],
+							"query": [
+								{"key": "Paginacao.NumeroPagina", "value": "1"},
+								{"key": "Paginacao.QuantidadeRegistros", "value": "10"},
+								{"key": "ClienteId", "value": "1"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Cadastrar Pet",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": 1,\n  \"nome\": \"Rex\",\n  \"racaId\": 1,\n  \"idade\": 3,\n  \"peso\": 25.5,\n  \"porte\": \"M\",\n  \"observacoes\": \"Muito dócil\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/pets",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "pets"]
+						}
+					}
+				},
+				{
+					"name": "Alterar Pet",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": 1,\n  \"nome\": \"Rex Atualizado\",\n  \"racaId\": 1,\n  \"idade\": 4,\n  \"peso\": 26.0,\n  \"porte\": \"M\",\n  \"observacoes\": \"Muito dócil e brincalhão\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/pets/1",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "pets", "1"]
+						}
+					}
+				},
+				{
+					"name": "Excluir Pet",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/pets/1",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "pets", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Racas",
+			"item": [
+				{
+					"name": "Listar Todas Racas",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/racas",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "racas"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Raca por ID",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/racas?racaId=1",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "racas"],
+							"query": [{"key": "racaId", "value": "1"}]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Reservas",
+			"item": [
+				{
+					"name": "Listar Reservas",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/reservas?Paginacao.NumeroPagina=1&Paginacao.QuantidadeRegistros=10",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "reservas"],
+							"query": [
+								{"key": "Paginacao.NumeroPagina", "value": "1"},
+								{"key": "Paginacao.QuantidadeRegistros", "value": "10"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Cadastrar Reserva",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": 1,\n  \"usuarioId\": 1,\n  \"dataInicial\": \"2024-06-10T14:00:00\",\n  \"dataFinal\": \"2024-06-15T12:00:00\",\n  \"quantidadeDiarias\": 5,\n  \"quantidadePets\": 2,\n  \"valorTotal\": 450.00,\n  \"valorDesconto\": 0,\n  \"valorFinal\": 450.00,\n  \"cupomId\": null,\n  \"observacoes\": \"Primeira reserva\",\n  \"petIds\": [1, 2]\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/reservas",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "reservas"]
+						}
+					}
+				},
+				{
+					"name": "Alterar Reserva",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": 1,\n  \"dataInicial\": \"2024-06-10T14:00:00\",\n  \"dataFinal\": \"2024-06-17T12:00:00\",\n  \"quantidadeDiarias\": 7,\n  \"quantidadePets\": 2,\n  \"valorTotal\": 630.00,\n  \"valorDesconto\": 0,\n  \"valorFinal\": 630.00,\n  \"cupomId\": null,\n  \"observacoes\": \"Reserva alterada\",\n  \"petIds\": [1, 2]\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/reservas/1",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "reservas", "1"]
+						}
+					}
+				},
+				{
+					"name": "Excluir Reserva",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/reservas/1",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "reservas", "1"]
+						}
+					}
+				},
+				{
+					"name": "Confirmar Reserva",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/reservas/1/confirmar",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "reservas", "1", "confirmar"]
+						}
+					}
+				},
+				{
+					"name": "Enviar Comprovante",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comprovantePagamento\": \"base64_string_aqui\",\n  \"observacoesPagamento\": \"Pix realizado\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/reservas/1/comprovante",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "reservas", "1", "comprovante"]
+						}
+					}
+				},
+				{
+					"name": "Aprovar Pagamento",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/reservas/1/aprovar-pagamento",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "reservas", "1", "aprovar-pagamento"]
+						}
+					}
+				},
+				{
+					"name": "Visualizar Comprovante",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/reservas/1/comprovante",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "reservas", "1", "comprovante"]
+						}
+					}
+				},
+				{
+					"name": "Conceder Desconto",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"valorDesconto\": 50.00\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/reservas/1/desconto",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "reservas", "1", "desconto"]
+						}
+					}
+				},
+				{
+					"name": "Cancelar Reserva",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/reservas/1/cancelar",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "reservas", "1", "cancelar"]
+						}
+					}
+				},
+				{
+					"name": "Aplicar Cupom (Tempo Real)",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigoCupom\": \"DESC10\",\n  \"valorTotal\": 450.00,\n  \"quantidadePets\": 2,\n  \"quantidadeDiarias\": 5\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/reservas/1/aplicar-cupom",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "reservas", "1", "aplicar-cupom"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Cupons",
+			"item": [
+				{
+					"name": "Listar Cupons",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/cupons?Paginacao.NumeroPagina=1&Paginacao.QuantidadeRegistros=10",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "cupons"],
+							"query": [
+								{"key": "Paginacao.NumeroPagina", "value": "1"},
+								{"key": "Paginacao.QuantidadeRegistros", "value": "10"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Cadastrar Cupom - Tipo 1 (Percentual Total)",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigo\": \"DESC10\",\n  \"descricao\": \"10% de desconto sobre o valor total\",\n  \"tipo\": 1,\n  \"percentual\": 10.00,\n  \"valorFixo\": null,\n  \"minimoValorTotal\": null,\n  \"minimoPets\": null,\n  \"minimoDiarias\": null,\n  \"dataInicio\": \"2024-01-01T00:00:00\",\n  \"dataFim\": \"2024-12-31T23:59:59\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/cupons",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "cupons"]
+						}
+					}
+				},
+				{
+					"name": "Cadastrar Cupom - Tipo 4 (Valor Fixo)",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigo\": \"50REAIS300\",\n  \"descricao\": \"R$ 50 de desconto em diárias acima de R$ 300\",\n  \"tipo\": 4,\n  \"percentual\": 0.00,\n  \"valorFixo\": 50.00,\n  \"minimoValorTotal\": 300.00,\n  \"minimoPets\": null,\n  \"minimoDiarias\": null,\n  \"dataInicio\": null,\n  \"dataFim\": null\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/cupons",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "cupons"]
+						}
+					}
+				},
+				{
+					"name": "Alterar Cupom",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigo\": \"DESC15\",\n  \"descricao\": \"15% de desconto - ATUALIZADO\",\n  \"tipo\": 1,\n  \"percentual\": 15.00,\n  \"valorFixo\": null,\n  \"minimoValorTotal\": null,\n  \"minimoPets\": null,\n  \"minimoDiarias\": null,\n  \"dataInicio\": \"2024-01-01T00:00:00\",\n  \"dataFim\": \"2024-12-31T23:59:59\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/cupons/1",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "cupons", "1"]
+						}
+					}
+				},
+				{
+					"name": "Inativar Cupom",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/cupons/1/inativar",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "cupons", "1", "inativar"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Sobre",
+			"item": [
+				{
+					"name": "Enviar Email Contato",
+					"request": {
+						"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{BearerToken}}"}]},
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"João Silva\",\n  \"email\": \"joao@email.com\",\n  \"mensagem\": \"Gostaria de mais informações sobre os serviços\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseURL}}/api/v1/sobre/enviar-email",
+							"host": ["{{BaseURL}}"],
+							"path": ["api", "v1", "sobre", "enviar-email"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
