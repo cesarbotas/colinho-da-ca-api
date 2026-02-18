@@ -1,7 +1,8 @@
 {
 	"info": {
 		"name": "Colinho da Cá API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"description": "API completa para gerenciamento de hotel para pets"
 	},
 	"item": [
 		{
@@ -30,7 +31,7 @@
 						"header": [{"key": "Content-Type", "value": "application/json"}],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"joao@email.com\",\n  \"senha\": \"senha123\",\n  \"deviceInfo\": {\n    \"userAgent\": \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36\",\n    \"platform\": \"MacIntel\",\n    \"language\": \"pt-BR\",\n    \"screenResolution\": \"1920x1080\",\n    \"timezone\": \"America/Sao_Paulo\",\n    \"clientIP\": \"192.168.1.100\",\n    \"timestamp\": \"2024-01-15T14:30:25.123Z\"\n  }\n}"
+							"raw": "{\n  \"email\": \"joao@email.com\",\n  \"senha\": \"senha123\",\n  \"deviceInfo\": {\n    \"userAgent\": \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36\",\n    \"platform\": \"MacIntel\",\n    \"language\": \"pt-BR\",\n    \"screenResolution\": \"1920x1080\",\n    \"timezone\": \"America/Sao_Paulo\",\n    \"clientIP\": \"192.168.1.100\"\n  }\n}"
 						},
 						"url": {
 							"raw": "{{BaseURL}}/api/v1/auth/login",
@@ -155,10 +156,7 @@
 					}
 				}
 			]
-		}
-	]
-}
-,
+		},
 		{
 			"name": "Pets",
 			"item": [
