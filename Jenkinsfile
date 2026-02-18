@@ -61,7 +61,7 @@ pipeline {
             }
         }
         
-        sstage('Docker Push') {
+        stage('Docker Push') {
             when {
                 branch 'release'
             }
