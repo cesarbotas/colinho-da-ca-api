@@ -31,7 +31,7 @@
 
 ## 🔧 Configuração Manual
 
-1. **Acesse Jenkins**: http://localhost:8080
+1. **Acesse Jenkins**: http://localhost:8090
 2. **Senha inicial**: Será exibida no terminal
 3. **Plugins necessários**:
    - Docker Pipeline
@@ -52,7 +52,7 @@
 
 ## 🐳 Serviços
 
-- **Jenkins**: http://localhost:8080
+- **Jenkins**: http://localhost:8090
 - **PostgreSQL**: localhost:5432
   - User: admin
   - Password: admin
