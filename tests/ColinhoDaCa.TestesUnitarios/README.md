@@ -7,20 +7,22 @@ Este projeto contém os testes unitários para a camada de aplicação do sistem
 ```
 ColinhoDaCa.TestesUnitarios/
 ├── Application/                    # Testes da camada de aplicação
-│   ├── LoginServiceTests.cs
-│   └── CadastrarClienteServiceTests.cs
-├── Domain/                         # Testes de entidades de domínio
-│   ├── ClienteTests.cs
-│   ├── CupomDbTests.cs
-│   ├── ExceptionsTests.cs
-│   ├── PetTests.cs
-│   ├── ReservaEntitiesTests.cs
-│   ├── ReservaTests.cs
-│   ├── SimpleEntitiesTests.cs
-│   └── UsuarioTests.cs
-└── Services/                       # Testes de serviços compartilhados
-    ├── JwtServiceTests.cs
-    └── PasswordServiceTests.cs
+│   ├── UseCases/                   # Testes de casos de uso
+│   │   ├── LoginServiceTests.cs
+│   │   └── CadastrarClienteServiceTests.cs
+│   ├── Services/                   # Testes de serviços
+│   │   ├── JwtServiceTests.cs
+│   │   └── PasswordServiceTests.cs
+│   └── Repositories/               # Testes de repositórios (futuro)
+└── Domain/                         # Testes de entidades de domínio
+    ├── ClienteTests.cs
+    ├── CupomDbTests.cs
+    ├── ExceptionsTests.cs
+    ├── PetTests.cs
+    ├── ReservaEntitiesTests.cs
+    ├── ReservaTests.cs
+    ├── SimpleEntitiesTests.cs
+    └── UsuarioTests.cs
 ```
 
 ## Tecnologias Utilizadas
@@ -89,17 +91,14 @@ Cobertura atual:
 ## Camadas Cobertas
 
 ### ✅ Application
-- LoginService: Autenticação de usuários
-- CadastrarClienteService: Cadastro de clientes
+- **UseCases**: LoginService, CadastrarClienteService
+- **Services**: JwtService, PasswordService
+- **Repositories**: (a ser implementado)
 
 ### ✅ Domain
 - Entidades: Cliente, Pet, Reserva, Cupom, Usuario
 - Exceções customizadas
 - Regras de negócio
-
-### ✅ Services
-- JwtService: Geração e validação de tokens
-- PasswordService: Hash e verificação de senhas
 
 ## Próximos Passos
 
