@@ -1,11 +1,6 @@
 pipeline {
     agent any
     
-    tools {
-        // Usar .NET SDK se disponível
-        dotnet 'dotnet-8'
-    }
-    
     environment {
         DOTNET_CLI_TELEMETRY_OPTOUT = '1'
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE = '1'
