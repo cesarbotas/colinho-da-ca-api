@@ -70,8 +70,8 @@ pipeline {
                         def coverageInt = coveragePercent as Integer
                         echo "Cobertura de testes: ${coverageInt}%"
                         
-                        if (coveragePercent < 20) {
-                            error "Cobertura de testes (${coverageInt}%) está abaixo do mínimo exigido (20%)"
+                        if (coveragePercent < 40) {
+                            error "Cobertura de testes (${coverageInt}%) está abaixo do mínimo exigido (40%)"
                         }
                         
                         echo 'Cobertura de testes aprovada ✅'
