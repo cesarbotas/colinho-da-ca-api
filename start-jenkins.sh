@@ -16,11 +16,11 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 echo ""
 echo "✅ Ambiente Jenkins disponível em:"
-echo "🌐 Jenkins: http://localhost:8080"
+echo "🌐 Jenkins: http://localhost:8090"
 echo "🐘 PostgreSQL: localhost:5432"
 echo ""
 echo "📋 Próximos passos:"
-echo "1. Acesse http://localhost:8080"
+echo "1. Acesse http://localhost:8090"
 echo "2. Use a senha acima para configurar"
 echo "3. Instale plugins sugeridos"
 echo "4. Crie um novo Pipeline job"
