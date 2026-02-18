@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'mcr.microsoft.com/dotnet/sdk:8.0'
+            args '-v /var/run/docker.sock:/var/run/docker.sock --user root'
+        }
+    }
     
     environment {
         DOTNET_CLI_TELEMETRY_OPTOUT = '1'
@@ -53,8 +58,12 @@ pipeline {
         
         stage('Docker Build') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:$DOCKER_TAG -f deploy/Dockerfile .'
-                sh 'docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:latest'
+                script {
+                    // Instalar Docker no container
+                    sh 'apt-get update && apt-get install -y docker.io'
+                    sh 'docker build -t $IMAGE_NAME:$DOCKER_TAG -f deploy/Dockerfile .'
+                    sh 'docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:latest'
+                }
                 echo 'Imagem Docker criada ✅'
             }
         }
@@ -73,7 +82,13 @@ pipeline {
     
     post {
         always {
-            sh 'docker system prune -f'
+            script {
+                try {
+                    sh 'docker system prune -f'
+                } catch (Exception e) {
+                    echo 'Docker cleanup falhou, mas continuando...'
+                }
+            }
         }
         success {
             echo '🚀 Pipeline executado com sucesso!'
