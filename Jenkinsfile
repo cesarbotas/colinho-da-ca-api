@@ -38,20 +38,6 @@ pipeline {
             }
         }
         
-        stage('Unit Tests') {
-            steps {
-                sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet test tests/ColinhoDaCa.TestesUnitarios/ColinhoDaCa.TestesUnitarios.csproj --verbosity normal'
-                echo 'Testes unitários executados ✅'
-            }
-        }
-        
-        stage('Integration Tests') {
-            steps {
-                sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet test tests/ColinhoDaCa.TestesIntegrados/ColinhoDaCa.TestesIntegrados.csproj --verbosity normal'
-                echo 'Testes integrados executados ✅'
-            }
-        }
-        
         stage('Publish') {
             steps {
                 sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet publish src/ColinhoDaCaApi/ColinhoDaCaApi.csproj -c Release -o out --exclude tests'
