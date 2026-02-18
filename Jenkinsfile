@@ -40,7 +40,7 @@ pipeline {
         
         stage('Publish') {
             steps {
-                sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet publish src/ColinhoDaCaApi/ColinhoDaCaApi.csproj -c Release -o out --exclude tests'
+                sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet publish src/ColinhoDaCaApi/ColinhoDaCaApi.csproj -c Release -o out'
                 echo 'Aplicação publicada ✅'
             }
         }
