@@ -16,21 +16,30 @@ pipeline {
         
         stage('Restore') {
             steps {
-                sh 'dotnet restore src/ColinhoDaCa.sln'
-                echo 'Dependências restauradas ✅'
+                script {
+                    try {
+                        sh 'dotnet restore src/ColinhoDaCa.sln'
+                        echo 'Dependências restauradas ✅'
+                    } catch (Exception e) {
+                        echo '⚠️ .NET não encontrado - instalando...'
+                        sh 'curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0'
+                        sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet restore src/ColinhoDaCa.sln'
+                        echo 'Dependências restauradas ✅'
+                    }
+                }
             }
         }
         
         stage('Build') {
             steps {
-                sh 'dotnet build src/ColinhoDaCa.sln --no-restore --configuration Release'
+                sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet build src/ColinhoDaCa.sln --no-restore --configuration Release'
                 echo 'Build executado ✅'
             }
         }
         
         stage('Unit Tests') {
             steps {
-                sh 'dotnet test tests/ColinhoDaCa.TestesUnitarios/ColinhoDaCa.TestesUnitarios.csproj --no-build --verbosity normal --collect:"XPlat Code Coverage"'
+                sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet test tests/ColinhoDaCa.TestesUnitarios/ColinhoDaCa.TestesUnitarios.csproj --no-build --verbosity normal'
                 echo 'Testes unitários executados ✅'
             }
         }
