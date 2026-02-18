@@ -27,11 +27,13 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="../../src/ColinhoDaCa.Application/ColinhoDaCa.Application.csproj" />
     <ProjectReference Include="../../src/ColinhoDaCa.Domain/ColinhoDaCa.Domain.csproj" />
+    <ProjectReference Include="../../src/ColinhoDaCa.Infra.Data/ColinhoDaCa.Infra.Data.csproj" />
   </ItemGroup>
 
 </Project>
