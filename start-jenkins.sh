@@ -2,6 +2,17 @@
 
 echo "🚀 Iniciando ambiente Jenkins CI/CD..."
 
+# Verificar se Docker está rodando
+if ! docker info > /dev/null 2>&1; then
+    echo "❌ Docker não está rodando. Iniciando Docker..."
+    open -a Docker
+    echo "⏳ Aguardando Docker inicializar..."
+    while ! docker info > /dev/null 2>&1; do
+        sleep 2
+    done
+    echo "✅ Docker iniciado com sucesso"
+fi
+
 cd jenkins-ci
 
 # Subir containers
