@@ -40,7 +40,7 @@ pipeline {
         
         stage('Unit Tests') {
             steps {
-                sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet test tests/ColinhoDaCa.TestesUnitarios/ColinhoDaCa.TestesUnitarios.csproj --no-build --verbosity normal'
+                sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet test tests/ColinhoDaCa.TestesUnitarios/ColinhoDaCa.TestesUnitarios.csproj --verbosity normal'
                 echo 'Testes unitários executados ✅'
             }
         }
