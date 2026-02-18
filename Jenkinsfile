@@ -47,16 +47,25 @@ pipeline {
         
         stage('Docker Build') {
             steps {
-                echo 'Docker build desabilitado - Jenkins sem plugin Docker'
+                sh 'docker build -t cesarbotas/colinhodaca-api:latest -f deploy/Dockerfile .'
+                echo 'Docker image criada ✅'
             }
         }
         
         stage('Docker Push') {
             when {
-                branch 'main'
+                branch 'release'
             }
             steps {
-                echo 'Docker push desabilitado - Jenkins sem plugin Docker'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub',
+                                                   usernameVariable: 'DOCKER_USER',
+                                                   passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                    docker login -u $DOCKER_USER -p $DOCKER_PASS
+                    docker push cesarbotas/colinhodaca-api:latest
+                    """
+                }
+                echo 'Docker image enviada ✅'
             }
         }
     }
