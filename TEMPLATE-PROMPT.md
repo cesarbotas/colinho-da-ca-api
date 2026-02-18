@@ -253,16 +253,20 @@ POST /api/v1/reservas/{id}/devolver
 - Controlar status: Reservada → Retirada → Devolvida
 
 ## ✅ Checklist de Implementação
-- [ ] Estrutura de projetos Clean Architecture
-- [ ] Sistema de autenticação JWT completo
-- [ ] Middleware de exceções global
-- [ ] Paginação em listagens
-- [ ] Validações de negócio
-- [ ] Auditoria (DataInclusao/DataAlteracao)
-- [ ] Repositórios com Unit of Work
-- [ ] Configurações via appsettings
-- [ ] Documentação README.md
-- [ ] Scripts SQL organizados
+- [x] Estrutura de projetos Clean Architecture
+- [x] Sistema de autenticação JWT completo
+- [x] Middleware de exceções global
+- [x] Paginação em listagens
+- [x] Validações de negócio
+- [x] Auditoria (DataInclusao/DataAlteracao)
+- [x] Repositórios com Unit of Work
+- [x] Configurações via appsettings
+- [x] Documentação README.md
+- [x] Scripts SQL organizados
+- [x] **Testes unitários (48% cobertura)**
+- [x] **Testes integrados (Testcontainers)**
+- [x] **Testes de carga (K6)**
+- [x] **CI/CD com cobertura mínima**
 
 ## 🚀 Comandos Iniciais
 ```bash

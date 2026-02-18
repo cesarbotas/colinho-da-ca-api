@@ -351,6 +351,18 @@ ConnectionStrings__ColinhoDaCaRender
 
 ## 🧪 Testes
 
+### Testes Unitários (ColinhoDaCa.TestesUnitarios)
+- **Tecnologias**: xUnit, Moq, FluentAssertions, Coverlet
+- **Cobertura Atual**: 48% (Application: 42%, Domain: 72%)
+- **Estrutura Organizada**:
+  - `Application/UseCases/` - Testes por domínio (Auth, Clientes, Pets, Cupons, Reservas, Racas, Sobre)
+  - `Application/Services/` - Testes de serviços (Auth, Email, Validation)
+  - `Domain/` - Testes de entidades
+- **Execução**: `dotnet test`
+- **Cobertura**: `dotnet test /p:CollectCoverage=true`
+- **Relatório HTML**: `./generate-coverage-report.sh`
+- **CI/CD**: Cobertura mínima de 40% no Jenkinsfile
+
 ### Testes Integrados (ColinhoDaCa.TestesIntegrados)
 - **Tecnologias**: xUnit, Testcontainers, FluentAssertions, Bogus
 - **Cobertura**: Auth, Clientes, Pets, Racas, Reservas, Fluxo Completo
@@ -370,6 +382,7 @@ ConnectionStrings__ColinhoDaCaRender
 - p(99) < 1000ms
 - Taxa de erro < 1%
 - Suportar 100+ usuários simultâneos
+- **Cobertura de código**: ≥ 40%
 
 ## 📁 Estrutura do Projeto
 
@@ -382,13 +395,13 @@ colinho-da-ca-api/
 │   ├── ColinhoDaCa.Infra.Data/      # Repositórios e EF Core
 │   └── ColinhoDaCa.IoC/             # Injeção de Dependências
 ├── tests/
+│   ├── ColinhoDaCa.TestesUnitarios/     # xUnit + Moq + Coverlet (48% cobertura)
 │   ├── ColinhoDaCa.TestesIntegrados/    # xUnit + Testcontainers
 │   └── ColinhoDaCa.TestesCarga.K6/      # K6 Load Tests
 ├── database/
 │   └── scripts/                     # Scripts SQL numerados
 ├── CONTEXT.md                       # Este arquivo
 ├── SECRETS-GUIDE.md                 # Guia de segurança
-├── USER-SECRETS-LOCAL.md            # Setup local
 └── RENDER-SECRETS-SETUP.md          # Setup produção
 ```
 
@@ -436,13 +449,18 @@ dotnet run --project src/ColinhoDaCaApi
 ## 📚 Documentação Adicional
 
 - **SECRETS-GUIDE.md**: Proteção de dados sensíveis
-- **USER-SECRETS-LOCAL.md**: Configuração local passo a passo
 - **RENDER-SECRETS-SETUP.md**: Configuração no Render
 - **tests/README.md**: Guia completo de testes
+- **tests/ColinhoDaCa.TestesUnitarios/README.md**: Guia de testes unitários
 - **tests/ColinhoDaCa.TestesCarga.K6/README.md**: Guia K6 detalhado
 
 ## 🔄 Últimas Atualizações
 
+- ✅ Testes unitários implementados com 48% de cobertura
+- ✅ Estrutura de testes organizada por domínio (Auth, Clientes, Pets, Cupons, Reservas, Racas, Sobre)
+- ✅ Testes de serviços (Auth, Email, Validation)
+- ✅ Cobertura mínima de 40% no CI/CD (Jenkinsfile)
+- ✅ 67 testes unitários passando
 - ✅ OAuth2 implementado com access token (30 min) e refresh token (7 dias)
 - ✅ Histórico de login com informações de dispositivo e IP
 - ✅ Roles preparadas para autorização baseada em perfis
