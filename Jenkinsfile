@@ -1,16 +1,14 @@
 pipeline {
-    agent {
-        docker {
-            image 'mcr.microsoft.com/dotnet/sdk:8.0'
-            args '-v /var/run/docker.sock:/var/run/docker.sock --user root'
-        }
+    agent any
+    
+    tools {
+        // Usar .NET SDK se disponível
+        dotnet 'dotnet-8'
     }
     
     environment {
         DOTNET_CLI_TELEMETRY_OPTOUT = '1'
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE = '1'
-        IMAGE_NAME = 'colinho-da-ca-api'
-        DOCKER_TAG = "${BUILD_NUMBER}"
     }
     
     stages {
@@ -58,13 +56,7 @@ pipeline {
         
         stage('Docker Build') {
             steps {
-                script {
-                    // Instalar Docker no container
-                    sh 'apt-get update && apt-get install -y docker.io'
-                    sh 'docker build -t $IMAGE_NAME:$DOCKER_TAG -f deploy/Dockerfile .'
-                    sh 'docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:latest'
-                }
-                echo 'Imagem Docker criada ✅'
+                echo 'Docker build desabilitado - Jenkins sem plugin Docker'
             }
         }
         
@@ -73,22 +65,14 @@ pipeline {
                 branch 'main'
             }
             steps {
-                echo 'Imagem Docker enviada para registry ✅'
-                // sh 'docker push $IMAGE_NAME:$DOCKER_TAG'
-                // sh 'docker push $IMAGE_NAME:latest'
+                echo 'Docker push desabilitado - Jenkins sem plugin Docker'
             }
         }
     }
     
     post {
         always {
-            script {
-                try {
-                    sh 'docker system prune -f'
-                } catch (Exception e) {
-                    echo 'Docker cleanup falhou, mas continuando...'
-                }
-            }
+            echo 'Pipeline finalizado'
         }
         success {
             echo '🚀 Pipeline executado com sucesso!'
