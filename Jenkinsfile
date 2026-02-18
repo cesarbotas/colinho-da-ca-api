@@ -47,14 +47,14 @@ pipeline {
         
         stage('Integration Tests') {
             steps {
-                sh 'dotnet test tests/ColinhoDaCa.TestesIntegrados/ColinhoDaCa.TestesIntegrados.csproj --verbosity normal'
+                sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet test tests/ColinhoDaCa.TestesIntegrados/ColinhoDaCa.TestesIntegrados.csproj --verbosity normal'
                 echo 'Testes integrados executados ✅'
             }
         }
         
         stage('Publish') {
             steps {
-                sh 'dotnet publish src/ColinhoDaCaApi/ColinhoDaCaApi.csproj -c Release -o out'
+                sh 'export PATH="$PATH:$HOME/.dotnet" && dotnet publish src/ColinhoDaCaApi/ColinhoDaCaApi.csproj -c Release -o out'
                 echo 'Aplicação publicada ✅'
             }
         }
