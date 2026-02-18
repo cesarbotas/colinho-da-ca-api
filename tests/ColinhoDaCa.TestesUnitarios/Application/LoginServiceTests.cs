@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace ColinhoDaCa.TestesUnitarios.Auth;
+namespace ColinhoDaCa.TestesUnitarios.Application;
 
 public class LoginServiceTests
 {
@@ -52,7 +52,6 @@ public class LoginServiceTests
     [Fact]
     public async Task Handle_ValidCredentials_ShouldReturnTokens()
     {
-        // Arrange
         var command = new LoginCommand { Email = "test@test.com", Senha = "password123" };
         var cliente = Cliente.Create("Test", "test@test.com", "11999999999", "12345678901", "Test");
         var usuario = Usuario.Create(1, "hashedPassword");
@@ -70,10 +69,8 @@ public class LoginServiceTests
         _jwtServiceMock.Setup(x => x.GenerateRefreshToken())
             .Returns("refresh_token");
 
-        // Act
         var result = await _service.Handle(command);
 
-        // Assert
         result.Should().NotBeNull();
         result.AccessToken.Should().Be("access_token");
         result.RefreshToken.Should().Be("refresh_token");
@@ -82,13 +79,11 @@ public class LoginServiceTests
     [Fact]
     public async Task Handle_InvalidEmail_ShouldThrowValidationException()
     {
-        // Arrange
         var command = new LoginCommand { Email = "invalid@test.com", Senha = "password123" };
 
         _clienteRepositoryMock.Setup(x => x.GetByEmailAsync(command.Email))
-            .ReturnsAsync((Cliente)null);
+            .ReturnsAsync((Cliente?)null);
 
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<ValidationException>(() => _service.Handle(command));
         exception.Message.Should().Be("Email ou senha inválidos");
     }

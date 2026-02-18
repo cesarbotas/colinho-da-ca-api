@@ -1,74 +1,109 @@
-# Testes Unitários - Colinho da Cá API
+# Testes Unitários - ColinhoDaCa.Application
 
-## 📊 Cobertura de Código
+Este projeto contém os testes unitários para a camada de aplicação do sistema ColinhoDaCa, organizados por domínio seguindo a mesma estrutura do projeto principal.
 
-Este projeto utiliza o **Coverlet** para análise de cobertura de código nos testes unitários.
+## Estrutura dos Testes
 
-### Executar Testes com Cobertura
+```
+ColinhoDaCa.TestesUnitarios/
+├── Application/                    # Testes da camada de aplicação
+│   ├── LoginServiceTests.cs
+│   └── CadastrarClienteServiceTests.cs
+├── Domain/                         # Testes de entidades de domínio
+│   ├── ClienteTests.cs
+│   ├── CupomDbTests.cs
+│   ├── ExceptionsTests.cs
+│   ├── PetTests.cs
+│   ├── ReservaEntitiesTests.cs
+│   ├── ReservaTests.cs
+│   ├── SimpleEntitiesTests.cs
+│   └── UsuarioTests.cs
+└── Services/                       # Testes de serviços compartilhados
+    ├── JwtServiceTests.cs
+    └── PasswordServiceTests.cs
+```
 
+## Tecnologias Utilizadas
+
+- **xUnit**: Framework de testes
+- **Moq**: Biblioteca para criação de mocks
+- **FluentAssertions**: Assertions mais legíveis
+- **Coverlet**: Cobertura de código
+
+## Executar os Testes
+
+### Executar todos os testes
 ```bash
-# Executar testes com cobertura
+dotnet test
+```
+
+### Executar com cobertura de código
+```bash
+dotnet test /p:CollectCoverage=true
+```
+
+### Gerar relatório HTML de cobertura
+```bash
 ./run-unit-tests-coverage.sh
-
-# Ou manualmente:
-cd tests/ColinhoDaCa.TestesUnitarios
-dotnet test --collect:"XPlat Code Coverage" --results-directory ./coverage
 ```
 
-### Gerar Relatório HTML
+O relatório HTML será gerado em `coverage/html/index.html`
 
-```bash
-# Gerar relatório HTML de cobertura
-./generate-coverage-report.sh
+## Padrões de Teste
 
-# Ou manualmente:
-dotnet tool install -g dotnet-reportgenerator-globaltool
-reportgenerator -reports:"tests/ColinhoDaCa.TestesUnitarios/coverage/**/coverage.cobertura.xml" -targetdir:"tests/ColinhoDaCa.TestesUnitarios/coverage/html" -reporttypes:Html
+### Estrutura de um Teste
+Cada teste segue o padrão AAA (Arrange, Act, Assert):
+
+```csharp
+[Fact]
+public async Task Handle_ValidCommand_ShouldCreateEntity()
+{
+    // Arrange - Preparar dados e mocks
+    var command = new CreateCommand { /* ... */ };
+    _repositoryMock.Setup(x => x.Method()).ReturnsAsync(result);
+
+    // Act - Executar o método testado
+    await _service.Handle(command);
+
+    // Assert - Verificar o resultado
+    _repositoryMock.Verify(x => x.InsertAsync(It.IsAny<Entity>()), Times.Once);
+}
 ```
 
-### Visualizar Relatório
+### Nomenclatura
+- **Classe de Teste**: `{ServiceName}Tests`
+- **Método de Teste**: `{MethodName}_{Scenario}_{ExpectedBehavior}`
 
-Após gerar o relatório HTML, abra o arquivo:
-```
-tests/ColinhoDaCa.TestesUnitarios/coverage/html/index.html
-```
+Exemplos:
+- `Handle_ValidCommand_ShouldCreatePet`
+- `Handle_InvalidId_ShouldThrowValidationException`
+- `Handle_ExistingEmail_ShouldThrowValidationException`
 
-## 🔧 Configuração
+## Cobertura de Código
 
-### Coverlet MSBuild
+Cobertura atual:
+- **Application**: ~12%
+- **Domain**: ~72%
+- **Total**: ~24%
 
-O projeto está configurado com:
-- **coverlet.msbuild**: Para integração com MSBuild
-- **coverlet.collector**: Para coleta de dados de cobertura
+## Camadas Cobertas
 
-### Configurações de Cobertura
+### ✅ Application
+- LoginService: Autenticação de usuários
+- CadastrarClienteService: Cadastro de clientes
 
-```xml
-<PropertyGroup>
-  <CollectCoverage>true</CollectCoverage>
-  <CoverletOutputFormat>opencover,lcov,json</CoverletOutputFormat>
-  <CoverletOutput>./coverage/</CoverletOutput>
-  <Exclude>[*]*.Program,[*]*.Startup,[*]*Migrations*,[*]*Tests*</Exclude>
-  <ExcludeByFile>**/Migrations/**/*</ExcludeByFile>
-</PropertyGroup>
-```
+### ✅ Domain
+- Entidades: Cliente, Pet, Reserva, Cupom, Usuario
+- Exceções customizadas
+- Regras de negócio
 
-### Exclusões
+### ✅ Services
+- JwtService: Geração e validação de tokens
+- PasswordService: Hash e verificação de senhas
 
-- Classes `Program` e `Startup`
-- Arquivos de migração
-- Classes de teste
-- Diretório `Migrations`
+## Próximos Passos
 
-## 📈 Métricas Atuais
-
-- **Total**: 23.99% de cobertura de linha
-- **ColinhoDaCa.Application**: 11.65% de cobertura
-- **ColinhoDaCa.Domain**: 71.78% de cobertura ✅
-
-### 🎯 Meta Atingida!
-
-A meta de **50% de cobertura no Domain** foi **SUPERADA**!
-- **Cobertura de linha**: 71.78%
-- **Cobertura de métodos**: 78.2%
-- **Total de testes**: 47 testes passando
+- [ ] Aumentar cobertura para 80%+
+- [ ] Adicionar testes para cenários de erro
+- [ ] Adicionar testes de integração entre serviços
+- [ ] Implementar testes de performance

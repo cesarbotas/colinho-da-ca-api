@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace ColinhoDaCa.TestesUnitarios.Clientes;
+namespace ColinhoDaCa.TestesUnitarios.Application;
 
 public class CadastrarClienteServiceTests
 {
@@ -45,7 +45,6 @@ public class CadastrarClienteServiceTests
     [Fact]
     public async Task Handle_ValidCommand_ShouldCreateClienteAndUsuario()
     {
-        // Arrange
         var command = new CadastrarClienteCommand
         {
             Nome = "Test Client",
@@ -62,25 +61,20 @@ public class CadastrarClienteServiceTests
         _passwordServiceMock.Setup(x => x.HashPassword(It.IsAny<string>()))
             .Returns("hashedPassword");
 
-        // Act
         await _service.Handle(command);
 
-        // Assert
         _clienteRepositoryMock.Verify(x => x.InsertAsync(It.IsAny<Cliente>()), Times.Once());
         _usuarioRepositoryMock.Verify(x => x.InsertAsync(It.IsAny<Usuario>()), Times.Once());
-
         _emailServiceMock.Verify(x => x.EnviarEmailAsync(
             It.IsAny<string>(),
             It.IsAny<string>(),
             It.IsAny<string>()), Times.Once());
-        
         _unitOfWorkMock.Verify(x => x.CommitAsync(It.IsAny<CancellationToken>()), Times.Exactly(3));
     }
 
     [Fact]
     public async Task Handle_ExistingEmail_ShouldThrowValidationException()
     {
-        // Arrange
         var command = new CadastrarClienteCommand 
         { 
             Email = "existing@test.com",
@@ -94,7 +88,6 @@ public class CadastrarClienteServiceTests
         _clienteRepositoryMock.Setup(x => x.GetByEmailAsync(command.Email))
             .ReturnsAsync(existingCliente);
 
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<ValidationException>(() => _service.Handle(command));
         exception.Message.Should().Be("Email já cadastrado");
     }
