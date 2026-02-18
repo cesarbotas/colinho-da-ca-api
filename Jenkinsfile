@@ -1,9 +1,15 @@
 pipeline {
     agent any
     
+    triggers {
+        githubPush()
+    }
+    
     environment {
         DOTNET_CLI_TELEMETRY_OPTOUT = '1'
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE = '1'
+        IMAGE_NAME = 'cesarbotas/colinhodaca-api'
+        VERSION = "1.0.${BUILD_NUMBER}"
     }
     
     stages {
@@ -44,28 +50,34 @@ pipeline {
                 echo 'Aplicação publicada ✅'
             }
         }
-        
+
         stage('Docker Build') {
             steps {
-                sh 'docker build -t cesarbotas/colinhodaca-api:latest -f deploy/Dockerfile .'
-                echo 'Docker image criada ✅'
+                sh """
+                docker build -t ${IMAGE_NAME}:${VERSION} -f deploy/Dockerfile .
+                docker tag ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:latest
+                """
+                echo "Imagem criada: ${VERSION} ✅"
             }
         }
         
-        stage('Docker Push') {
+        sstage('Docker Push') {
             when {
                 branch 'release'
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub',
-                                                   usernameVariable: 'DOCKER_USER',
-                                                   passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
                     sh """
-                    docker login -u $DOCKER_USER -p $DOCKER_PASS
-                    docker push cesarbotas/colinhodaca-api:latest
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    docker push ${IMAGE_NAME}:${VERSION}
+                    docker push ${IMAGE_NAME}:latest
                     """
                 }
-                echo 'Docker image enviada ✅'
+                echo 'Imagem enviada ao Docker Hub 🚀'
             }
         }
     }
