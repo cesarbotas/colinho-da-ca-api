@@ -67,10 +67,11 @@ pipeline {
                         ).trim()
                         
                         def coveragePercent = (coverage as Double) * 100
-                        echo "Cobertura de testes: ${coveragePercent.round(2)}%"
+                        def coverageInt = coveragePercent as Integer
+                        echo "Cobertura de testes: ${coverageInt}%"
                         
                         if (coveragePercent < 20) {
-                            error "Cobertura de testes (${coveragePercent.round(2)}%) está abaixo do mínimo exigido (20%)"
+                            error "Cobertura de testes (${coverageInt}%) está abaixo do mínimo exigido (20%)"
                         }
                         
                         echo 'Cobertura de testes aprovada ✅'
