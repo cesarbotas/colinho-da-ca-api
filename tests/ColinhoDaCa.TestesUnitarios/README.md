@@ -6,15 +6,23 @@ Este projeto contém os testes unitários para a camada de aplicação do sistem
 
 ```
 ColinhoDaCa.TestesUnitarios/
-├── Application/                    # Testes da camada de aplicação
-│   ├── UseCases/                   # Testes de casos de uso
-│   │   ├── LoginServiceTests.cs
-│   │   └── CadastrarClienteServiceTests.cs
-│   ├── Services/                   # Testes de serviços
-│   │   ├── JwtServiceTests.cs
-│   │   └── PasswordServiceTests.cs
-│   └── Repositories/               # Testes de repositórios (futuro)
-└── Domain/                         # Testes de entidades de domínio
+├── Application/
+│   ├── UseCases/
+│   │   ├── Auth/
+│   │   │   └── LoginServiceTests.cs
+│   │   └── Clientes/
+│   │       └── CadastrarClienteServiceTests.cs
+│   ├── Services/
+│   │   ├── Auth/
+│   │   │   ├── JwtServiceTests.cs
+│   │   │   └── PasswordServiceTests.cs
+│   │   ├── Email/
+│   │   │   ├── EmailServiceTests.cs
+│   │   │   └── EmailTemplateServiceTests.cs
+│   │   └── Validation/
+│   │       └── CpfValidationServiceTests.cs
+│   └── Repositories/               # (futuro)
+└── Domain/
     ├── ClienteTests.cs
     ├── CupomDbTests.cs
     ├── ExceptionsTests.cs
@@ -84,15 +92,20 @@ Exemplos:
 ## Cobertura de Código
 
 Cobertura atual:
-- **Application**: ~12%
+- **Application**: ~34%
 - **Domain**: ~72%
-- **Total**: ~24%
+- **Total**: ~34%
 
 ## Camadas Cobertas
 
 ### ✅ Application
-- **UseCases**: LoginService, CadastrarClienteService
-- **Services**: JwtService, PasswordService
+- **UseCases**:
+  - Auth: LoginService
+  - Clientes: CadastrarClienteService
+- **Services**:
+  - Auth: JwtService, PasswordService
+  - Email: EmailService, EmailTemplateService
+  - Validation: CpfValidationService
 - **Repositories**: (a ser implementado)
 
 ### ✅ Domain
