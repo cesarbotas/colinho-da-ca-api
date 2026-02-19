@@ -9,7 +9,8 @@ pipeline {
         DOTNET_CLI_TELEMETRY_OPTOUT = '1'
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE = '1'
         IMAGE_NAME = 'cesarbotas/colinhodaca-api'
-        VERSION = "1.0.${BUILD_NUMBER}"
+        GIT_COMMIT_SHORT = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+        VERSION = "${GIT_COMMIT_SHORT}"
     }
     
     stages {
@@ -101,28 +102,43 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh """
-                docker build -t ${IMAGE_NAME}:${VERSION} -f deploy/Dockerfile .
-                docker tag ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:latest
-                """
-                echo "Imagem criada: ${VERSION} ✅"
+                script {
+                    def gitBranch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    def timestamp = sh(script: "date +%Y%m%d-%H%M%S", returnStdout: true).trim()
+                    
+                    sh """
+                    docker build -t ${IMAGE_NAME}:${VERSION} -f deploy/Dockerfile .
+                    docker tag ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:${gitBranch}
+                    docker tag ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:${gitBranch}-${timestamp}
+                    docker tag ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:latest
+                    """
+                    echo "Imagem criada: ${VERSION} (${gitBranch}) ✅"
+                }
             }
         }
         
         stage('Docker Push') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh """
-                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                    docker push ${IMAGE_NAME}:${VERSION}
-                    docker push ${IMAGE_NAME}:latest
-                    """
+                script {
+                    def gitBranch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    def timestamp = sh(script: "date +%Y%m%d-%H%M%S", returnStdout: true).trim()
+                    
+                    withCredentials([usernamePassword(
+                        credentialsId: 'dockerhub',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+                        sh """
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push ${IMAGE_NAME}:${VERSION}
+                        docker push ${IMAGE_NAME}:${gitBranch}
+                        docker push ${IMAGE_NAME}:${gitBranch}-${timestamp}
+                        docker push ${IMAGE_NAME}:latest
+                        """
+                    }
+                    echo "Imagens enviadas ao Docker Hub 🚀"
+                    echo "Tags: ${VERSION}, ${gitBranch}, ${gitBranch}-${timestamp}, latest"
                 }
-                echo 'Imagem enviada ao Docker Hub 🚀'
             }
         }
     }
