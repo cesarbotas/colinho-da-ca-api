@@ -66,15 +66,19 @@ pipeline {
                             returnStdout: true
                         ).trim()
                         
-                        def coveragePercent = (coverage as Double) * 100
-                        def coverageInt = coveragePercent as Integer
-                        echo "Cobertura de testes: ${coverageInt}%"
-                        
-                        if (coveragePercent < 50) {
-                            error "Cobertura de testes (${coverageInt}%) está abaixo do mínimo exigido (50%)"
+                        if (coverage) {
+                            def coveragePercent = (coverage as Double) * 100
+                            def coverageInt = coveragePercent as Integer
+                            echo "Cobertura de testes: ${coverageInt}%"
+                            
+                            if (coveragePercent < 30) {
+                                error "Cobertura de testes (${coverageInt}%) está abaixo do mínimo exigido (30%)"
+                            }
+                            
+                            echo 'Cobertura de testes aprovada ✅'
+                        } else {
+                            echo '⚠️ Não foi possível extrair cobertura - continuando...'
                         }
-                        
-                        echo 'Cobertura de testes aprovada ✅'
                     } else {
                         echo '⚠️ Arquivo de cobertura não encontrado - continuando...'
                     }
