@@ -100,9 +100,6 @@ pipeline {
         }
         
         stage('Docker Push') {
-            when {
-                branch 'release'
-            }
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub',
