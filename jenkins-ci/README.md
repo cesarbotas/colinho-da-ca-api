@@ -1,4 +1,4 @@
-# Jenkins CI/CD - Colinho da Cá API
+# Jenkins CI/CD - Colinho da Cá
 
 ## 🏗️ Arquitetura
 
@@ -11,7 +11,7 @@
            ▼
 ┌─────────────────────┐
 │  Docker Agent       │
-│  (Build .NET 8)     │
+│  (.NET 8 + Node 20) │
 └──────────┬──────────┘
            │
            ▼
@@ -39,8 +39,9 @@
    - Pipeline
    - Blue Ocean (opcional)
 
-## 📋 Pipeline Stages
+## 📋 Pipelines Disponíveis
 
+### Backend API (.NET)
 1. **Checkout** - Baixa código fonte
 2. **Restore** - Restaura dependências .NET
 3. **Build** - Compila aplicação
@@ -49,6 +50,17 @@
 6. **Publish** - Publica aplicação
 7. **Docker Build** - Cria imagem Docker
 8. **Docker Push** - Envia para registry (apenas branch main)
+
+### Frontend (Node.js)
+1. **Checkout** - Baixa código fonte
+2. **Install Dependencies** - npm ci
+3. **Build** - npm run build
+4. **Docker Build** - Cria imagem com Nginx
+5. **Docker Push** - Envia para registry (apenas branch main)
+
+Arquivos:
+- Backend: `Jenkinsfile` ou `Jenkinsfile.simple`
+- Frontend: `jenkins-ci/Jenkinsfile.frontend`
 
 ## 🐳 Serviços
 
