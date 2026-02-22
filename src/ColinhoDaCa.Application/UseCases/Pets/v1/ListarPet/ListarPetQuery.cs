@@ -8,5 +8,5 @@ public class ListarPetQuery
     public long? ClienteId { get; set; }
     public string? ClienteNome { get; set; }
     public string? PetNome { get; set; }
-    public PaginacaoDto? Paginacao { get; set; }
+    public PaginacaoDto? Paginacao { get; set; } = new PaginacaoDto();
 }
