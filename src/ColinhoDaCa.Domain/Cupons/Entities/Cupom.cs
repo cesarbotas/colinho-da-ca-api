@@ -82,6 +82,10 @@ public class Cupom
                 valorTotal >= (MinimoValorTotal ?? 0)
                     ? ValorFixo ?? 0
                     : 0,
+            TipoCupom.PercentualNoUltimoPetComMinimo =>
+                quantidadePets >= (MinimoPets ?? 0)
+                    ? (valorTotal / quantidadePets) * (Percentual / 100)
+                    : 0,
             _ => 0
         };
     }

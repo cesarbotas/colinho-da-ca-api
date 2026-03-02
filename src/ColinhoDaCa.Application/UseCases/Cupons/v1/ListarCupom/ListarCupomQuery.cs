@@ -4,5 +4,6 @@ namespace ColinhoDaCa.Application.UseCases.Cupons.v1.ListarCupom;
 
 public class ListarCupomQuery
 {
-    public PaginacaoDto Paginacao { get; set; }
+    public long? Id { get; set; }
+    public PaginacaoDto? Paginacao { get; set; } = new PaginacaoDto();
 }

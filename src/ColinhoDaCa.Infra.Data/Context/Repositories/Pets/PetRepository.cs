@@ -48,6 +48,12 @@ public class PetRepository : Repository<Pet>, IPetRepository, IPetReadRepository
                     ClienteNome = c.Nome
                 };
 
+            if (query.Id.HasValue && query.Id > 0)
+            {
+                queryResult = queryResult
+                    .Where(p => p.Id == query.Id);
+            }
+
             if (query.ClienteId.HasValue && query.ClienteId > 0)
             {
                 queryResult = queryResult

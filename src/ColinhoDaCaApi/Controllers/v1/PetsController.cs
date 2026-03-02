@@ -35,8 +35,15 @@ public class PetsController : Controller
     }
 
     [HttpGet("", Name = "ListarPets")]
-    public async Task<ActionResult<ResultadoPaginadoDto<PetsDto>>> ListarPets([FromQuery] ListarPetQuery query)
+    public async Task<ActionResult<ResultadoPaginadoDto<PetsDto>>> ListarPets(
+        [FromQuery] ListarPetQuery query,
+        [FromHeader(Name = "X-Pet-Id")] long? petId)
     {
+        if (petId.HasValue)
+        {
+            query.Id = petId.Value;
+        }
+
         var result = await _listarPetService.Handle(query);
 
         return Ok(result);

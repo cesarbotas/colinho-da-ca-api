@@ -34,10 +34,7 @@ try
         options.AddPolicy("AllowFrontend", policy =>
         {
             policy
-                .WithOrigins(
-                    "http://localhost:8080",
-                    "https://colinho-da-ca-site.vercel.app"
-                )
+                .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
