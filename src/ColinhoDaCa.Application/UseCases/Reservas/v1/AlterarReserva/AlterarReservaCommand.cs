@@ -11,6 +11,6 @@ public class AlterarReservaCommand
     public decimal ValorDesconto { get; set; }
     public decimal ValorFinal { get; set; }
     public long? CupomId { get; set; }
-    public string Observacoes { get; set; }
+    public string? Observacoes { get; set; }
     public List<long> PetIds { get; set; }
 }
